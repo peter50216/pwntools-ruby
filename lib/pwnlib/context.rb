@@ -169,8 +169,8 @@ module Pwnlib
       end
 
       def os=(os)
-        os = OSES[os.downcase]
-        raise ArgumentError, "os must be one of #{OSES.inspect}" unless os
+        os = os.downcase
+        raise ArgumentError, "os must be one of #{OSES.sort.inspect}" unless OSES.include?(os)
         @attrs[:os] = os
       end
 
@@ -182,7 +182,9 @@ module Pwnlib
         when true, false
           signed = value
         end
-        raise ArgumentError, "signed must be boolean or one of #{SIGNEDNESSES.keys.inspect}" if signed.nil?
+        if signed.nil?
+          raise ArgumentError, "signed must be boolean or one of #{SIGNEDNESSES.keys.sort.inspect}"
+        end
         @attrs[:signed] = signed
       end
 
