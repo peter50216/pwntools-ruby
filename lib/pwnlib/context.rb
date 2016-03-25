@@ -72,6 +72,11 @@ module Pwnlib
 
       VALID_SIGNED = SIGNEDNESSES.keys
 
+      # XXX(Darkpi): Should we just hard-coded all levels here,
+      # or should we use Logger#const_defined?
+      # (This would include constant SEV_LEVEL, and exclude UNKNOWN)?
+      LOG_LEVELS = %w(DEBUG INFO WARN ERROR FATAL UNKNOWN)
+
       def initialize(**kwargs)
         @attrs = DEFAULT.dup
         update(**kwargs)
@@ -107,6 +112,7 @@ module Pwnlib
         @attrs = DEFAULT.dup
       end
 
+      # Getters here.
       DEFAULT.keys.each do |k|
         define_method(k) { @attrs[k] }
       end
@@ -128,6 +134,56 @@ module Pwnlib
         raise ArgumentError, "arch must be one of #{ARCHS.keys.sort.inspect}" unless defaults
         defaults.each { |k, v| @attrs[k] = v }
         @attrs[:arch] = arch
+      end
+
+      def bits=(bits)
+        raise ArgumentError, "bits must be > 0 (#{bits} given)" unless bits > 0
+        @attrs[:bits] = bits
+      end
+
+      def bytes
+        self.bits / 8
+      end
+
+      def bytes=(bytes)
+        self.bits = bytes * 8
+      end
+
+      def endian=(endian)
+        endian = ENDIANNESSES[endian.downcase]
+        raise ArgumentError, "endian must be one of #{ENDIANNESSES.sort.inspect}" if endian.nil?
+        @attrs[:endian] = endian
+      end
+
+      def log_level=(value)
+        log_level = nil
+        case value
+        when String
+          value = value.upcase
+          log_level = Logger.const_get(value) if LEVELS.include?(value)
+        when Integer
+          log_level = value
+        end
+        raise ArgumentError, "log_level must be an integer or one of #{LEVELS.inspect}" unless log_level
+        @attrs[:log_level] = log_level
+      end
+
+      def os=(os)
+        os = OSES[os.downcase]
+        raise ArgumentError, "os must be one of #{OSES.inspect}" unless os
+        @attrs[:os] = os
+      end
+
+      def signed=(value)
+        signed = nil
+        case value
+        when String
+          signed = SIGNEDNESSES[value.downcase]
+        when true, false
+          signed = value
+        end
+        raise ArgumentError, "signed must be boolean or one of #{SIGNEDNESSES.keys.inspect}" if signed.nil?
+        @attrs[:signed] = signed
       end
 
       # TODO(Darkpi): #binary when we can read ELF.
