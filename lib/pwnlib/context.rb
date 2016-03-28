@@ -192,9 +192,8 @@ module Pwnlib
       # TODO(Darkpi): #binary when we can read ELF.
     end
 
-    @context = ContextType.new
-    class << self
-      attr_reader :context
+    def context
+      @context ||= ContextType.new
     end
   end
 end

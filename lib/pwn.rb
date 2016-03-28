@@ -1,8 +1,5 @@
 require 'pwnlib/context'
+require 'pwnlib/util/packing'
 
-module Kernel
-  private
-  def context
-    Pwnlib::Context.context
-  end
-end
+extend Pwnlib::Context
+extend Pwnlib::Util::Packing
