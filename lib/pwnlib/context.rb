@@ -28,9 +28,10 @@ module Pwnlib
       LITTLE_64 = { endian: 'little', bits: 64 }.freeze
 
       class << self
-        private def longest(d)
+        def longest(d)
           Hash[d.sort_by { |k, _v| k.length }.reverse]
         end
+        private :longest
       end
 
       ARCHS = longest(
