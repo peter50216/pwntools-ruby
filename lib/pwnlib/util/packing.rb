@@ -3,6 +3,7 @@ require 'pwnlib/context'
 module Pwnlib
   module Util
     module Packing
+      module_function
       def pack(number, bits = nil, endian = nil, signed = nil, **kwargs)
         raise ArgumentError, 'number must be an integer' unless number.is_a?(Integer)
 
@@ -95,8 +96,6 @@ module Pwnlib
           number
         end
       end
-
-      module_function :pack, :unpack
 
       extend Pwnlib::Context
       private_class_method :context
