@@ -1,5 +1,15 @@
 language: ruby
+sudo: false
+cache: bundler
 rvm:
-  - "2.0.0"
-  - "2.1.0"
-  - "2.2.0"
+  - 2.0.0
+  - 2.1.5
+  - 2.2.0
+  - ruby-head
+matrix:
+  allow_failures:
+    - rvm: ruby-head
+before_install:
+  - gem update --system
+  - gem install bundler
+  - gem --version
