@@ -18,4 +18,3 @@ class ContextTest < MiniTest::Test
   include Pwnlib::Context
   private :context
 end
-

@@ -3,7 +3,9 @@ require 'logger'
 # TODO(Darkpi): Check if there should be special care for threading.
 
 module Pwnlib
+  # Context module, store some platform-dependent informations.
   module Context
+    # The type for context. User should never need to initialize one by themself.
     class ContextType
       DEFAULT = {
         arch: 'i386',
@@ -13,26 +15,25 @@ module Pwnlib
         newline: "\n",
         os: 'linux',
         signed: false,
-        timeout: Float::INFINITY,
-      }
+        timeout: Float::INFINITY
+      }.freeze
 
       OSES = %w(linux freebsd windows).sort
 
-      BIG_32    = {endian: 'big', bits: 32}
-      BIG_64    = {endian: 'big', bits: 64}
-      LITTLE_8  = {endian: 'little', bits: 8}
-      LITTLE_16 = {endian: 'little', bits: 16}
-      LITTLE_32 = {endian: 'little', bits: 32}
-      LITTLE_64 = {endian: 'little', bits: 64}
+      BIG_32    = { endian: 'big', bits: 32 }.freeze
+      BIG_64    = { endian: 'big', bits: 64 }.freeze
+      LITTLE_8  = { endian: 'little', bits: 8 }.freeze
+      LITTLE_16 = { endian: 'little', bits: 16 }.freeze
+      LITTLE_32 = { endian: 'little', bits: 32 }.freeze
+      LITTLE_64 = { endian: 'little', bits: 64 }.freeze
 
       class << self
-        private
-        def longest(d)
-          Hash[d.sort_by{|k, v| k.length}.reverse]
+        private def longest(d)
+          Hash[d.sort_by { |k, _v| k.length }.reverse]
         end
       end
 
-      ARCHS = longest({
+      ARCHS = longest(
         'aarch64' => LITTLE_64,
         'alpha' => LITTLE_64,
         'avr' => LITTLE_8,
@@ -51,31 +52,31 @@ module Pwnlib
         'sparc' => BIG_32,
         'sparc64' => BIG_64,
         'thumb' => LITTLE_32,
-        'vax' => LITTLE_32,
-      })
+        'vax' => LITTLE_32
+      )
 
-      ENDIANNESSES = longest({
+      ENDIANNESSES = longest(
         'be' => 'big',
         'eb' => 'big',
         'big' => 'big',
         'le' => 'little',
         'el' => 'little',
-        'little' => 'little',
-      })
+        'little' => 'little'
+      )
 
       SIGNEDNESSES = {
         'unsigned' => false,
         'no' => false,
         'yes' => true,
-        'signed' => true,
-      }
+        'signed' => true
+      }.freeze
 
       VALID_SIGNED = SIGNEDNESSES.keys
 
       # XXX(Darkpi): Should we just hard-coded all levels here,
       # or should we use Logger#const_defined?
       # (This would include constant SEV_LEVEL, and exclude UNKNOWN)?
-      LOG_LEVELS = %w(DEBUG INFO WARN ERROR FATAL UNKNOWN)
+      LOG_LEVELS = %w(DEBUG INFO WARN ERROR FATAL UNKNOWN).freeze
 
       def initialize(**kwargs)
         @attrs = DEFAULT.dup
@@ -84,7 +85,7 @@ module Pwnlib
 
       def update(**kwargs)
         kwargs.each do |k, v|
-          self.public_send("#{k}=", v)
+          public_send("#{k}=", v)
         end
         self
       end
@@ -93,7 +94,7 @@ module Pwnlib
       alias call update
 
       def to_s
-        vals = @attrs.map{|k, v| "#{k} = #{v.inspect}"}
+        vals = @attrs.map { |k, v| "#{k} = #{v.inspect}" }
         "#{self.class}(#{vals.join(', ')})"
       end
 
@@ -143,7 +144,7 @@ module Pwnlib
       end
 
       def bytes
-        self.bits / 8
+        bits / 8
       end
 
       def bytes=(bytes)
