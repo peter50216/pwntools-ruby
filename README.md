@@ -1,6 +1,6 @@
 [![Dependency Status](https://gemnasium.com/peter50216/pwntools-ruby.svg)](https://gemnasium.com/peter50216/pwntools-ruby)
 [![Build Status](https://travis-ci.org/peter50216/pwntools-ruby.svg?branch=master)](https://travis-ci.org/peter50216/pwntools-ruby)
-[![Test Coverage](https://codeclimate.com/github/peter50216/pwntools-ruby/badges/coverage.svg)](https://codeclimate.com/github/peter50216/pwntools-ruby/coverage)
+[![Test Coverage](https://img.shields.io/codeclimate/coverage/github/peter50216/pwntools-ruby.svg)](https://codeclimate.com/github/peter50216/pwntools-ruby/coverage)
 [![Code Climate](https://codeclimate.com/github/peter50216/pwntools-ruby/badges/gpa.svg)](https://codeclimate.com/github/peter50216/pwntools-ruby)
 [![Inline docs](http://inch-ci.org/github/peter50216/pwntools-ruby.svg)](http://inch-ci.org/github/peter50216/pwntools-ruby)
 
