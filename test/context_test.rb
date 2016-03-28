@@ -9,6 +9,12 @@ class ContextTest < MiniTest::Test
     assert_equal(context.endian, 'little')
   end
 
+  def test_set_bits
+    assert_equal(context.bits, 32)
+    context.bits = 64
+    assert_equal(context.bits, 64)
+  end
+
   include Pwnlib::Context
   private :context
 end
