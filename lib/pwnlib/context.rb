@@ -97,6 +97,7 @@ module Pwnlib
         "#{self.class}(#{vals.join(', ')})"
       end
 
+      # This would return what the block return.
       def local(**kwargs)
         raise ArgumentError, "Need a block for #{self.class}##{__callee__}" unless block_given?
         old_attrs = @attrs.dup
