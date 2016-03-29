@@ -14,3 +14,20 @@ So this is an attempt to create such library.
 There's absolutely NOTHING here now.
 Going to implement important things (socket, tubes, asm/disasm, pack/unpack utilities) first.
 Would try to have consistent naming with original pwntools, and do things in Ruby style.
+
+# Example Usage
+```ruby
+# encoding: ASCII-8BIT
+# The encoding line is important most time, or you'll get "\u0000" when using "\x00" in code,
+# which is NOT what we want when doing pwn...
+
+require 'pwn'
+
+p pack(0x41424344)  # 'DCBA'
+context.endian = 'big'
+p pack(0x41424344)  # 'ABCD'
+
+context.local(bits: 16) do
+  p pack(0x4142)  # 'AB'
+end
+```

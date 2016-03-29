@@ -171,6 +171,8 @@ module Pwnlib
         end
         ret.join
       end
+
+      # TODO(Darkpi): fit! Which seems super useful.
     end
   end
 end
