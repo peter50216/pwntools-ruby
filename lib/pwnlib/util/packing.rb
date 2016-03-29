@@ -6,38 +6,33 @@ module Pwnlib
     module Packing
       module_function
 
-      def pack(number, bits = nil, endian = nil, signed = nil, **kwargs)
+      def pack(number, bits: nil, endian: nil, signed: nil)
         unless number.is_a?(Integer)
           raise ArgumentError, 'number must be an integer'
         end
 
-        kwargs.merge!(
-          bits: bits,
-          endian: endian,
-          signed: signed
-        ) do |_, v1, v2|
-          v1.nil? ? v2 : v1
+        if bits == 'all'
+          bits = nil
+          is_all = true
+        else
+          is_all = false
         end
-        bits = kwargs[:bits]
-        kwargs[:bits] = nil if bits == 'all'
-        kwargs[:signed] = true if number < 0 && kwargs[:signed].nil?
-        kwargs.delete_if { |_, v| v.nil? }
 
-        context.local(**kwargs) do
-          bits = (bits == 'all' ? 'all' : context.bits)
+        context.local(bits: bits, endian: endian, signed: signed) do
+          bits = context.bits
           endian = context.endian
           signed = context.signed
 
           # Verify that bits make sense
           if signed
-            bits = (number.bit_length | 7) + 1 if bits == 'all'
+            bits = (number.bit_length | 7) + 1 if is_all
 
             limit = 1 << (bits - 1)
             unless -limit <= number && number < limit
               raise ArgumentError, "signed number=#{number} does not fit within bits=#{bits}"
             end
           else
-            if bits == 'all'
+            if is_all
               if number < 0
                 raise ArgumentError, "Can't pack negative number with bits='all' and signed=false"
               end
@@ -64,18 +59,10 @@ module Pwnlib
         end
       end
 
-      def unpack(data, bits = nil, endian = nil, signed = nil, **kwargs)
-        kwargs.merge!(
-          bits: bits,
-          endian: endian,
-          signed: signed
-        ) do |_, v1, v2|
-          v1.nil? ? v2 : v1
-        end
-        kwargs[:bits] = data.size * 8 if kwargs[:bits] == 'all'
-        kwargs.delete_if { |_, v| v.nil? }
+      def unpack(data, bits: nil, endian: nil, signed: nil)
+        bits = data.size * 8 if bits == 'all'
 
-        context.local(**kwargs) do
+        context.local(bits: bits, endian: endian, signed: signed) do
           bits = context.bits
           endian = context.endian
           signed = context.signed
@@ -98,21 +85,10 @@ module Pwnlib
         end
       end
 
-      def unpack_many(data, bits = nil, endian = nil, signed = nil, **kwargs)
-        kwargs.merge!(
-          bits: bits,
-          endian: endian,
-          signed: signed
-        ) do |_, v1, v2|
-          v1.nil? ? v2 : v1
-        end
-        bits = kwargs[:bits]
-        kwargs[:bits] = nil if bits == 'all'
-        kwargs.delete_if { |_, v| v.nil? }
+      def unpack_many(data, bits: nil, endian: nil, signed: nil)
+        return [unpack(data, bits: bits, endian: endian, signed: signed)] if bits == 'all'
 
-        return [unpack(data, 'all', **kwargs)] if bits == 'all'
-
-        context.local(**kwargs) do
+        context.local(bits: bits, endian: endian, signed: signed) do
           bits = context.bits
 
           # TODO(Darkpi): Support this if found useful.
@@ -127,15 +103,14 @@ module Pwnlib
           (data.size / bytes).times do |idx|
             x1 = idx * bytes
             x2 = x1 + bytes
-            ret << unpack(data[x1...x2], bits)
+            # We already set local context, no need to pass things down.
+            ret << unpack(data[x1...x2], bits: bits)
           end
           ret
         end
       end
 
-      SIZE_MAP = { 8 => 'c', 16 => 's', 32 => 'l', 64 => 'q' }
-
-      SIZE_MAP.each do |sz, ch|
+      { 8 => 'c', 16 => 's', 32 => 'l', 64 => 'q' }.each do |sz, ch|
         define_method("p#{sz}") do |*numbers, **kwargs|
           context.local(**kwargs) do
             c = context.signed ? ch : ch.upcase

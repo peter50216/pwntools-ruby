@@ -86,6 +86,7 @@ module Pwnlib
 
       def update(**kwargs)
         kwargs.each do |k, v|
+          next if v.nil?
           public_send("#{k}=", v)
         end
         self
