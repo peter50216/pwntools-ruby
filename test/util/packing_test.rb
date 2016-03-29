@@ -64,4 +64,54 @@ class PackingTest < MiniTest::Test
     assert_equal([0x4142, 0x4344], unpack_many('ABCD', bits: 16, endian: 'big', signed: 'signed'))
     assert_equal([-2, -1], unpack_many("\xff\xfe\xff\xff", bits: 16, endian: 'big', signed: 'signed'))
   end
+
+  def test_ps
+    assert_equal('A', p8(0x41))
+    assert_equal('BA', p16(0x4142))
+    assert_equal('DCBA', p32(0x41424344))
+    assert_equal('4321DCBA', p64(0x4142434431323334))
+
+    assert_equal('AB', p16(0x4142, endian: 'big'))
+    assert_equal('ABCD', p32(0x41424344, endian: 'big'))
+    assert_equal('ABCD1234', p64(0x4142434431323334, endian: 'big'))
+
+    assert_equal('ABCD', p8(0x41, 0x42, 0x43, 0x44))
+    assert_equal('BADC', p16(0x4142, 0x4344))
+
+    assert_equal("\xff\xff\xff\xff", p32(-1))
+  end
+
+  def test_us
+    assert_equal(0x41, u8('A'))
+    assert_equal(0x4142, u16('BA'))
+    assert_equal(0x41424344, u32('DCBA'))
+    assert_equal(0x4142434431323334, u64('4321DCBA'))
+
+    assert_equal(0x4142, u16('AB', endian: 'big'))
+    assert_equal(0x41424344, u32('ABCD', endian: 'big'))
+    assert_equal(0x4142434431323334, u64('ABCD1234', endian: 'big'))
+
+    assert_equal(0xFFFFFFFF, u32("\xff\xff\xff\xff", signed: false))
+    assert_equal(-1, u32("\xff\xff\xff\xff", signed: true))
+  end
+
+  def test_up_rand
+    [8, 16, 32, 64].each do |sz|
+      u = ->(*x, **y) { send("u#{sz}", *x, **y) }
+      p = ->(*x, **y) { send("p#{sz}", *x, **y) }
+      100.times do
+        limit = (1 << sz)
+        val = rand(0...limit)
+        assert_equal(val, u[p[val, signed: false], signed: false])
+
+        limit = (1 << (sz - 1))
+        val = rand(-limit...limit)
+        assert_equal(val, u[p[val, signed: true], signed: true])
+
+        rs = (sz / 8).times.map { rand(256).chr }.join
+        assert_equal(rs, p[u[rs, signed: false], signed: false])
+        assert_equal(rs, p[u[rs, signed: true], signed: true])
+      end
+    end
+  end
 end

@@ -11,8 +11,6 @@ module Pwnlib
           raise ArgumentError, 'number must be an integer'
         end
 
-        signed = true if number < 0 && signed.nil?
-
         kwargs.merge!(
           bits: bits,
           endian: endian,
@@ -22,6 +20,7 @@ module Pwnlib
         end
         bits = kwargs[:bits]
         kwargs[:bits] = nil if bits == 'all'
+        kwargs[:signed] = true if number < 0 && kwargs[:signed].nil?
         kwargs.delete_if { |_, v| v.nil? }
 
         context.local(**kwargs) do
@@ -116,7 +115,7 @@ module Pwnlib
         context.local(**kwargs) do
           bits = context.bits
 
-          # TODO(Darkpi): Support this if found useful some time.
+          # TODO(Darkpi): Support this if found useful.
           raise ArgumentError, 'bits must be a multiple of 8' if bits % 8 != 0
 
           bytes = bits / 8
@@ -133,6 +132,30 @@ module Pwnlib
           ret
         end
       end
+
+      SIZE_MAP = { 8 => 'c', 16 => 's', 32 => 'l', 64 => 'q' }
+
+      SIZE_MAP.each do |sz, ch|
+        define_method("p#{sz}") do |*numbers, **kwargs|
+          context.local(**kwargs) do
+            c = context.signed ? ch : ch.upcase
+            arrow = context.endian == 'little' ? '<' : '>'
+            arrow = '' if sz == 8
+            numbers.pack("#{c}#{arrow}*")
+          end
+        end
+
+        define_method("u#{sz}") do |data, **kwargs|
+          context.local(**kwargs) do
+            c = context.signed ? ch : ch.upcase
+            arrow = context.endian == 'little' ? '<' : '>'
+            arrow = '' if sz == 8
+            data.unpack("#{c}#{arrow}")[0]
+          end
+        end
+      end
+
+      # TODO(Darkpi): make_packer, make_unpacker if found useful.
 
       include Pwnlib::Context
     end
