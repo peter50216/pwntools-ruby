@@ -30,23 +30,21 @@ module Pwnlib
           signed = context.signed
 
           # Verify that bits make sense
-          if bits == 'all'
-            if signed
-              bits = (number.bit_length | 7) + 1
-            else
-              if number < 0
-                raise ArgumentError, "Can't pack negative number with bits='all' and signed=false"
-              end
-              bits = number == 0 ? 8 : ((number.bit_length - 1) | 7) + 1
-            end
-          end
-
           if signed
+            bits = (number.bit_length | 7) + 1 if bits == 'all'
+
             limit = 1 << (bits - 1)
             unless -limit <= number && number < limit
               raise ArgumentError, "signed number=#{number} does not fit within bits=#{bits}"
             end
           else
+            if bits == 'all'
+              if number < 0
+                raise ArgumentError, "Can't pack negative number with bits='all' and signed=false"
+              end
+              bits = number == 0 ? 8 : ((number.bit_length - 1) | 7) + 1
+            end
+
             limit = 1 << bits
             unless 0 <= number && number < limit
               raise ArgumentError, "unsigned number=#{number} does not fit within bits=#{bits}"
