@@ -1,3 +1,4 @@
+# encoding: ASCII-8BIT
 require 'logger'
 
 # TODO(Darkpi): Check if there should be special care for threading.
@@ -195,12 +196,10 @@ module Pwnlib
       # TODO(Darkpi): #binary when we can read ELF.
     end
 
+    module_function
+
     def context
       @context ||= ContextType.new
-    end
-
-    def self.included(klass)
-      klass.extend self
     end
   end
 end
