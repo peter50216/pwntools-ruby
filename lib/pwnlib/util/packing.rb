@@ -4,6 +4,8 @@ module Pwnlib
   module Util
     # Methods for integer pack/unpack
     module Packing
+      include Pwnlib::Context
+
       module_function
 
       def pack(number, bits: nil, endian: nil, signed: nil)
@@ -162,7 +164,25 @@ module Pwnlib
         end
       end
 
-      include Pwnlib::Context
+      def flat(*args, **kwargs, &preprocessor)
+        ret = []
+        p = make_packer(**kwargs)
+        args.each do |it|
+          if preprocessor && !it.is_a?(Array)
+            r = preprocessor[it]
+            it = r unless r.nil?
+          end
+          v = case it
+              when Array then flat(*it, **kwargs, &preprocessor)
+              when Integer then p[it]
+              when String then it.force_encoding('ASCII-8BIT')
+              else
+                raise ArgumentError, "Flat does not support values of type #{it.class}"
+              end
+          ret << v
+        end
+        ret.join
+      end
     end
   end
 end
