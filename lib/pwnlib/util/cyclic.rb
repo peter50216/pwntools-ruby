@@ -36,6 +36,24 @@ module Pwnlib
         r = length.nil? ? enum.to_a : enum.take(length)
         alphabet.is_a?(String) ? r.join : r
       end
+
+      def cyclic_find(subseq, alphabet: ASCII_LOWERCASE, n: nil)
+        n ||= subseq.size
+        subseq = subseq.chars if subseq.is_a?(String)
+        return nil unless subseq.all? { |c| alphabet.include?(c) }
+
+        pos = 0
+        saved = []
+        de_bruijn(alphabet: alphabet, n: n).each do |c|
+          saved << c
+          if saved.size > subseq.size
+            saved.shift
+            pos += 1
+          end
+          return pos if saved == subseq
+        end
+        nil
+      end
     end
   end
 end

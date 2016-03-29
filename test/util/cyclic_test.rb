@@ -12,4 +12,24 @@ class CyclicTest < MiniTest::Test
     assert_equal([1, 1, 1, 1, 2, 1, 1, 2, 2, 1, 2, 1, 2, 2, 2, 2],
                  cyclic(alphabet: [1, 2], n: 4))
   end
+
+  def test_cyclic_find
+    r = cyclic(1000)
+    10.times do
+      idx = rand(0...1000 - 4)
+      assert_equal(idx, cyclic_find(r[idx...idx + 4]))
+    end
+
+    r = cyclic(1000)
+    10.times do
+      idx = rand(0...1000 - 5)
+      assert_equal(idx, cyclic_find(r[idx...idx + 5], n: 4))
+    end
+
+    r = cyclic(1000, alphabet: (0...10).to_a)
+    10.times do
+      idx = rand(0...1000 - 4)
+      assert_equal(idx, cyclic_find(r[idx...idx + 4], alphabet: (0...10).to_a))
+    end
+  end
 end
