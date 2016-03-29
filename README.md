@@ -4,6 +4,7 @@
 [![Test Coverage](https://img.shields.io/codeclimate/coverage/github/peter50216/pwntools-ruby.svg)](https://codeclimate.com/github/peter50216/pwntools-ruby/coverage)
 [![Code Climate](https://img.shields.io/codeclimate/github/peter50216/pwntools-ruby.svg)](https://codeclimate.com/github/peter50216/pwntools-ruby)
 [![Inline docs](https://inch-ci.org/github/peter50216/pwntools-ruby.svg)](https://inch-ci.org/github/peter50216/pwntools-ruby)
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](http://choosealicense.com/licenses/mit/)
 
 # pwntools-ruby
 
