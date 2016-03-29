@@ -107,4 +107,9 @@ class ContextTest < MiniTest::Test
     context.timeout = 123
     assert_equal(context.timeout, 123)
   end
+
+  def test_newline
+    context.newline = "\r\n"
+    assert_equal(context.newline, "\r\n")
+  end
 end

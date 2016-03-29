@@ -14,12 +14,14 @@ module Pwnlib
         signed = true if number < 0 && signed.nil?
 
         kwargs.merge!(
-          bits: (bits == 'all' ? nil : bits),
+          bits: bits,
           endian: endian,
           signed: signed
         ) do |_, v1, v2|
           v1.nil? ? v2 : v1
         end
+        bits = kwargs[:bits]
+        kwargs[:bits] = nil if bits == 'all'
         kwargs.delete_if { |_, v| v.nil? }
 
         context.local(**kwargs) do
@@ -67,12 +69,13 @@ module Pwnlib
 
       def unpack(data, bits = nil, endian = nil, signed = nil, **kwargs)
         kwargs.merge!(
-          bits: (bits == 'all' ? data.size * 8 : bits),
+          bits: bits,
           endian: endian,
           signed: signed
         ) do |_, v1, v2|
           v1.nil? ? v2 : v1
         end
+        kwargs[:bits] = data.size * 8 if kwargs[:bits] == 'all'
         kwargs.delete_if { |_, v| v.nil? }
 
         context.local(**kwargs) do
