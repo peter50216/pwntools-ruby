@@ -99,6 +99,41 @@ module Pwnlib
         end
       end
 
+      def unpack_many(data, bits = nil, endian = nil, signed = nil, **kwargs)
+        kwargs.merge!(
+          bits: bits,
+          endian: endian,
+          signed: signed
+        ) do |_, v1, v2|
+          v1.nil? ? v2 : v1
+        end
+        bits = kwargs[:bits]
+        kwargs[:bits] = nil if bits == 'all'
+        kwargs.delete_if { |_, v| v.nil? }
+
+        return [unpack(data, 'all', **kwargs)] if bits == 'all'
+
+        context.local(**kwargs) do
+          bits = context.bits
+
+          # TODO(Darkpi): Support this if found useful some time.
+          raise ArgumentError, 'bits must be a multiple of 8' if bits % 8 != 0
+
+          bytes = bits / 8
+
+          if data.size % bytes != 0
+            raise ArgumentError, "data.size=#{data.size} must be a multiple of bytes=#{bytes}"
+          end
+          ret = []
+          (data.size / bytes).times do |idx|
+            x1 = idx * bytes
+            x2 = x1 + bytes
+            ret << unpack(data[x1...x2], bits)
+          end
+          ret
+        end
+      end
+
       include Pwnlib::Context
     end
   end

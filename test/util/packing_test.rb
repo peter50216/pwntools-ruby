@@ -46,4 +46,22 @@ class PackingTest < MiniTest::Test
 
     assert_equal(0x414243, unpack('ABC', bits: 'all', endian: 'big', signed: false))
   end
+
+  def test_unpack_many
+    assert_equal([0x55aa, 0x33cc], unpack_many("\xaa\x55\xcc\x33", 16, 'little', false))
+    assert_equal([0xaa55, 0xcc33], unpack_many("\xaa\x55\xcc\x33", 16, 'big', false))
+    assert_equal([-0x55ab, -0x33cd], unpack_many("\xaa\x55\xcc\x33", 16, 'big', true))
+    assert_equal([0x0302ff], unpack_many("\xff\x02\x03", 'all', 'little', true))
+    assert_equal([-0xfdfd], unpack_many("\xff\x02\x03", 'all', 'big', true))
+
+    err = assert_raises(ArgumentError) { unpack_many('ABCD', 12) }
+    assert_match(/bits must be a multiple of 8/, err.message)
+
+    err = assert_raises(ArgumentError) { unpack_many('ABC', 16) }
+    assert_match(/must be a multiple of bytes/, err.message)
+
+    assert_equal([0x41, 0x42, 0x43, 0x44], unpack_many('ABCD', bits: 8))
+    assert_equal([0x4142, 0x4344], unpack_many('ABCD', bits: 16, endian: 'big', signed: 'signed'))
+    assert_equal([-2, -1], unpack_many("\xff\xfe\xff\xff", bits: 16, endian: 'big', signed: 'signed'))
+  end
 end
