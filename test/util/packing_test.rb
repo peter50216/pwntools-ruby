@@ -168,5 +168,8 @@ class PackingTest < MiniTest::Test
     assert_equal("\x01\x00testABABABABABAB",
                  flat(1, 'test', [[['AB'] * 2] * 3], endian: 'le', bits: 16))
     assert_equal('234', flat([1, [2, 3]]) { |x| "#{x + 1}" })
+
+    err = assert_raises(ArgumentError) { flat(1.23) }
+    assert_match(/flat does not support values of type/, err.message)
   end
 end

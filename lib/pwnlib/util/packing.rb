@@ -165,7 +165,7 @@ module Pwnlib
               when Integer then p[it]
               when String then it.force_encoding('ASCII-8BIT')
               else
-                raise ArgumentError, "Flat does not support values of type #{it.class}"
+                raise ArgumentError, "flat does not support values of type #{it.class}"
               end
           ret << v
         end
