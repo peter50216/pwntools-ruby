@@ -136,30 +136,18 @@ module Pwnlib
       #               but current implementation doesn't offer that much performance
       #               relative to what pwntools-python do. Maybe we should initialize
       #               those functions (p8lu, ...) like in pwntools-python?
-      def make_packer(bits: nil, endian: nil, signed: nil)
-        context.local(bits: bits, endian: endian, signed: signed) do
-          bits = context.bits
-          endian = context.endian
-          signed = context.signed
+      [%w(pack p), %w(unpack u)].each do |v1, v2|
+        define_method("make_#{v1}er") do |bits: nil, endian: nil, signed: nil|
+          context.local(bits: bits, endian: endian, signed: signed) do
+            bits = context.bits
+            endian = context.endian
+            signed = context.signed
 
-          if [8, 16, 32, 64].include?(bits)
-            ->(num) { send("p#{bits}", num, endian: endian, signed: signed) }
-          else
-            ->(num) { pack(num, bits: bits, endian: endian, signed: signed) }
-          end
-        end
-      end
-
-      def make_unpacker(bits: nil, endian: nil, signed: nil)
-        context.local(bits: bits, endian: endian, signed: signed) do
-          bits = context.bits
-          endian = context.endian
-          signed = context.signed
-
-          if [8, 16, 32, 64].include?(bits)
-            ->(data) { send("u#{bits}", data, endian: endian, signed: signed) }
-          else
-            ->(data) { unpack(data, bits: bits, endian: endian, signed: signed) }
+            if [8, 16, 32, 64].include?(bits)
+              ->(num) { send("#{v2}#{bits}", num, endian: endian, signed: signed) }
+            else
+              ->(num) { send(v1, num, bits: bits, endian: endian, signed: signed) }
+            end
           end
         end
       end
