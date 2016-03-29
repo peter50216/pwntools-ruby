@@ -5,3 +5,6 @@ extend Pwnlib::Context
 
 require 'pwnlib/util/packing'
 extend Pwnlib::Util::Packing
+
+require 'pwnlib/util/cyclic'
+extend Pwnlib::Util::Cyclic
