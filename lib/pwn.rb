@@ -8,3 +8,6 @@ extend Pwnlib::Util::Packing
 
 require 'pwnlib/util/cyclic'
 extend Pwnlib::Util::Cyclic
+
+require 'pwnlib/util/fiddling'
+extend Pwnlib::Util::Fiddling
