@@ -197,5 +197,9 @@ module Pwnlib
     def context
       @context ||= ContextType.new
     end
+
+    def self.included(klass)
+      klass.extend self
+    end
   end
 end

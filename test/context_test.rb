@@ -2,6 +2,8 @@ require 'test_helper'
 require 'pwnlib/context'
 
 class ContextTest < MiniTest::Test
+  include Pwnlib::Context
+
   def test_set_arch
     context.arch = 'amd64'
     assert_equal(context.arch, 'amd64')
@@ -14,7 +16,4 @@ class ContextTest < MiniTest::Test
     context.bits = 64
     assert_equal(context.bits, 64)
   end
-
-  include Pwnlib::Context
-  private :context
 end

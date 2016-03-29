@@ -98,8 +98,7 @@ module Pwnlib
         end
       end
 
-      extend Pwnlib::Context
-      private_class_method :context
+      include Pwnlib::Context
     end
   end
 end
