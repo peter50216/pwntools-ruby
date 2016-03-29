@@ -26,5 +26,7 @@ class PackingTest < MiniTest::Test
     assert_equal(unpack("\xff\x02\x03", 'all', 'little', true), 0x0302ff)
     assert_equal(unpack("\xff\x02\x03", 'all', 'big', true), -0xfdfd)
     assert_equal(unpack("\x00\x00\x00\x80\x00", 'all', 'little', true), 0x80000000)
+    err = assert_raises(ArgumentError) { unpack("\xff\xff", 8, 'big', false) }
+    assert_match(/does not match/, err.message)
   end
 end

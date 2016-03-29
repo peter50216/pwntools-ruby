@@ -163,11 +163,11 @@ module Pwnlib
         case value
         when String
           value = value.upcase
-          log_level = Logger.const_get(value) if LEVELS.include?(value)
+          log_level = Logger.const_get(value) if LOG_LEVELS.include?(value)
         when Integer
           log_level = value
         end
-        raise ArgumentError, "log_level must be an integer or one of #{LEVELS.inspect}" unless log_level
+        raise ArgumentError, "log_level must be an integer or one of #{LOG_LEVELS.inspect}" unless log_level
         @attrs[:log_level] = log_level
       end
 
