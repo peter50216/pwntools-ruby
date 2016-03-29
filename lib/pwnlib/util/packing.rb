@@ -111,12 +111,12 @@ module Pwnlib
       end
 
       { 8 => 'c', 16 => 's', 32 => 'l', 64 => 'q' }.each do |sz, ch|
-        define_method("p#{sz}") do |*numbers, **kwargs|
+        define_method("p#{sz}") do |num, **kwargs|
           context.local(**kwargs) do
             c = context.signed ? ch : ch.upcase
             arrow = context.endian == 'little' ? '<' : '>'
             arrow = '' if sz == 8
-            numbers.pack("#{c}#{arrow}*")
+            [num].pack("#{c}#{arrow}")
           end
         end
 
@@ -130,7 +130,37 @@ module Pwnlib
         end
       end
 
-      # TODO(Darkpi): make_packer, make_unpacker if found useful.
+      # TODO(Darkpi): pwntools-python have this for performance reason,
+      #               but current implementation doesn't offer that much performance
+      #               relative to what pwntools-python do. Maybe we should initialize
+      #               those functions (p8lu, ...) like in pwntools-python?
+      def make_packer(bits: nil, endian: nil, signed: nil)
+        context.local(bits: bits, endian: endian, signed: signed) do
+          bits = context.bits
+          endian = context.endian
+          signed = context.signed
+
+          if [8, 16, 32, 64].include?(bits)
+            ->(num) { send("p#{bits}", num, endian: endian, signed: signed) }
+          else
+            ->(num) { pack(num, bits: bits, endian: endian, signed: signed) }
+          end
+        end
+      end
+
+      def make_unpacker(bits: nil, endian: nil, signed: nil)
+        context.local(bits: bits, endian: endian, signed: signed) do
+          bits = context.bits
+          endian = context.endian
+          signed = context.signed
+
+          if [8, 16, 32, 64].include?(bits)
+            ->(data) { send("u#{bits}", data, endian: endian, signed: signed) }
+          else
+            ->(data) { unpack(data, bits: bits, endian: endian, signed: signed) }
+          end
+        end
+      end
 
       include Pwnlib::Context
     end

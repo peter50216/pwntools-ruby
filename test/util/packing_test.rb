@@ -80,9 +80,6 @@ class PackingTest < MiniTest::Test
     assert_equal('ABCD', p32(0x41424344, endian: 'big'))
     assert_equal('ABCD1234', p64(0x4142434431323334, endian: 'big'))
 
-    assert_equal('ABCD', p8(0x41, 0x42, 0x43, 0x44))
-    assert_equal('BADC', p16(0x4142, 0x4344))
-
     assert_equal("\xff\xff\xff\xff", p32(-1))
   end
 
@@ -118,5 +115,35 @@ class PackingTest < MiniTest::Test
         assert_equal(rs, p[u[rs, signed: true], signed: true])
       end
     end
+  end
+
+  def test_make_packer
+    context.bits = 32
+    context.signed = 'no'
+    p = make_packer(endian: 'be')
+    assert_equal("\x00\x00\x00A", p[0x41])
+
+    context.bits = 64
+    context.endian = 'le'
+    context.signed = true
+    assert_equal("\x00\x00\x00A", p[0x41])
+
+    p = make_packer(bits: 24)
+    assert_equal("B\x00\x00", p[0x42])
+  end
+
+  def test_make_unpacker
+    context.bits = 32
+    context.signed = 'no'
+    u = make_unpacker(endian: 'be')
+    assert_equal(0x41, u["\x00\x00\x00A"])
+
+    context.bits = 64
+    context.endian = 'le'
+    context.signed = true
+    assert_equal(0x41, u["\x00\x00\x00A"])
+
+    u = make_unpacker(bits: 24)
+    assert_equal(0x42, u["B\x00\x00"])
   end
 end
