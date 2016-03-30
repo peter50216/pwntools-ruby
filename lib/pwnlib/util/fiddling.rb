@@ -1,9 +1,12 @@
 # encoding: ASCII-8BIT
+require 'pwnlib/context'
 
 module Pwnlib
   module Util
     # Some fiddling methods
     module Fiddling
+      include Pwnlib::Context
+
       module_function
 
       def enhex(s)
@@ -39,6 +42,24 @@ module Pwnlib
           end
         end
         res
+      end
+
+      def bits(s, endian: 'big', zero: 0, one: 1)
+        context.local(endian: endian) do
+          is_little = context.endian == 'little'
+          case s
+          when String
+            v = 'b*'
+            v.upcase! unless is_little
+            s.unpack(v)[0].chars.map { |ch| ch == '1' ? one : zero }
+          when Integer
+            r = s.to_s(2).chars.map { |ch| ch == '1' ? one : zero }
+            r.unshift(zero) until r.size % 8 == 0
+            is_little ? r.reverse : r
+          else
+            raise ArgumentError, 's must be either String or Integer'
+          end
+        end
       end
     end
   end

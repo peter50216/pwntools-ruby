@@ -38,4 +38,13 @@ class FiddlingTest < MiniTest::Test
     err = assert_raises(ArgumentError) { urldecode('%ff%') }
     assert_match(/Invalid input to urldecode/, err.message)
   end
+
+  def test_bits
+    assert_equal(['+', '+', '+', '+', '+', '+', '+', '-', '-', '-', '-', '-', '-', '-', '-', '-'],
+                 bits(511, zero: '+', one: '-'))
+    assert_equal([0, 1, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0], bits('XD'))
+    assert_equal([0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0],
+                 bits('XD', endian: 'le'))
+    assert_equal([0, 0, 0, 0, 0, 0, 0, 0], bits(0))
+  end
 end
