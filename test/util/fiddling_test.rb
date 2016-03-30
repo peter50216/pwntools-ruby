@@ -22,13 +22,20 @@ class FiddlingTest < MiniTest::Test
   end
 
   def test_urlencode
-    assert_equal('%74%65%73%74', urlencode('test'))
+    assert_equal('%74%65%73%74%20%41', urlencode('test A'))
+    assert_equal('%00%ff%01%fe', urlencode("\x00\xff\x01\xfe"))
   end
 
   def test_urldecode
-    assert_equal('test A', urldecode('test%20%41'))
+    assert_equal('test A', urldecode('te%73t%20%41'))
+    assert_equal("\x00\xff\x01\xfe", urldecode('%00%ff%01%fe'))
+
     assert_equal('%qq', urldecode('%qq', true))
     err = assert_raises(ArgumentError) { urldecode('%qq') }
+    assert_match(/Invalid input to urldecode/, err.message)
+
+    assert_equal('%%1z2%orz%%%%%#$!#)@%', urldecode('%%1z2%orz%%%%%#$!#)@%', true))
+    err = assert_raises(ArgumentError) { urldecode('%ff%') }
     assert_match(/Invalid input to urldecode/, err.message)
   end
 end

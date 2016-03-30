@@ -17,19 +17,19 @@ class CyclicTest < MiniTest::Test
     r = cyclic(1000)
     10.times do
       idx = rand(0...1000 - 4)
-      assert_equal(idx, cyclic_find(r[idx...idx + 4]))
+      assert_equal(idx, cyclic_find(r[idx, 4]))
     end
 
     r = cyclic(1000)
     10.times do
       idx = rand(0...1000 - 5)
-      assert_equal(idx, cyclic_find(r[idx...idx + 5], n: 4))
+      assert_equal(idx, cyclic_find(r[idx, 5], n: 4))
     end
 
     r = cyclic(1000, alphabet: (0...10).to_a)
     10.times do
       idx = rand(0...1000 - 4)
-      assert_equal(idx, cyclic_find(r[idx...idx + 4], alphabet: (0...10).to_a))
+      assert_equal(idx, cyclic_find(r[idx, 4], alphabet: (0...10).to_a))
     end
   end
 end

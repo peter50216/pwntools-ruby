@@ -15,7 +15,7 @@ module Pwnlib
       end
 
       def urlencode(s)
-        s.unpack('H*')[0].scan(/../).map { |i| "%#{i}" }.join
+        s.bytes.map { |b| format('%%%02x', b) }.join
       end
 
       def urldecode(s, ignore_invalid = false)
@@ -23,15 +23,15 @@ module Pwnlib
         n = 0
         while n < s.length
           if s[n] != '%'
-            res += s[n]
+            res << s[n]
             n += 1
           else
             cur = s[n + 1, 2]
-            if /[0-9a-fA-F]{2}/.match(cur)
-              res += cur.to_i(16).chr
+            if cur =~ /[0-9a-fA-F]{2}/
+              res << cur.to_i(16).chr
               n += 3
             elsif ignore_invalid
-              res += '%'
+              res << '%'
               n += 1
             else
               raise ArgumentError, 'Invalid input to urldecode'
