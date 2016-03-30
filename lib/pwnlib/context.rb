@@ -30,7 +30,7 @@ module Pwnlib
 
       class << self
         def longest(d)
-          Hash[d.sort_by { |k, _v| k.length }.reverse]
+          Hash[d.sort_by { |k, _v| k.size }.reverse]
         end
         private :longest
       end

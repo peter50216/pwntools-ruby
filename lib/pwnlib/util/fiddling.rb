@@ -21,7 +21,7 @@ module Pwnlib
       def urldecode(s, ignore_invalid = false)
         res = ''
         n = 0
-        while n < s.length
+        while n < s.size
           if s[n] != '%'
             res << s[n]
             n += 1
