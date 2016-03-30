@@ -46,5 +46,17 @@ class FiddlingTest < MiniTest::Test
     assert_equal([0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0],
                  bits('XD', endian: 'le'))
     assert_equal([0, 0, 0, 0, 0, 0, 0, 0], bits(0))
+
+    err = assert_raises(ArgumentError) { bits(2.0) }
+    assert_match(/must be either String or Integer/, err.message)
+
+    err = assert_raises(ArgumentError) { bits(-1) }
+    assert_match(/must be non-negative/, err.message)
+  end
+
+  def test_bits_str
+    assert_equal('0000000111111111', bits_str(511))
+    assert_equal('0100011010010110001011101100111011111010110011100010111001001110',
+                 bits_str('bits_str', endian: 'little'))
   end
 end

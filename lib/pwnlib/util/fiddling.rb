@@ -53,6 +53,8 @@ module Pwnlib
             v.upcase! unless is_little
             s.unpack(v)[0].chars.map { |ch| ch == '1' ? one : zero }
           when Integer
+            # TODO(Darkpi): What should we do to negative number?
+            raise ArgumentError, 's must be non-negative' unless s >= 0
             r = s.to_s(2).chars.map { |ch| ch == '1' ? one : zero }
             r.unshift(zero) until r.size % 8 == 0
             is_little ? r.reverse : r
@@ -60,6 +62,10 @@ module Pwnlib
             raise ArgumentError, 's must be either String or Integer'
           end
         end
+      end
+
+      def bits_str(s, endian: 'big', zero: 0, one: 1)
+        bits(s, endian: endian, zero: zero, one: one).join
       end
     end
   end
