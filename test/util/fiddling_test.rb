@@ -68,4 +68,8 @@ class FiddlingTest < MiniTest::Test
     err = assert_raises(ArgumentError) { unbits(%w(hi there)) }
     assert_match(/cannot decode value/, err.message)
   end
+
+  def test_bitswap
+    assert_equal("\x8cL\xcc,", bitswap('1234'))
+  end
 end

@@ -81,6 +81,10 @@ module Pwnlib
           [bytes].pack(is_little ? 'b*' : 'B*')
         end
       end
+
+      def bitswap(s)
+        unbits(bits(s, endian: 'big'), endian: 'little')
+      end
     end
   end
 end
