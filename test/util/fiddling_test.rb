@@ -82,4 +82,14 @@ class FiddlingTest < MiniTest::Test
     context.bits = 32
     assert_equal(0xf77db57b, bitswap_int(0xdeadbeef))
   end
+
+  def test_b64e
+    assert_equal('dGVzdA==', b64e('test'))
+    assert_equal('shik' * 100, b64e("\xb2\x18\xa4" * 100))
+  end
+
+  def test_b64d
+    assert_equal('test', b64d('dGVzdA=='))
+    assert_equal("\xb2\x18\xa4" * 100, b64d('shik' * 100))
+  end
 end

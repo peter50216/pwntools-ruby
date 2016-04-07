@@ -95,6 +95,14 @@ module Pwnlib
           bits_str(n, endian: 'little').ljust(bits, '0').to_i(2)
         end
       end
+
+      def b64e(s)
+        [s].pack('m0')
+      end
+
+      def b64d(s)
+        s.unpack('m0')[0]
+      end
     end
   end
 end
