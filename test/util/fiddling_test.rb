@@ -64,5 +64,8 @@ class FiddlingTest < MiniTest::Test
     assert_equal("\x80", unbits([1]))
     assert_equal("\x01", unbits([1], endian: 'le'))
     assert_equal("\x16\xa666\xf6", unbits(bits('hello'), endian: 'le'))
+
+    err = assert_raises(ArgumentError) { unbits(%w(hi there)) }
+    assert_match(/cannot decode value/, err.message)
   end
 end
