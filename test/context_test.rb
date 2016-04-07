@@ -22,6 +22,12 @@ class ContextTest < MiniTest::Test
     end
 
     assert_equal(1, context.timeout)
+
+    assert_raises(RuntimeError) do
+      context.local(timeout: 3) { raise 'QQ failed in block' }
+    end
+
+    assert_equal(1, context.timeout)
   end
 
   def test_clear

@@ -104,6 +104,8 @@ module Pwnlib
       # This would return what the block return.
       def local(**kwargs)
         raise ArgumentError, "Need a block for #{self.class}##{__callee__}" unless block_given?
+        # XXX(Darkpi): improve performance for this if this is too slow, since we use this in many
+        #              places that has argument endian / signed / ...
         old_attrs = @attrs.dup
         begin
           update(**kwargs)
