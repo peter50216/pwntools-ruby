@@ -59,4 +59,10 @@ class FiddlingTest < MiniTest::Test
     assert_equal('0100011010010110001011101100111011111010110011100010111001001110',
                  bits_str('bits_str', endian: 'little'))
   end
+
+  def test_unbits
+    assert_equal("\x80", unbits([1]))
+    assert_equal("\x01", unbits([1], endian: 'le'))
+    assert_equal("\x16\xa666\xf6", unbits(bits('hello'), endian: 'le'))
+  end
 end

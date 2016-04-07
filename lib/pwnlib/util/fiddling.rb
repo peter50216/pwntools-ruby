@@ -67,6 +67,20 @@ module Pwnlib
       def bits_str(s, endian: 'big', zero: 0, one: 1)
         bits(s, endian: endian, zero: zero, one: one).join
       end
+
+      def unbits(s, endian: 'big')
+        context.local(endian: endian) do
+          is_little = context.endian == 'little'
+          bytes = s.map do |c|
+            case c
+            when '1', 1, true then '1'
+            when '0', 0, false then '0'
+            else raise ArgumentError, "cannot decode value #{c.inspect} into a bit"
+            end
+          end.join
+          [bytes].pack(is_little ? 'b*' : 'B*')
+        end
+      end
     end
   end
 end
