@@ -72,4 +72,14 @@ class FiddlingTest < MiniTest::Test
   def test_bitswap
     assert_equal("\x8cL\xcc,", bitswap('1234'))
   end
+
+  def test_bitswap_int
+    assert_equal(0x2c, bitswap_int(0x1234, bits: 8))
+    assert_equal(0x2c48, bitswap_int(0x1234, bits: 16))
+    assert_equal(0x2c4800, bitswap_int(0x1234, bits: 24))
+    assert_equal(0x589000, bitswap_int(0x1234, bits: 25))
+
+    context.bits = 32
+    assert_equal(0xf77db57b, bitswap_int(0xdeadbeef))
+  end
 end
