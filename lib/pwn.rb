@@ -14,3 +14,4 @@ extend Pwnlib::Util::Fiddling::ClassMethod
 
 require 'pwnlib/ext/string'
 require 'pwnlib/ext/integer'
+require 'pwnlib/ext/array'
