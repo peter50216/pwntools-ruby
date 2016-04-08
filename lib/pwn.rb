@@ -11,3 +11,6 @@ extend Pwnlib::Util::Cyclic::ClassMethod
 
 require 'pwnlib/util/fiddling'
 extend Pwnlib::Util::Fiddling::ClassMethod
+
+require 'pwnlib/ext/string'
+require 'pwnlib/ext/integer'

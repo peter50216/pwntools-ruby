@@ -66,6 +66,7 @@ module Pwnlib
         end
 
         def unbits(s, endian: 'big')
+          s = s.chars if s.is_a?(String)
           context.local(endian: endian) do
             is_little = context.endian == 'little'
             bytes = s.map do |c|

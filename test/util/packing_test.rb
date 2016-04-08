@@ -116,8 +116,8 @@ class PackingTest < MiniTest::Test
 
   def test_up_rand
     [8, 16, 32, 64].each do |sz|
-      u = ->(*x, **y) { send("u#{sz}", *x, **y) }
-      p = ->(*x, **y) { send("p#{sz}", *x, **y) }
+      u = ->(*x) { send("u#{sz}", *x) }
+      p = ->(*x) { send("p#{sz}", *x) }
       100.times do
         limit = (1 << sz)
         val = rand(0...limit)
