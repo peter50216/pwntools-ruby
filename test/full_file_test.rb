@@ -1,8 +1,10 @@
 # encoding: ASCII-8BIT
 require 'test_helper'
+require 'minitest/hell'
 require 'open3'
 
 class FullFileTest < MiniTest::Test
+  parallelize_me!
   Dir['test/files/*.rb'].each do |f|
     fn = File.basename(f, '.rb')
     define_method("test_#{fn}") do
