@@ -3,7 +3,7 @@ require 'test_helper'
 require 'pwnlib/util/cyclic'
 
 class CyclicTest < MiniTest::Test
-  include Pwnlib::Util::Cyclic
+  include Pwnlib::Util::Cyclic::ClassMethod
 
   def test_cyclic
     assert_equal('AAABAACABBABCACBACCBBBCBCCC', cyclic(alphabet: 'ABC', n: 3))

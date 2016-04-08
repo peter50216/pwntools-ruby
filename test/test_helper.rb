@@ -10,3 +10,8 @@ end
 
 require 'minitest/autorun'
 require 'minitest/unit'
+require 'minitest/hell'
+
+class Minitest::Test
+  parallelize_me!
+end

@@ -123,4 +123,8 @@ class ContextTest < MiniTest::Test
   def test_to_s
     assert_match(/\APwnlib::Context::ContextType\(.+\)\Z/, context.to_s)
   end
+
+  def teardown
+    context.clear
+  end
 end

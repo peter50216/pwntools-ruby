@@ -198,10 +198,20 @@ module Pwnlib
       # TODO(Darkpi): #binary when we can read ELF.
     end
 
-    module_function
+    @context = ContextType.new
 
+    class << self
+      attr_reader :context
+    end
+
+    # For include.
     def context
-      @context ||= ContextType.new
+      Pwnlib::Context.context
+    end
+
+    def self.included(base)
+      # XXX(Darkpi): Should we do this?
+      base.send(:private, :context)
     end
   end
 end

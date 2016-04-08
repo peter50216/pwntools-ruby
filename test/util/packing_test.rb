@@ -3,7 +3,7 @@ require 'test_helper'
 require 'pwnlib/util/packing'
 
 class PackingTest < MiniTest::Test
-  include Pwnlib::Util::Packing
+  include Pwnlib::Util::Packing::ClassMethod
 
   def test_pack
     assert_equal('ABC',
@@ -135,30 +135,24 @@ class PackingTest < MiniTest::Test
   end
 
   def test_make_packer
-    context.bits = 32
-    context.signed = 'no'
-    p = make_packer(endian: 'be')
+    p = context.local(bits: 32, signed: 'no') { make_packer(endian: 'be') }
     assert_equal("\x00\x00\x00A", p[0x41])
 
-    context.bits = 64
-    context.endian = 'le'
-    context.signed = true
-    assert_equal("\x00\x00\x00A", p[0x41])
+    context.local(bits: 64, endian: 'le', signed: true) do
+      assert_equal("\x00\x00\x00A", p[0x41])
+    end
 
     p = make_packer(bits: 24)
     assert_equal("B\x00\x00", p[0x42])
   end
 
   def test_make_unpacker
-    context.bits = 32
-    context.signed = 'no'
-    u = make_unpacker(endian: 'be')
+    u = context.local(bits: 32, signed: 'no') { make_unpacker(endian: 'be') }
     assert_equal(0x41, u["\x00\x00\x00A"])
 
-    context.bits = 64
-    context.endian = 'le'
-    context.signed = true
-    assert_equal(0x41, u["\x00\x00\x00A"])
+    context.local(bits: 64, endian: 'le', signed: true) do
+      assert_equal(0x41, u["\x00\x00\x00A"])
+    end
 
     u = make_unpacker(bits: 24)
     assert_equal(0x42, u["B\x00\x00"])

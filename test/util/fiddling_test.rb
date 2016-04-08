@@ -3,7 +3,7 @@ require 'test_helper'
 require 'pwnlib/util/fiddling'
 
 class FiddlingTest < MiniTest::Test
-  include Pwnlib::Util::Fiddling
+  include Pwnlib::Util::Fiddling::ClassMethod
 
   def test_enhex
     assert_equal('4141313233', enhex('AA123'))
@@ -79,17 +79,13 @@ class FiddlingTest < MiniTest::Test
     assert_equal(0x2c4800, bitswap_int(0x1234, bits: 24))
     assert_equal(0x589000, bitswap_int(0x1234, bits: 25))
 
-    context.bits = 32
-    assert_equal(0xf77db57b, bitswap_int(0xdeadbeef))
+    context.local(bits: 36) do
+      assert_equal(0xf77db57b0, bitswap_int(0xdeadbeef))
+    end
   end
 
   def test_b64e
     assert_equal('dGVzdA==', b64e('test'))
     assert_equal('shik' * 100, b64e("\xb2\x18\xa4" * 100))
-  end
-
-  def test_b64d
-    assert_equal('test', b64d('dGVzdA=='))
-    assert_equal("\xb2\x18\xa4" * 100, b64d('shik' * 100))
   end
 end
