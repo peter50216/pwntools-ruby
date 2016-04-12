@@ -1,12 +1,24 @@
 # encoding: ASCII-8BIT
 require 'logger'
-require 'pwnlib/timeout'
 
 # TODO(Darkpi): Check if there should be special care for threading.
 
 module Pwnlib
   # Context module, store some platform-dependent informations.
   module Context
+    # XXX(Darkpi): Should we REALLY put this here?
+    FOREVER = (2**20).to_f
+
+    def self.timeout_sec(timeout)
+      case timeout
+      when :forever then FOREVER
+      else
+        timeout = timeout.to_f
+        raise ArgumentError, 'Timeout cannot be negative' if timeout < 0
+        [timeout, FOREVER].min
+      end
+    end
+
     # The type for context. User should never need to initialize one by themself.
     class ContextType
       DEFAULT = {
@@ -17,7 +29,7 @@ module Pwnlib
         newline: "\n",
         os: 'linux',
         signed: false,
-        timeout: Timeout.to_sec(:forever)
+        timeout: Context.timeout_sec(:forever)
       }.freeze
 
       OSES = %w(linux freebsd windows).sort
@@ -129,9 +141,8 @@ module Pwnlib
         @attrs[:newline] = newline
       end
 
-      # TODO(Darkpi): Timeout module.
       def timeout=(timeout)
-        @attrs[:timeout] = Timeout.to_sec(timeout)
+        @attrs[:timeout] = Context.timeout_sec(timeout)
       end
 
       # Difference from Python pwntools:
