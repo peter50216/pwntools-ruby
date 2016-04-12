@@ -1,5 +1,6 @@
 # encoding: ASCII-8BIT
 require 'logger'
+require 'pwnlib/timeout'
 
 # TODO(Darkpi): Check if there should be special care for threading.
 
@@ -16,7 +17,7 @@ module Pwnlib
         newline: "\n",
         os: 'linux',
         signed: false,
-        timeout: Float::INFINITY
+        timeout: Timeout.to_sec(:forever)
       }.freeze
 
       OSES = %w(linux freebsd windows).sort
@@ -130,7 +131,7 @@ module Pwnlib
 
       # TODO(Darkpi): Timeout module.
       def timeout=(timeout)
-        @attrs[:timeout] = timeout
+        @attrs[:timeout] = Timeout.to_sec(timeout)
       end
 
       # Difference from Python pwntools:
