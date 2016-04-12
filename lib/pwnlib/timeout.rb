@@ -1,33 +1,20 @@
 # encoding: ASCII-8BIT
 require 'time'
-# XXX(Darkpi): This actually is circular require, but seems to work fine?
-#              Check if there's any problem with this.
 require 'pwnlib/context'
 
 module Pwnlib
   # Mixin module for class with timeout.
   # TODO(Darkpi): Python pwntools seems to have many unreasonable codes in this class,
-  #               not sure of the use case of this, check if everything is coded as intended
-  #               after we have some use cases. (e.g. sock)
+  #               not sure of the use case of this, check if everything is coded as
+  #               intended after we have some use cases. (e.g. sock)
   module Timeout
     # Difference from Python pwntools:
     # We just use default argument and :forever for forever.
-    FOREVER = (2**20).to_f
 
     def initialize(timeout = nil)
       @stop = nil
       timeout ||= Pwnlib::Context.context.timeout
       self.timeout = timeout
-    end
-
-    def self.to_sec(timeout)
-      case timeout
-      when :forever then FOREVER
-      else
-        timeout = timeout.to_f
-        raise ArgumentError, 'Timeout cannot be negative' if timeout < 0
-        [timeout, FOREVER].min
-      end
     end
 
     def timeout
@@ -36,7 +23,7 @@ module Pwnlib
     end
 
     def timeout=(timeout)
-      @timeout = Timeout.to_sec(timeout)
+      @timeout = Context.timeout_sec(timeout)
       timeout_changed
     end
 
@@ -44,7 +31,7 @@ module Pwnlib
     end
 
     def countdown_active?
-      # XXX(Darkpi): Why should @stop == nil count as active??? (This is the case in Python pwntool)
+      # XXX(Darkpi): Why should @stop == nil count as active??? (as in Python pwntool)
       @stop && Time.now < @stop
     end
 
