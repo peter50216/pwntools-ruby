@@ -3,16 +3,16 @@ require 'time'
 require 'pwnlib/context'
 
 module Pwnlib
-  # Mixin module for class with timeout.
+  # A simple timer class.
   # TODO(Darkpi): Python pwntools seems to have many unreasonable codes in this class,
   #               not sure of the use case of this, check if everything is coded as
   #               intended after we have some use cases. (e.g. sock)
-  module Timeout
-    # Difference from Python pwntools:
-    # We just use default argument and :forever for forever.
+  class Timer
+    # DIFF: We just use nil for default and :forever for forever.
 
-    def initialize(timeout = nil)
+    def initialize(parent, timeout = nil)
       @stop = nil
+      @parent = parent
       timeout ||= Pwnlib::Context.context.timeout
       self.timeout = timeout
     end
@@ -24,13 +24,10 @@ module Pwnlib
 
     def timeout=(timeout)
       @timeout = Context.timeout_sec(timeout)
-      timeout_changed
+      @parent.timeout_changed(self)
     end
 
-    def timeout_changed
-    end
-
-    def countdown_active?
+    def active?
       # XXX(Darkpi): Why should @stop == nil count as active??? (as in Python pwntool)
       @stop && Time.now < @stop
     end
