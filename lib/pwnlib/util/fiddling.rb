@@ -84,8 +84,7 @@ module Pwnlib
           unbits(bits(s, endian: 'big'), endian: 'little')
         end
 
-        # Difference from Python pwntools:
-        # bits default to context.bits
+        # DIFF: bits default to context.bits
         def bitswap_int(n, bits: nil)
           context.local(bits: bits) do
             bits = context.bits

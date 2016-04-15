@@ -145,8 +145,7 @@ module Pwnlib
         @attrs[:timeout] = Context.timeout_sec(timeout)
       end
 
-      # Difference from Python pwntools:
-      # We always change +bits+ and +endian+ field whether user have already changed them.
+      # DIFF: We always change +bits+ and +endian+ field whether user have already changed them.
       def arch=(arch)
         arch = arch.downcase.gsub(/[[:punct:]]/, '')
         defaults = ARCHS[arch]
