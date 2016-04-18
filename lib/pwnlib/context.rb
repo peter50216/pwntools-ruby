@@ -6,19 +6,6 @@ require 'logger'
 module Pwnlib
   # Context module, store some platform-dependent informations.
   module Context
-    # XXX(Darkpi): Should we REALLY put this here?
-    FOREVER = (2**20).to_f
-
-    def self.timeout_sec(timeout)
-      case timeout
-      when :forever then FOREVER
-      else
-        timeout = timeout.to_f
-        raise ArgumentError, 'Timeout cannot be negative' if timeout < 0
-        [timeout, FOREVER].min
-      end
-    end
-
     # The type for context. User should never need to initialize one by themself.
     class ContextType
       DEFAULT = {
@@ -29,7 +16,7 @@ module Pwnlib
         newline: "\n",
         os: 'linux',
         signed: false,
-        timeout: Context.timeout_sec(:forever)
+        timeout: :forever
       }.freeze
 
       OSES = %w(linux freebsd windows).sort

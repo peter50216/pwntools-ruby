@@ -7,62 +7,51 @@ module Pwnlib
   # TODO(Darkpi): Python pwntools seems to have many unreasonable codes in this class,
   #               not sure of the use case of this, check if everything is coded as
   #               intended after we have some use cases. (e.g. sock)
+  # NOTE(Darkpi): This class is actually quite weird, and expected to be used only in tubes.
   class Timer
     # DIFF: We just use nil for default and :forever for forever.
 
-    def initialize(parent, timeout = nil)
-      @stop = nil
-      @parent = parent
-      timeout ||= Pwnlib::Context.context.timeout
-      self.timeout = timeout
+    def initialize(timeout = nil)
+      @deadline = nil
+      @timeout = timeout
     end
 
-    def timeout
-      return @timeout unless @stop
-      [@stop - Time.now, 0].max
-    end
-
-    def timeout=(timeout)
-      @timeout = Context.timeout_sec(timeout)
-      @parent.timeout_changed(self)
+    def started?
+      @deadline
     end
 
     def active?
-      # XXX(Darkpi): Why should @stop == nil count as active??? (as in Python pwntool)
-      @stop && Time.now < @stop
+      started? && (@deadline == :forever || Time.now < @deadline)
     end
 
+    def timeout
+      return @timeout || Pwnlib::Context.context.timeout unless started?
+      @deadline == :forever ? :forever : [@deadline - Time.now, 0].max
+    end
+
+    def timeout=(timeout)
+      raise "Can't change timeout when countdown" if started?
+      @timeout = timeout
+    end
+
+    # DIFF: We do NOT allow nested countdown with non-default value. This simplifies thing a lot.
+    # NOTE(Darkpi): timeout = nil means default value for the first time, and nop after that.
     def countdown(timeout = nil)
       raise ArgumentError, 'Need a block for countdown' unless block_given?
-      timeout ||= @timeout
-      return yield if timeout >= FOREVER
-
-      old_timeout = @timeout
-      old_stop = @stop
-
-      @stop = Time.now + timeout
-      @stop = [@stop, old_stop].min if old_stop
-      begin
-        self.timeout = timeout
-        yield
-      ensure
-        @stop = old_stop
-        self.timeout = old_timeout
+      if started?
+        return yield if timeout.nil?
+        raise 'Nested countdown not permitted'
       end
-    end
 
-    def local(timeout)
-      raise ArgumentError, 'Need a block for countdown' unless block_given?
-      old_timeout = @timeout
-      old_stop = @stop
+      timeout ||= @timeout
+      timeout ||= Pwnlib::Context.context.timeout
 
-      @stop = nil
+      @deadline = timeout == :forever ? :forever : Time.now + timeout
+
       begin
-        self.timeout = timeout
         yield
       ensure
-        @stop = old_stop
-        self.timeout = old_timeout
+        @deadline = nil
       end
     end
   end
