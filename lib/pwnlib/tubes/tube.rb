@@ -42,7 +42,7 @@ module Pwnlib
             end
             data.slice!(0..-1)
           ensure
-            @buffer.unget(data)
+            unrecv(data)
           end
         end
       end
@@ -52,6 +52,53 @@ module Pwnlib
           # TODO(Darkpi): Select!
           fillbuffer while @timer.active? && @buffer.size < num_bytes
           @buffer.size >= num_bytes ? @buffer.get(num_bytes) : ''
+        end
+      end
+
+      # DIFF: We return the string that ends the earliest, rather then starts the earliest,
+      #       since the latter can't be done greedly. Still, it would be bad to call this
+      #       for case with ambiguity.
+      def recvuntil(delims, drop: false, timeout: nil)
+        delims = Array(delims)
+        max_len = delims.map(&:size).max
+        @timer.countdown(timeout) do
+          data = Buffer.new
+          matching = ''
+          begin
+            while @timer.active?
+              begin
+                s = recv
+              rescue
+                return ''
+              end
+
+              return '' if s.empty?
+              matching << s
+
+              sidx = matching.size
+              match_len = 0
+              delims.each do |d|
+                idx = matching.index(d)
+                next unless idx
+                if idx + d.size < si + match_len
+                  sidx = idx
+                  match_len = d.size
+                end
+              end
+
+              if sidx < matching.size
+                r = data.get + matching.slice!(0, sidx + match_len)
+                r.slice!(-match_len..-1) if drop
+                return r
+              end
+
+              data << matching.slice!(0...-max_len) if matching.size > max_len
+            end
+            ''
+          ensure
+            unrecv(matching)
+            unrecv(data)
+          end
         end
       end
 
