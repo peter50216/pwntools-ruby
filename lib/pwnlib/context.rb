@@ -129,7 +129,7 @@ module Pwnlib
       end
 
       def timeout=(timeout)
-        @attrs[:timeout] = Context.timeout_sec(timeout)
+        @attrs[:timeout] = timeout
       end
 
       # DIFF: We always change +bits+ and +endian+ field whether user have already changed them.
