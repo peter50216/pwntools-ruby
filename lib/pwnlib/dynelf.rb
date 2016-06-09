@@ -15,6 +15,17 @@ module Pwnlib
       end
 
       private
+
+      # gnu_hash(str) -> int
+      # Function used to generated GNU-style hashes for strings.
+      def gnu_hash(s)
+        h = 5381
+        s.each_byte do |c|
+          h = h * 33 + c.to_i
+        end
+        h &  0xffffffff
+      end
+
       def find_base(ptr)
         ptr &= PAGE_MASK
         while true
