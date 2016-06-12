@@ -18,4 +18,3 @@ require 'pwnlib/ext/array'
 
 require 'pwnlib/dynelf'
 extend Pwnlib::DynELF
-
