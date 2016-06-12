@@ -131,7 +131,7 @@ module Pwnlib
     end
 
     def dynelf(*args, &block)
-      DynELFType.new(*args, block)
+      DynELFType.new(*args, &block)
     end
   end
 end
