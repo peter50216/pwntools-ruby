@@ -45,11 +45,7 @@ module Pwnlib
 
       # Function used to generated GNU-style hashes for strings.
       def gnu_hash(s)
-        h = 5381
-        s.each_byte do |c|
-          h = h * 33 + c.to_i
-        end
-        h & 0xffffffff
+        s.bytes.inject(5381) { |a, e| a * 33 + e } & 0xffffffff
       end
 
       # Leak `numb` bytes at `addr`.
@@ -94,10 +90,9 @@ module Pwnlib
         ptr &= PAGE_MASK
         loop do
           ret = @leak.call(ptr)
-          break if ret.length >= 5 && ret[0, 4] == "\x7fELF"
+          return ptr if ret.length >= 5 && ret[0, 4] == "\x7fELF"
           ptr -= PAGE_SIZE
         end
-        ptr
       end
 
       def resolve_symbol_gnu(symb)
