@@ -25,7 +25,7 @@ module Pwnlib
       def initialize(*args, &block)
         @leak = block || args.find { |a| a.is_a?(Proc) }
         @libbase = find_base(args.find { |a| a.is_a?(Integer) })
-        @elfclass = { "\x01" => 32, "\x02" => 64 }[@leak.call(@libbase)[4]]
+        @elfclass = { "\x01" => 32, "\x02" => 64 }[leak_n(@libbase + 4, 1)]
         @elfword = @elfclass / 8
         @unp = { 32 => :u32, 64 => :u64 }[@elfclass]
         @dynamic = find_dynamic
@@ -89,8 +89,7 @@ module Pwnlib
       def find_base(ptr)
         ptr &= PAGE_MASK
         loop do
-          ret = @leak.call(ptr)
-          return ptr if ret.length >= 5 && ret[0, 4] == "\x7fELF"
+          return ptr if leak_n(ptr, 4) == "\x7fELF"
           ptr -= PAGE_SIZE
         end
       end
