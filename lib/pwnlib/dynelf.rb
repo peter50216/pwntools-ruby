@@ -13,7 +13,6 @@ module Pwnlib
   module DynELF
     # The type for dynelf.
     class DynELFType
-      include Pwnlib::Util::Packing::ClassMethod
       PT_DYNAMIC = 2
       DT_GNU_HASH = 0x6ffffef5
       DT_HASH = 4
@@ -21,20 +20,21 @@ module Pwnlib
       DT_SYMTAB = 6
 
       attr_reader :libbase
-      def initialize(*args, &block)
-        @leak = Pwnlib::MemLeak.new(&block || args.find { |a| a.is_a?(Proc) })
-        @libbase = @leak.find_elf_base(args.find { |a| a.is_a?(Integer) })
+
+      def initialize(addr, &block)
+        @leak = Pwnlib::MemLeak.new(&block)
+        @libbase = @leak.find_elf_base(addr)
         @elfclass = { "\x01" => 32, "\x02" => 64 }[@leak.b(@libbase + 4)]
         @elfword = @elfclass / 8
-        @unp = { 32 => :u32, 64 => :u64 }[@elfclass]
+        @unp = ->(x) { Util::Packing.send({ 32 => :u32, 64 => :u64 }[@elfclass], x) }
         @dynamic = find_dynamic
         @hshtab = @strtab = @symtab = nil
       end
 
       def lookup(symb)
-        @hshtab = find_dt(DT_GNU_HASH) unless @hshtab
-        @strtab = find_dt(DT_STRTAB) unless @strtab
-        @symtab = find_dt(DT_SYMTAB) unless @symtab
+        @hshtab ||= find_dt(DT_GNU_HASH)
+        @strtab ||= find_dt(DT_STRTAB)
+        @symtab ||= find_dt(DT_SYMTAB)
         resolve_symbol_gnu(symb)
       end
 
@@ -42,12 +42,12 @@ module Pwnlib
 
       # Function used to generated GNU-style hashes for strings.
       def gnu_hash(s)
-        s.bytes.inject(5381) { |a, e| a * 33 + e } & 0xffffffff
+        s.bytes.inject(5381) { |a, e| (a * 33 + e) & 0xffffffff }
       end
 
       def find_dynamic
         e_phoff_offset = { 32 => 28, 64 => 32 }[@elfclass]
-        e_phoff = @libbase + @leak.n(@libbase + e_phoff_offset, @elfword).send(@unp)
+        e_phoff = @libbase + @unp.call(@leak.n(@libbase + e_phoff_offset, @elfword))
         phdr_size = { 32 => 32, 64 => 56 }[@elfclass]
         loop do
           ptype = @leak.d(e_phoff)
@@ -55,7 +55,7 @@ module Pwnlib
           e_phoff += phdr_size
         end
         offset = { 32 => 8, 64 => 16 }[@elfclass]
-        @libbase + @leak.n(e_phoff + offset, @elfword).send(@unp)
+        @unp.call(@leak.n(e_phoff + offset, @elfword))
       end
 
       def find_dt(tag)
@@ -63,8 +63,8 @@ module Pwnlib
         ptr = @dynamic
         loop do
           tmp = @leak.n(ptr, @elfword * 2)
-          d_tag = tmp[0, @elfword].send(@unp)
-          d_addr = tmp[@elfword, @elfword].send(@unp)
+          d_tag = @unp.call(tmp[0, @elfword])
+          d_addr = @unp.call(tmp[@elfword, @elfword])
           break if d_tag == 0
           return d_addr if tag == d_tag
           ptr += dyn_size
@@ -97,7 +97,7 @@ module Pwnlib
             name = @leak.n(@strtab + st_name, symb.length + 1)
             if name == (symb + "\x00")
               offset = { 32 => 4, 64 => 8 }[@elfclass]
-              st_value = @leak.n(sym + offset, @elfword).send(@unp)
+              st_value = @unp.call(@leak.n(sym + offset, @elfword))
               return @libbase + st_value
             end
           end
