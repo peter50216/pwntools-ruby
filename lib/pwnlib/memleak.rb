@@ -26,10 +26,7 @@ module Pwnlib
     def do_leak(addr)
       unless @cache.include?(addr)
         data = @leak.call(addr)
-        data.bytes.each_with_index do |b, i|
-          a = addr + i
-          @cache[a] = b
-        end
+        data.bytes.each.with_index(addr) { |b, i| @cache[i] = b }
       end
       @cache[addr]
     end
