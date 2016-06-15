@@ -102,8 +102,6 @@ module Pwnlib
           s.unpack('m0')[0]
         end
 
-        private
-
         include Pwnlib::Context
       end
 

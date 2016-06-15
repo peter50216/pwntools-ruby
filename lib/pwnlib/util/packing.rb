@@ -172,8 +172,6 @@ module Pwnlib
 
         # TODO(Darkpi): fit! Which seems super useful.
 
-        private
-
         include Pwnlib::Context
       end
 
