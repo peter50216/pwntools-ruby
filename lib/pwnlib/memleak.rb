@@ -24,7 +24,7 @@ module Pwnlib
     # Call the leaker function on address `addr`.
     # Store the result to @cache
     def do_leak(addr)
-      unless @cache.include?(addr)
+      unless @cache.key?(addr)
         data = @leak.call(addr)
         data.bytes.each.with_index(addr) { |b, i| @cache[i] = b }
       end
