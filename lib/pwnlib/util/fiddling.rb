@@ -3,21 +3,72 @@ require 'pwnlib/context'
 
 module Pwnlib
   module Util
-    # Some fiddling methods
+    # Some fiddling methods.
+    # See {ClassMethod} for method details.
+    # @example Call by specifying full module path.
+    #   require 'pwnlib/util/fiddling'
+    #   Pwnlib::Util::Fiddling.enhex('217') #=> '323137'
+    # @example require 'pwn' and have all methods.
+    #   require 'pwn'
+    #   enhex('217') #=> '323137'
     module Fiddling
-      module ClassMethod # rubocop:disable Style/Documentation
+      # @note Do not create and call instance method here. Instead, call module method on {Fiddling}.
+      module ClassMethod
+        # Hex-encodes a string.
+        #
+        # @param [String] s
+        #   String to be encoded.
+        # @return [String]
+        #   Hex-encoded string.
+        #
+        # @example
+        #   enhex('217') #=> '323137'
         def enhex(s)
           s.unpack('H*')[0]
         end
 
+        # Hex-decodes a string.
+        #
+        # @param [String] s
+        #   String to be decoded.
+        # @return [String]
+        #   Hex-decoded string.
+        #
+        # @example
+        #   unhex('353134') #=> '514'
         def unhex(s)
           [s].pack('H*')
         end
 
+        # URL-encodes a string.
+        #
+        # @param [String] s
+        #   String to be encoded.
+        # @return [String]
+        #   URL-encoded string.
+        #
+        # @example
+        #   urlencode('shikway') #=> '%73%68%69%6b%77%61%79'
         def urlencode(s)
           s.bytes.map { |b| format('%%%02x', b) }.join
         end
 
+        # URL-decodes a string.
+        #
+        # @param [String] s
+        #   String to be decoded.
+        # @param [Boolean] ignore_invalid
+        #   Whether invalid encoding should be ignore. If set to +true+, invalid encoding in input are
+        #   left intact to output.
+        # @return [String]
+        #   URL-decoded string.
+        # @raise [ArgumentError]
+        #   If +ignore_invalid+ is +false+, and there are invalid encoding in input.
+        #
+        # @example
+        #   urldecode('test%20url') #=> 'test url'
+        #   urldecode('%qw%er%ty') #=> raise ArgumentError
+        #   urldecode('%qw%er%ty', true) #=> '%qw%er%ty'
         def urldecode(s, ignore_invalid = false)
           res = ''
           n = 0
@@ -41,13 +92,30 @@ module Pwnlib
           res
         end
 
+        # Converts the argument to an array of bits.
+        #
+        # @param [String, Integer] s
+        #   Input to be converted into bits. If input is integer, output would be padded to byte aligned.
+        # @param [String] endian
+        #   Endian for conversion, see {Pwnlib::Context::ContextType::ENDIANNESSES} for possible values.
+        # @param zero
+        #   Object representing a 0-bit.
+        # @param one
+        #   Object representing a 1-bit.
+        # @return [Array]
+        #   An array consisting of +zero+ and +one+.
+        #
+        # @example
+        #   bits(314) #=> [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 0, 1, 0]
+        #   bits('orz', zero: '-', one: '+').join #=> '-++-++++-+++--+--++++-+-'
+        #   bits(128, endian: 'little') #=> [0, 0, 0, 0, 0, 0, 0, 1]
         def bits(s, endian: 'big', zero: 0, one: 1)
           context.local(endian: endian) do
             is_little = context.endian == 'little'
             case s
             when String
-              v = 'b*'
-              v.upcase! unless is_little
+              v = 'B*'
+              v.downcase! if is_little
               s.unpack(v)[0].chars.map { |ch| ch == '1' ? one : zero }
             when Integer
               # TODO(Darkpi): What should we do to negative number?
@@ -61,10 +129,31 @@ module Pwnlib
           end
         end
 
+        # Simple wrapper around {#bits}, which converts output to string.
+        #
+        # @param (see #bits)
+        # @return [String]
+        #
+        # @example
+        #   bits_str('GG') #=> '0100011101000111'
         def bits_str(s, endian: 'big', zero: 0, one: 1)
           bits(s, endian: endian, zero: zero, one: one).join
         end
 
+        # Reverse of {#bits} and {#bits_str}, convert an array of bits back to string.
+        #
+        # @param [String, Array<String, Integer, Boolean>] s
+        #   String or array of bits to be convert back to string.
+        #   <tt>[0, '0', false]</tt> represents 0-bit, and <tt>[1, '1', true]</tt> represents 1-bit.
+        # @param [String] endian
+        #   Endian for conversion, see {Pwnlib::Context::ContextType::ENDIANNESSES} for possible values.
+        # @raise [ArgumentError]
+        #   If input contains value not in <tt>[0, 1, '0', '1', true, false]</tt>.
+        #
+        # @example
+        #   unbits('0100011101000111') #=> 'GG'
+        #   unbits([0, 1, 0, 1, 0, 1, 0, 0]) #=> 'T'
+        #   unbits('0100011101000111', endian: 'little') #=> "\xE2\xE2"
         def unbits(s, endian: 'big')
           s = s.chars if s.is_a?(String)
           context.local(endian: endian) do
@@ -80,12 +169,30 @@ module Pwnlib
           end
         end
 
+        # Reverse the bits of each byte in input string.
+        #
+        # @param [String] s
+        #   Input string.
+        # @return [String]
+        #   The string with bits of each byte reversed.
+        #
+        # @example
+        #   bitswap('rb') #=> 'NF'
         def bitswap(s)
           unbits(bits(s, endian: 'big'), endian: 'little')
         end
 
-        # Difference from Python pwntools:
-        # bits default to context.bits
+        # Reverse the bits of a number, and returns the result as number.
+        #
+        # @param [Integer] n
+        # @param [Integer] bits
+        #   The bit length of +n+, only the lower +bits+ bits of +n+ would be used.
+        #   Default to context.bits
+        # @return [Integer]
+        #   The number with bits reversed.
+        #
+        # @example
+        #   bitswap_int(217, bits: 8) #=> 155
         def bitswap_int(n, bits: nil)
           context.local(bits: bits) do
             bits = context.bits

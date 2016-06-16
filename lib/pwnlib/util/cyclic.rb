@@ -27,14 +27,14 @@ module Pwnlib
         #     Length of substring that should be unique.
         #   @return [void]
         #   @yieldparam c
-        #     Item of the result sequence in order
+        #     Item of the result sequence in order.
         # @overload de_bruijn(alphabet: ASCII_LOWERCASE, n: 4)
         #   @param [String, Array] alphabet
         #     Alphabet to be used.
         #   @param [Integer] n
         #     Length of substring that should be unique.
         #   @return [Enumerator]
-        #     The result sequence
+        #     The result sequence.
         def de_bruijn(alphabet: ASCII_LOWERCASE, n: 4)
           return to_enum(__method__, alphabet: alphabet, n: n) { alphabet.size**n } unless block_given?
           k = alphabet.size
