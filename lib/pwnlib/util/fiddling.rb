@@ -185,7 +185,7 @@ module Pwnlib
         # Reverse the bits of a number, and returns the result as number.
         #
         # @param [Integer] n
-        # @param [Integer] bits
+        # @param [Integer, nil] bits
         #   The bit length of +n+, only the lower +bits+ bits of +n+ would be used.
         #   Default to context.bits
         # @return [Integer]
@@ -201,10 +201,29 @@ module Pwnlib
           end
         end
 
+        # Base64-encodes a string.
+        # Do NOT contains those stupid newline (with RFC 4648)
+        #
+        # @param [String] s
+        #   String to be encoded.
+        # @return [String]
+        #   Base64-encoded string.
+        #
+        # @example
+        #   b64e('desu') #=> 'ZGVzdQ=='
         def b64e(s)
           [s].pack('m0')
         end
 
+        # Base64-decodes a string.
+        #
+        # @param [String] s
+        #   String to be decoded.
+        # @return [String]
+        #   Base64-decoded string.
+        #
+        # @example
+        #   b64d('ZGVzdQ==') #=> 'desu'
         def b64d(s)
           s.unpack('m0')[0]
         end

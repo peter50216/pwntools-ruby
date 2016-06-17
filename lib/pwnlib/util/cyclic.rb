@@ -83,7 +83,7 @@ module Pwnlib
         #   The substring to be found in the sequence.
         # @param [String, Array] alphabet
         #   Alphabet to be used.
-        # @param [Integer] n
+        # @param [Integer, nil] n
         #   Length of substring that should be unique. Default to +subseq.size+.
         # @return [Integer, nil]
         #   The index +subseq+ first appear in the sequence, or +nil+ if not found.
