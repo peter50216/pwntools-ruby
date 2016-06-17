@@ -17,8 +17,9 @@ module Pwnlib
         ASCII_LOWERCASE = ('a'..'z').to_a.join
         private_constant :ASCII_LOWERCASE
 
-        # Generator for a sequence of unique substrings of length +n+. This is implemented using a
-        # De Bruijn Sequence over the given +alphabet+. Returns an Enumerator if no block given.
+        # Generator for a sequence of unique substrings of length +n+.
+        # This is implemented using a De Bruijn Sequence over the given +alphabet+.
+        # Returns an Enumerator if no block given.
         #
         # @overload de_bruijn(alphabet: ASCII_LOWERCASE, n: 4)
         #   @param [String, Array] alphabet
@@ -59,13 +60,15 @@ module Pwnlib
         # Simple wrapper over {#de_bruijn}, returning at most +length+ items.
         #
         # @param [Integer, nil] length
-        #   Desired length of the sequence, or +nil+ for the entire sequence.
+        #   Desired length of the sequence,
+        #   or +nil+ for the entire sequence.
         # @param [String, Array] alphabet
         #   Alphabet to be used.
         # @param [Integer] n
         #   Length of substring that should be unique.
         # @return [String, Array]
-        #   The result sequence of at most +length+ items, with same type as +alphabet+.
+        #   The result sequence of at most +length+ items,
+        #   with same type as +alphabet+.
         #
         # @example
         #   cyclic(alphabet: 'ABC', n: 3) #=> 'AAABAACABBABCACBACCBBBCBCCC'
@@ -83,10 +86,12 @@ module Pwnlib
         #   The substring to be found in the sequence.
         # @param [String, Array] alphabet
         #   Alphabet to be used.
-        # @param [Integer, nil] n
-        #   Length of substring that should be unique. Default to +subseq.size+.
+        # @param [Integer] n
+        #   Length of substring that should be unique.
+        #   Default to +subseq.size+.
         # @return [Integer, nil]
-        #   The index +subseq+ first appear in the sequence, or +nil+ if not found.
+        #   The index +subseq+ first appear in the sequence,
+        #   or +nil+ if not found.
         #
         # @example
         #   cyclic_find(cyclic(300)[217, 4]) #=> 217

@@ -58,12 +58,14 @@ module Pwnlib
         # @param [String] s
         #   String to be decoded.
         # @param [Boolean] ignore_invalid
-        #   Whether invalid encoding should be ignore. If set to +true+, invalid encoding in input are
-        #   left intact to output.
+        #   Whether invalid encoding should be ignore.
+        #   If set to +true+,
+        #   invalid encoding in input are left intact to output.
         # @return [String]
         #   URL-decoded string.
         # @raise [ArgumentError]
-        #   If +ignore_invalid+ is +false+, and there are invalid encoding in input.
+        #   If +ignore_invalid+ is +false+,
+        #   and there are invalid encoding in input.
         #
         # @example
         #   urldecode('test%20url') #=> 'test url'
@@ -95,9 +97,12 @@ module Pwnlib
         # Converts the argument to an array of bits.
         #
         # @param [String, Integer] s
-        #   Input to be converted into bits. If input is integer, output would be padded to byte aligned.
+        #   Input to be converted into bits.
+        #   If input is integer,
+        #   output would be padded to byte aligned.
         # @param [String] endian
-        #   Endian for conversion, see {Pwnlib::Context::ContextType::ENDIANNESSES} for possible values.
+        #   Endian for conversion.
+        #   Can be any value accepted by context (See {Context::ContextType}).
         # @param zero
         #   Object representing a 0-bit.
         # @param one
@@ -144,9 +149,11 @@ module Pwnlib
         #
         # @param [String, Array<String, Integer, Boolean>] s
         #   String or array of bits to be convert back to string.
-        #   <tt>[0, '0', false]</tt> represents 0-bit, and <tt>[1, '1', true]</tt> represents 1-bit.
+        #   <tt>[0, '0', false]</tt> represents 0-bit,
+        #   and <tt>[1, '1', true]</tt> represents 1-bit.
         # @param [String] endian
-        #   Endian for conversion, see {Pwnlib::Context::ContextType::ENDIANNESSES} for possible values.
+        #   Endian for conversion.
+        #   Can be any value accepted by context (See {Context::ContextType}).
         # @raise [ArgumentError]
         #   If input contains value not in <tt>[0, 1, '0', '1', true, false]</tt>.
         #
@@ -185,8 +192,9 @@ module Pwnlib
         # Reverse the bits of a number, and returns the result as number.
         #
         # @param [Integer] n
-        # @param [Integer, nil] bits
-        #   The bit length of +n+, only the lower +bits+ bits of +n+ would be used.
+        # @param [Integer] bits
+        #   The bit length of +n+,
+        #   only the lower +bits+ bits of +n+ would be used.
         #   Default to context.bits
         # @return [Integer]
         #   The number with bits reversed.
