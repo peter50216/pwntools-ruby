@@ -53,7 +53,7 @@ module Pwnlib
         e_phoff += phdr_size
       end
       offset = { 32 => 8, 64 => 16 }[@elfclass]
-      @unp.call(@leak.n(e_phoff + offset, @elfword))
+      @libbase + @unp.call(@leak.n(e_phoff + offset, @elfword))
     end
 
     def find_dt(tag)
