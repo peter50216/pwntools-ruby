@@ -32,9 +32,6 @@ class PackingTest < MiniTest::Test
     assert_equal("\x00\x00\x00\x80\x00",
                  pack(0x80000000, bits: 'all', endian: 'little', signed: true))
 
-    err = assert_raises(ArgumentError) { pack('shik') }
-    assert_match(/must be an integer/, err.message)
-
     assert_equal('ABC', pack(0x414243, bits: 24, endian: 'big'))
 
     err = assert_raises(ArgumentError) { pack(-514, bits: 'all', signed: 'unsigned') }
