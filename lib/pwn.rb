@@ -17,4 +17,5 @@ require 'pwnlib/ext/integer'
 require 'pwnlib/ext/array'
 
 require 'pwnlib/dynelf'
-extend Pwnlib::DynELF
+
+include Pwnlib
