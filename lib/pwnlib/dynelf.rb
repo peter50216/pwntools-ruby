@@ -3,7 +3,6 @@ require 'pwnlib/context'
 require 'pwnlib/util/packing'
 require 'pwnlib/memleak'
 
-# TODO(hh): Use MemLeak instead of leak
 # TODO(hh): Use ELF datatype instead of magic offset
 
 module Pwnlib
