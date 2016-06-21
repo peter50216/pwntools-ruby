@@ -54,7 +54,7 @@ module Pwnlib
       offset = { 32 => 8, 64 => 16 }[@elfclass]
       dyn = @unp.call(@leak.n(e_phoff + offset, @elfword))
       # Sometimes this is an offset instead of an address
-      dyn += @libbase if 0 < dyn && dyn < 0x400000
+      dyn += @libbase if (0...0x400000).include?(dyn)
       dyn
     end
 
