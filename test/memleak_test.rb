@@ -1,6 +1,7 @@
 # encoding: ASCII-8BIT
 require 'test_helper'
 require 'pwnlib/memleak'
+require 'open3'
 
 class MemLeakTest < MiniTest::Test
   def setup
@@ -10,6 +11,28 @@ class MemLeakTest < MiniTest::Test
 
   def test_find_elf_base
     assert_equal(0, @leak.find_elf_base(@binsh.length * 2 / 3))
+    [32, 64].each do |b|
+      Open3.popen3("test/data/victim#{b}") do |i, o, _e, t|
+        main_ra = o.readline[2...-1].to_i(16)
+        realbase = nil
+        `cat /proc/#{t.pid}/maps`.split("\n").each do |s|
+          st, ed = s.split[0].split('-').map { |x| x.to_i(16) }
+          if main_ra.between?(st, ed)
+            realbase = st
+            break
+          end
+        end
+        refute_nil(realbase)
+        mem = open("/proc/#{t.pid}/mem", 'rb')
+        l2 = Pwnlib::MemLeak.new do |addr|
+          mem.seek(addr)
+          mem.getc
+        end
+        assert_equal(realbase, l2.find_elf_base(main_ra))
+        mem.close
+        i.write('bye')
+      end
+    end
   end
 
   def test_n
