@@ -11,7 +11,7 @@ engines:
       - python
       - php
   fixme:
-    enabled: true
+    enabled: false
   rubocop:
     enabled: true
 ratings:
