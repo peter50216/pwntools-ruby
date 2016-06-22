@@ -13,15 +13,14 @@ class MemLeakTest < MiniTest::Test
     assert_equal(0, @leak.find_elf_base(@binsh.length * 2 / 3))
     [32, 64].each do |b|
       # TODO(hh): Use process instead of popen3
-      Open3.popen3("test/data/victim#{b}") do |i, o, _e, t|
+      Open3.popen3(File.expand_path("../data/victim#{b}", __FILE__)) do |i, o, _e, t|
         main_ra = o.readline[2...-1].to_i(16)
         realbase = nil
-        `cat /proc/#{t.pid}/maps`.split("\n").each do |s|
-          st, ed = s.split[0].split('-').map { |x| x.to_i(16) }
-          if main_ra.between?(st, ed)
-            realbase = st
-            break
-          end
+        IO.readlines("/proc/#{t.pid}/maps").map(&:split).each do |s|
+          st, ed = s[0].split('-').map { |x| x.to_i(16) }
+          next unless main_ra.between?(st, ed)
+          realbase = st
+          break
         end
         refute_nil(realbase)
         mem = open("/proc/#{t.pid}/mem", 'rb')
