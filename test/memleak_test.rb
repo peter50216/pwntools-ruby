@@ -4,7 +4,7 @@ require 'pwnlib/memleak'
 
 class MemLeakTest < MiniTest::Test
   def setup
-    @binsh = File.open('/bin/sh', 'rb', &:read)
+    @binsh = File.binread('/bin/sh')
     @leak = Pwnlib::MemLeak.new { |addr| @binsh[addr] }
   end
 
