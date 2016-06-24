@@ -12,7 +12,7 @@ class MemLeakTest < MiniTest::Test
   def test_find_elf_base
     assert_equal(0, @leak.find_elf_base(@binsh.length * 2 / 3))
     [32, 64].each do |b|
-      # TODO(hh): Use process instead of popen3
+      # TODO(hh): Use process instead of popen2
       Open3.popen2(File.expand_path("../data/victim#{b}", __FILE__)) do |i, o, t|
         main_ra = o.readline[2...-1].to_i(16)
         realbase = nil

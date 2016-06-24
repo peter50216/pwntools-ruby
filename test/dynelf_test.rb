@@ -6,9 +6,9 @@ require 'open3'
 class DynELFTest < MiniTest::Test
   def test_lookup
     [32, 64].each do |b|
-      # TODO(hh): Use process instead of popen3
+      # TODO(hh): Use process instead of popen2
       Open3.popen2(File.expand_path("../data/victim#{b}", __FILE__)) do |i, o, t|
-        main_ra = o.readline[2...-1].to_i(16)
+        main_ra = Integer(o.readline)
         libc_path = nil
         IO.readlines("/proc/#{t.pid}/maps").map(&:split).each do |s|
           st, ed = s[0].split('-').map { |x| x.to_i(16) }
@@ -22,8 +22,8 @@ class DynELFTest < MiniTest::Test
         # Methods in libc might have multi-versions, so we record and check if
         # we can find one of them.
         h = Hash.new { |hsh, key| hsh[key] = [] }
-        symbols = `objdump -T #{libc_path}`.split("\n").map(&:split).select { |a| a[2] == 'DF' }
-        symbols.map { |a| h[a[-1]].push a[0].to_i(16) }
+        symbols = `objdump -T #{libc_path}`.lines.map(&:split).select { |a| a[2] == 'DF' }
+        symbols.map { |a| h[a[-1]] << a[0].to_i(16) }
 
         mem = open("/proc/#{t.pid}/mem", 'rb')
         d = Pwnlib::DynELF.new(main_ra) do |addr|
