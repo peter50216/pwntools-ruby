@@ -10,8 +10,8 @@ module Pwnlib
       module InstanceMethods
         extend Pwnlib::Ext::Helper
 
-        define_proxy_method Pwnlib::Util::Packing, %w(unpack unpack_many u8 u16 u32 u64)
-        define_proxy_method Pwnlib::Util::Fiddling, %w(
+        def_proxy_method Pwnlib::Util::Packing, %w(unpack unpack_many u8 u16 u32 u64)
+        def_proxy_method Pwnlib::Util::Fiddling, %w(
           enhex unhex urlencode urldecode bits bits_str unbits bitswap b64e b64d)
       end
     end

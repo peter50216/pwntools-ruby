@@ -10,8 +10,8 @@ module Pwnlib
       module InstanceMethods
         extend Pwnlib::Ext::Helper
 
-        define_proxy_method Pwnlib::Util::Packing, %w(flat)
-        define_proxy_method Pwnlib::Util::Fiddling, %w(unbits)
+        def_proxy_method Pwnlib::Util::Packing, %w(flat)
+        def_proxy_method Pwnlib::Util::Fiddling, %w(unbits)
       end
     end
   end
