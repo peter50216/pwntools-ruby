@@ -1,0 +1,46 @@
+<%
+  # FIXME(david942j)
+  require_relative '../../registers' 
+  extend ::Pwnlib::Shellcraft::Registers::ClassMethod
+%>
+<%# args(dest, src, stack_allowed: true) %>
+<%
+  @dest, @src = dest, src # can't do dest = get(dest), seems tilt's bug?
+  raise ArgumentError, "%s is not a register" % @dest unless register?(@dest)
+  @dest = get_register(@dest)
+  if register? @src
+    @src = get_register(@src)
+    if @dest.size < @src.size and not @dest.bigger.include? @src.name
+      raise ArgumentError, ("cannot mov %s, %s: dest is smaller than src" % [@dest, @src])
+    end
+    # Can't move between RAX and DIL for example.
+    # TODO(david942j): rex mode
+    # if dest.rex_mode & src.rex_mode == 0:
+    #    log.error('The amd64 instruction set does not support moving from %s to %s' % (src, dest))
+
+    # Downgrade our register choice if possible.
+    # Opcodes for operating on 32-bit registers are always (?) shorter.
+    if @dest.size == 64 and @src.size <= 32
+      @dest = get_register(@dest.native32)
+    end
+  else
+    # TODO(david942j)
+  end
+%>
+<%=
+  if register?(@src)
+    if @src == @dest 
+      "/* moving #{@src} into #{@dest}, but this is a no-op */"
+    elsif @dest.bigger.include? @src.name
+      "/* moving #{@src} into #{@dest}, but this is a no-op */"
+    elsif @dest.size > @src.size
+      "movzx #{@dest}, #{@src}"
+    else
+      "mov #{@dest}, #{@src}"
+    end
+  elsif @src.is_a? Integer
+    # TODO(david942j)
+  else
+    raise ArgumentError, ('%s is neither a register nor an immediate' % @src)
+  end
+%>

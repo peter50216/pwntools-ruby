@@ -1,11 +1,12 @@
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'pwnlib/version'
+require 'date'
 
 Gem::Specification.new do |s|
   s.name          = 'pwntools'
   s.version       = ::Pwnlib::VERSION
-  s.date          = '2016-03-23'
+  s.date          = Date.today.to_s
   s.summary       = 'pwntools'
   s.description   = <<-EOS
   Rewrite https://github.com/Gallopsled/pwntools in ruby.
