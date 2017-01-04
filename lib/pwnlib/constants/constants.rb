@@ -1,8 +1,14 @@
-#encoding: ASCII-8BIT
+# encoding: ASCII-8BIT
 
 require 'pwnlib/context'
 module Pwnlib
+  # Module containing constants
+  # @example
+  #   context.arch = 'amd64'
+  #   Pwnlib::Constants.SYS_read
+  #   # => Constant('SYS_read', 0)
   module Constants
+    # @note Do not create and call instance method here. Instead, call module method on {Constants}.
     module ClassMethod
       include ::Pwnlib::Context
       ENV_STORE = {}
@@ -26,8 +32,8 @@ module Pwnlib
       end
 
       def get_constant(name)
-        filename = File.join(__dir__, context.os, "#{context.arch}.rb")
-        return nil unless File.exists? filename
+        filename = File.join(__dir__, context.os, "#{context.arch}.rb.cst")
+        return nil unless File.exist? filename
         require filename # require will not do twice, so no need to check if key exists
         ENV_STORE[cur_arch_key][name.to_sym] || ENV_STORE[cur_arch_key][name.to_s]
       end
