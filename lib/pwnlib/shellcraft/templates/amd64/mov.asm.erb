@@ -1,6 +1,8 @@
 <%
   require 'pwnlib/util/packing'
   extend ::Pwnlib::Util::Packing::ClassMethod
+  require 'pwnlib/util/fiddling'
+  extend ::Pwnlib::Util::Fiddling::ClassMethod
   require 'pwnlib/shellcraft/registers'
   extend ::Pwnlib::Shellcraft::Registers::ClassMethod
   require 'pwnlib/shellcraft/shellcraft'
@@ -103,7 +105,7 @@
       cat "mov #{@dest.sizes[32]}, #{pretty(@src)}"
     # All else has failed.  Use some XOR magic to move things around.
     else
-      a, b = fiddling.xor_pair(srcp, avoid: '\x00\n')
+      a, b = xor_pair(srcp, avoid: "\x00\n")
       a = '%#x' % unpack(a, bits: @dest.size)
       b = '%#x' % unpack(b, bits: @dest.size)
       # There's no XOR REG, IMM64 but we can take the easy route

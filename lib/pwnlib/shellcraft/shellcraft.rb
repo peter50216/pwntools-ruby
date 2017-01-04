@@ -13,16 +13,16 @@ module Pwnlib
 
     def okay(s, *a, **kw)
       s = ::Pwnlib::Util::Packing.pack(s, *a, **kw) if s.is_a? Integer
-      return ! (s.include?("\x00") || s.include?("\n"))
+      ! (s.include?("\x00") || s.include?("\n"))
     end
 
-    def pretty(n, comment: true)
+    def pretty(n) # , comment: true)
       return n.inspect if n.is_a? String
       return n unless n.is_a? Integer
-      #TODO(david942j): constants
+      # TODO(david942j): constants
       return n if n.abs < 10
       # TODO(david942j): n.hex
-      return format("#{n < 0 ? '-' : ''}0x%x", n.abs)
+      format("#{n < 0 ? '-' : ''}0x%x", n.abs)
     end
 
     # There're a few custom defined formats in erb, use a class to parse it.
@@ -41,7 +41,10 @@ module Pwnlib
       def self.parse(name, *args)
         return nil unless exists? name
         filename = file_of(name)
-        Tilt.new(filename, trim: '>', outvar: '@erbout').render(nil, get_context_struct(filename, *args))
+        Tilt.new(filename, trim: '>', outvar: '@erbout').render(nil, get_context_struct(filename, *args)).lines.map do |asm|
+          # add indent, like python-shellcraft do
+          ' ' * 4 + asm
+        end.join
       end
 
       def self.get_context_struct(filename, *args)

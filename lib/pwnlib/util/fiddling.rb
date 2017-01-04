@@ -236,6 +236,33 @@ module Pwnlib
           s.unpack('m0')[0]
         end
 
+        # Finds two strings that will xor into a given string, while only
+        # using a given alphabet.
+        #
+        # @param [String] data
+        #   The desired string.
+        # @option [String] avoid
+        #   The list of disallowed characters. Defaults to nulls and newlines.
+        # @return [String, String]
+        #   Two strings which will xor to the given string. If no such two strings exist, then nil is returned.
+        #
+        # @example
+        #   xor_pair("test") #=> ["\x01\x01\x01\x01", 'udru']
+        def xor_pair(data, avoid: "\x00\n")
+          data = pack(data) if data.is_a? Integer
+          alphabet = 256.times.reject { |c| avoid.include? c.chr }
+          res1 = ''
+          res2 = ''
+          data.bytes.each do |c1|
+            # alphabet.shuffle! if context.randomize
+            c2 = alphabet.find { |c| alphabet.include?(c1 ^ c) }
+            return nil if c2.nil?
+            res1 += c2.chr
+            res2 += (c1 ^ c2).chr
+          end
+          [res1, res2]
+        end
+
         include Pwnlib::Context
       end
 
