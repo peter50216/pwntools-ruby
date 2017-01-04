@@ -13,13 +13,13 @@ module Pwnlib
       include ::Pwnlib::Context
       ENV_STORE = {}
       def method_missing(method, *_)
-        get_constant(method.to_s) || super
+        get_constant(method) || super
       end
 
       def eval(str)
         return str unless str.instance_of? String
         # TODO(david942j): safeeval
-        send(str.symbol)
+        send(str.to_sym)
       end
 
       def define
@@ -32,7 +32,7 @@ module Pwnlib
       end
 
       def get_constant(name)
-        filename = File.join(__dir__, context.os, "#{context.arch}.rb.cst")
+        filename = File.join(__dir__, context.os, "#{context.arch}.rb")
         return nil unless File.exist? filename
         require filename # require will not do twice, so no need to check if key exists
         ENV_STORE[cur_arch_key][name.to_sym] || ENV_STORE[cur_arch_key][name.to_s]

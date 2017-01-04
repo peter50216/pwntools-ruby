@@ -1,7 +1,7 @@
 # XXX(david42j): should this file be ignored by rubocop?
 require 'pwnlib/constants/constant'
 include ::Pwnlib::Constants
-Constants.define do |hash|
+::Pwnlib::Constants.define do |hash|
   hash[:__NR_read] = Constant.new('__NR_read', 0)
   hash[:__NR_write] = Constant.new('__NR_write', 1)
   hash[:__NR_open] = Constant.new('__NR_open', 2)
