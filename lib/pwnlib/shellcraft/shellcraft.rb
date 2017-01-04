@@ -1,0 +1,81 @@
+# encoding: ASCII-8BIT
+require 'pwnlib/context'
+require 'tilt'
+require 'ostruct'
+
+module Pwnlib
+  # Implement shellcraft!
+  module Shellcraft
+    def self.method_missing(method, *args, &_)
+      # no asm need block?
+      AsmErbParser.parse(method.to_s, *args) || super
+    end
+
+    # There're a few custom defined formats in erb, use a class to parse it.
+    class AsmErbParser
+      ARGUMENT_REGEXP = /^<%#\s+Argument\((.*)\)\s+%>/
+      # Check if can find {name}.asm.erb in current context.
+      # @return [Boolean] if {name}.asm.erb exists.
+      def self.exists?(name)
+        file_of(name) != nil
+      end
+
+      def self.file_of(name)
+        Dir.glob(File.join(__dir__, 'templates', context.arch, '**', format('%s.asm.erb', name))).first
+      end
+
+      def self.parse(name, *args)
+        return nil unless exists? name
+        filename = file_of(name)
+        Tilt.new(filename, trim: '>').render(get_context_struct(filename, *args))
+      end
+
+      def self.get_context_struct(filename, *args)
+        arg_line = IO.binread(filename).lines.find do |line|
+          line =~ ARGUMENT_REGEXP
+        end
+        return nil if arg_line.nil?
+        OpenStruct.new(arg_to_hash(arg_line.scan(ARGUMENT_REGEXP)[0][0], args))
+      end
+
+      # Parse the argument line and combine args to hash
+      #
+      # @param [String] args_str The argument line specified in asm.erb.
+      # @param [Array] args The arguments array called by user.
+      #
+      # @return [Hash] The result hash to pass to OpenStruct
+      #
+      # @example
+      #   arg_to_hash('dest, src, stack_allowed: true', ['rax', 'rcx', {stack_allowed: false}]
+      #   # => {dest: 'rax', src: 'rcx', stack_allowed: false}
+      #   arg_to_hash('*args', [1, 2, 3, 4])
+      #   # => {args: [1, 2, 3, 4]}
+      #
+      # @note Not support '**kwargs' and '&block'
+      # @bug fail when default value includes ',', e.g. 'key: "123,"'
+      def self.arg_to_hash(args_str, args)
+        args_str.strip!
+        return {} if args_str.empty?
+        args_hash = {}
+        args_hash = args.last if args.last.is_a? Hash
+        args_str.split(',').each_with_object({}) do |str, hash|
+          if str.start_with? '*' # *args
+            hash[str[1..-1].strip.to_sym] = args
+            args = []
+            next
+          end
+          if str.include? ':' # keyword argument
+            key, val = str.split(':', 2)
+            key = key.strip.to_sym
+            hash[key] = args_hash.key?(key) ? args_hash[key] : instance_eval(val) # roooooock
+            next
+          end
+          hash[str.strip.to_sym] = args.shift
+        end
+      end
+
+      # XXX(david942j, peter50216) is this correct usage of context?
+      extend ::Pwnlib::Context
+    end
+  end
+end

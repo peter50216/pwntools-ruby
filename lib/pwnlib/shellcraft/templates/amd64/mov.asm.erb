@@ -1,9 +1,9 @@
 <%
   # FIXME(david942j)
-  require_relative '../../registers' 
+  require 'pwnlib/shellcraft/registers'
   extend ::Pwnlib::Shellcraft::Registers::ClassMethod
 %>
-<%# args(dest, src, stack_allowed: true) %>
+<%# Argument(dest, src, stack_allowed: true) %>
 <%
   @dest, @src = dest, src # can't do dest = get(dest), seems tilt's bug?
   raise ArgumentError, "%s is not a register" % @dest unless register?(@dest)
