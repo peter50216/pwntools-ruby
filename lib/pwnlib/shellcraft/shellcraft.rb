@@ -1,7 +1,7 @@
 # encoding: ASCII-8BIT
 require 'pwnlib/context'
+require 'pwnlib/util/packing'
 require 'tilt'
-require 'ostruct'
 
 module Pwnlib
   # Implement shellcraft!
@@ -9,6 +9,20 @@ module Pwnlib
     def self.method_missing(method, *args, &_)
       # no asm need block?
       AsmErbParser.parse(method.to_s, *args) || super
+    end
+
+    def okay(s, *a, **kw)
+      s = ::Pwnlib::Util::Packing.pack(s, *a, **kw) if s.is_a? Integer
+      return ! (s.include?("\x00") || s.include?("\n"))
+    end
+
+    def pretty(n, comment: true)
+      return n.inspect if n.is_a? String
+      return n unless n.is_a? Integer
+      #TODO(david942j): constants
+      return n if n.abs < 10
+      # TODO(david942j): n.hex
+      return format("#{n < 0 ? '-' : ''}0x%x", n.abs)
     end
 
     # There're a few custom defined formats in erb, use a class to parse it.
@@ -27,7 +41,7 @@ module Pwnlib
       def self.parse(name, *args)
         return nil unless exists? name
         filename = file_of(name)
-        Tilt.new(filename, trim: '>').render(get_context_struct(filename, *args))
+        Tilt.new(filename, trim: '>', outvar: '@erbout').render(nil, get_context_struct(filename, *args))
       end
 
       def self.get_context_struct(filename, *args)
@@ -35,7 +49,7 @@ module Pwnlib
           line =~ ARGUMENT_REGEXP
         end
         return nil if arg_line.nil?
-        OpenStruct.new(arg_to_hash(arg_line.scan(ARGUMENT_REGEXP)[0][0], args))
+        arg_to_hash(arg_line.scan(ARGUMENT_REGEXP)[0][0], args)
       end
 
       # Parse the argument line and combine args to hash

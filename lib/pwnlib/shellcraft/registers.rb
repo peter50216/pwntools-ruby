@@ -64,6 +64,10 @@ module Pwnlib
           bits / 8
         end
 
+        def fits(value)
+          size >= Registers.bits_required(value)
+        end
+
         def to_s
           name
         end
@@ -91,8 +95,17 @@ module Pwnlib
         def register?(obj)
           get_register(obj) != nil
         end
-        # be ruby
         alias is_register register?
+
+        def bits_required(value)
+          bits = 0
+          value = -value if value < 0
+          while value > 0
+            bits += 8
+            value >>= 8
+          end
+          bits
+        end
       end
 
       extend ClassMethod
