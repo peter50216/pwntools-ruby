@@ -41,13 +41,10 @@ module Pwnlib
       def self.parse(name, *args)
         return nil unless exists? name
         filename = file_of(name)
-        Tilt.new(filename, trim: '>', outvar: '@erbout').render(nil, get_context_struct(filename, *args)).lines.map do |asm|
-          # add indent, like python-shellcraft do
-          ' ' * 4 + asm
-        end.join
+        Tilt.new(filename, trim: '>', outvar: '@erbout').render(nil, get_locals(filename, *args))
       end
 
-      def self.get_context_struct(filename, *args)
+      def self.get_locals(filename, *args)
         arg_line = IO.binread(filename).lines.find do |line|
           line =~ ARGUMENT_REGEXP
         end

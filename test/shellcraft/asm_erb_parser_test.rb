@@ -15,9 +15,9 @@ class AsmErbParserTest < MiniTest::Test
   end
 
   def test_parse
-    assert_equal("    nop\n", AsmErbParser.parse('nop', []))
+    assert_equal("  nop\n", AsmErbParser.parse('nop', []))
     context.local(arch: 'amd64') do
-      assert_equal("    mov rax, rbx\n", AsmErbParser.parse('mov', 'rax', 'rbx'))
+      assert_equal("  mov rax, rbx\n", AsmErbParser.parse('mov', 'rax', 'rbx'))
     end
   end
 end

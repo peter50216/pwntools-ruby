@@ -9,7 +9,7 @@
   extend ::Pwnlib::Shellcraft
   # XXX(david942j): How to do this DRY?
   def cat str
-    @erbout += str + "\n"
+    @erbout += ' ' * 2 + str + "\n"
   end
 %>
 <%# Argument(dest, src, stack_allowed: true) %>
