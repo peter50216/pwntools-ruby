@@ -18,4 +18,7 @@ require 'pwnlib/ext/array'
 
 require 'pwnlib/dynelf'
 
+require 'pwnlib/shellcraft/shellcraft'
+extend Pwnlib::Shellcraft
+
 include Pwnlib

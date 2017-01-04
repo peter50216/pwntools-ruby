@@ -54,13 +54,13 @@ module Pwnlib
       # @note Not support '**kwargs' and '&block'
       # @bug fail when default value includes ',', e.g. 'key: "123,"'
       def self.arg_to_hash(args_str, args)
-        args_str.strip!
-        return {} if args_str.empty?
-        args_hash = {}
-        args_hash = args.last if args.last.is_a? Hash
+        # TODO(david942j): raise ArgumentError when args invalid
+        args_hash = args.last.is_a?(Hash) ? args.last : {}
         args_str.split(',').each_with_object({}) do |str, hash|
+          str.strip!
+          next if str.empty?
           if str.start_with? '*' # *args
-            hash[str[1..-1].strip.to_sym] = args
+            hash[str[1..-1].to_sym] = args
             args = []
             next
           end
@@ -70,7 +70,7 @@ module Pwnlib
             hash[key] = args_hash.key?(key) ? args_hash[key] : instance_eval(val) # roooooock
             next
           end
-          hash[str.strip.to_sym] = args.shift
+          hash[str.to_sym] = args.shift
         end
       end
 

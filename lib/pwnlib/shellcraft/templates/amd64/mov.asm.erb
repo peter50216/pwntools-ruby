@@ -30,13 +30,13 @@
 <%=
   if register?(@src)
     if @src == @dest 
-      "/* moving #{@src} into #{@dest}, but this is a no-op */"
+      "/* moving #{@src} into #{@dest}, but this is a no-op */\n"
     elsif @dest.bigger.include? @src.name
-      "/* moving #{@src} into #{@dest}, but this is a no-op */"
+      "/* moving #{@src} into #{@dest}, but this is a no-op */\n"
     elsif @dest.size > @src.size
-      "movzx #{@dest}, #{@src}"
+      "movzx #{@dest}, #{@src}\n"
     else
-      "mov #{@dest}, #{@src}"
+      "mov #{@dest}, #{@src}\n"
     end
   elsif @src.is_a? Integer
     # TODO(david942j)

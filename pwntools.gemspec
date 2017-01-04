@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
   EOS
   s.license       = 'MIT'
   s.authors       = ['peter50216@gmail.com']
-  s.files         = Dir['lib/**/*.rb'] + %w(README.md Rakefile)
+  s.files         = Dir['lib/**/*.rb', 'lib/**/*.erb'] + %w(README.md Rakefile)
   s.test_files    = Dir['test/**/*']
   s.require_paths = ['lib']
 
