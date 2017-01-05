@@ -36,6 +36,7 @@ module Pwnlib
         return str unless str.instance_of?(String)
         # TODO(david942j): safeeval
         const = get_constant(str.strip.to_sym)
+        raise NameError, str unless const.instance_of?(::Pwnlib::Constants::Constant)
         ::Pwnlib::Constants::Constant.new("(#{str})", const.val)
       end
 
