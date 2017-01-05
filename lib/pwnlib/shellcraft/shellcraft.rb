@@ -16,7 +16,7 @@ module Pwnlib
     module ClassMethod
       def okay(s, *a, **kw)
         s = ::Pwnlib::Util::Packing.pack(s, *a, **kw) if s.is_a? Integer
-        ! (s.include?("\x00") || s.include?("\n"))
+        !(s.include?("\x00") || s.include?("\n"))
       end
 
       def eval(item)
@@ -31,7 +31,7 @@ module Pwnlib
           return format(comment ? '%s /* %s */' : '%s (%s)', n, pretty(n.to_i))
         end
         return n if n.abs < 10
-        # TODO(david942j): n.hex
+        # TODO(david942j, peter50216): n.hex
         format("#{n < 0 ? '-' : ''}0x%x", n.abs)
       end
     end
@@ -65,10 +65,10 @@ module Pwnlib
 
       # Parse the argument line and combine args to hash
       #
-      # @param [String] args_str The argument line specified in asm.erb.
-      # @param [Array] args The arguments array called by user.
+      # @param [String] args_str The argument line specified in *.asm.erb.
+      # @param [Array] args The arguments array from callee.
       #
-      # @return [Hash] The result hash to pass to OpenStruct
+      # @return [Hash] The result locals hash.
       #
       # @example
       #   arg_to_hash('dest, src, stack_allowed: true', ['rax', 'rcx', {stack_allowed: false}]
@@ -77,7 +77,7 @@ module Pwnlib
       #   # => {args: [1, 2, 3, 4]}
       #
       # @note Not support '**kwargs' and '&block'
-      # @bug fail when default value includes ',', e.g. 'key: "123,"'
+      # @bug Fails when default value includes ',', e.g. 'key: "123,"'
       def self.arg_to_hash(args_str, args)
         # TODO(david942j): raise ArgumentError when args invalid
         args_hash = args.last.is_a?(Hash) ? args.last : {}
