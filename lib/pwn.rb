@@ -21,4 +21,6 @@ require 'pwnlib/dynelf'
 require 'pwnlib/shellcraft/shellcraft'
 extend Pwnlib::Shellcraft
 
+require 'pwnlib/constants/constants'
+
 include Pwnlib
