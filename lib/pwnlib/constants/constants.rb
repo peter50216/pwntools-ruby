@@ -14,10 +14,24 @@ module Pwnlib
     module ClassMethod
       include ::Pwnlib::Context
       ENV_STORE = {}
+      # Try getting constants when method missing
       def method_missing(method, *args)
         args.empty? && get_constant(method) || super
       end
 
+      # Eval for Constants
+      #
+      # @param [String] str
+      #   The string to be evaluate.
+      #
+      # @return [Constant]
+      #   The evaluate result
+      #
+      # @example
+      #   eval('O_CREAT')
+      #   => Constant('(O_CREAT)', 0x40)
+      #
+      # @todo Support eval('O_CREAT | O_APPEND')
       def eval(str)
         return str unless str.instance_of?(String)
         # TODO(david942j): safeeval
