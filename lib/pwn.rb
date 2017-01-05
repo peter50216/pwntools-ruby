@@ -22,5 +22,6 @@ require 'pwnlib/shellcraft/shellcraft'
 extend Pwnlib::Shellcraft
 
 require 'pwnlib/constants/constants'
+require 'pwnlib/reg_sort'
 
 include Pwnlib
