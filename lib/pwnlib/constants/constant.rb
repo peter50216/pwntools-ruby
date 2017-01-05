@@ -27,7 +27,7 @@ module Pwnlib
       end
 
       def inspect
-        format('Constant(%s, 0x%x)', @str.inspect, @val)
+        format('Constant(%s, %s)', @str.inspect, @val.hex)
       end
 
       def <=>(other)
