@@ -1,5 +1,7 @@
 # encoding: ASCII-8BIT
 
+require 'pwnlib/util/fiddling'
+
 module Pwnlib
   module Constants
     # A class that includes name and value
@@ -27,7 +29,7 @@ module Pwnlib
       end
 
       def inspect
-        format('Constant(%s, %s)', @str.inspect, @val.hex)
+        format('Constant(%s, %s)', @str.inspect, ::Pwnlib::Util::Fiddling.hex(@val))
       end
 
       def <=>(other)
