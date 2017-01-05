@@ -43,7 +43,7 @@ module Pwnlib
           @name = name
           @size = size
           I386_ORDERED.each do |row|
-            next unless row.include? name
+            next unless row.include?(name)
             @bigger   = row[0, row.index(name)]
             @smaller  = row[(row.index(name) + 1)..-1]
             @native64 = row[0]
@@ -87,8 +87,8 @@ module Pwnlib
 
         # @return [Register] get register by name
         def get_register(name)
-          return name if name.instance_of? Register
-          return INTEL[name] if name.instance_of? String
+          return name if name.instance_of?(Register)
+          return INTEL[name] if name.instance_of?(String)
           nil
         end
 

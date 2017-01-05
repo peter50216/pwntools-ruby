@@ -17,9 +17,9 @@
   @dest, @src = dest, src # can't do dest = get(dest), seems tilt's bug?
   raise ArgumentError, "%s is not a register" % @dest unless register?(@dest)
   @dest = get_register(@dest)
-  if register? @src
+  if register?(@src)
     @src = get_register(@src)
-    if @dest.size < @src.size and not @dest.bigger.include? @src.name
+    if @dest.size < @src.size and not @dest.bigger.include?(@src.name)
       raise ArgumentError, ("cannot mov %s, %s: dest is smaller than src" % [@dest, @src])
     end
     # Can't move between RAX and DIL for example.
@@ -47,14 +47,14 @@
   if register?(@src)
     if @src == @dest 
       cat "/* moving #{@src} into #{@dest}, but this is a no-op */"
-    elsif @dest.bigger.include? @src.name
+    elsif @dest.bigger.include?(@src.name)
       cat "/* moving #{@src} into #{@dest}, but this is a no-op */"
     elsif @dest.size > @src.size
       cat "movzx #{@dest}, #{@src}"
     else
       cat "mov #{@dest}, #{@src}"
     end
-  elsif @src.is_a? Numeric # Constant or immi
+  elsif @src.is_a?(Numeric) # Constant or immi
     # Special case for zeroes
     # XORing the 32-bit register clears the high 32 bits as well
     if @src == 0

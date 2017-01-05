@@ -1,6 +1,7 @@
 # encoding: ASCII-8BIT
 require 'pwnlib/context'
 require 'pwnlib/util/packing'
+require 'pwnlib/util/fiddling'
 require 'pwnlib/constants/constant'
 require 'tilt'
 
@@ -15,24 +16,23 @@ module Pwnlib
     # For *.asm.erb use
     module ClassMethod
       def okay(s, *a, **kw)
-        s = ::Pwnlib::Util::Packing.pack(s, *a, **kw) if s.is_a? Integer
+        s = ::Pwnlib::Util::Packing.pack(s, *a, **kw) if s.is_a?(Integer)
         !(s.include?("\x00") || s.include?("\n"))
       end
 
       def eval(item)
-        return item if item.is_a? Integer
+        return item if item.is_a?(Integer)
         ::Pwnlib::Constants.eval(item)
       end
 
       def pretty(n, comment: true)
-        return n.inspect if n.is_a? String
-        return n unless n.is_a? Numeric
-        if n.instance_of? ::Pwnlib::Constants::Constant
+        return n.inspect if n.is_a?(String)
+        return n unless n.is_a?(Numeric)
+        if n.instance_of?(::Pwnlib::Constants::Constant)
           return format(comment ? '%s /* %s */' : '%s (%s)', n, pretty(n.to_i))
         end
         return n if n.abs < 10
-        # TODO(david942j, peter50216): n.hex
-        format("#{n < 0 ? '-' : ''}0x%x", n.abs)
+        ::Pwnlib::Util::Fiddling.hex(n)
       end
     end
 
@@ -50,7 +50,7 @@ module Pwnlib
       end
 
       def self.parse(name, *args)
-        return nil unless exists? name
+        return nil unless exists?(name)
         filename = file_of(name)
         Tilt.new(filename, trim: '>', outvar: '@erbout').render(nil, get_locals(filename, *args))
       end
@@ -84,12 +84,12 @@ module Pwnlib
         args_str.split(',').each_with_object({}) do |str, hash|
           str.strip!
           next if str.empty?
-          if str.start_with? '*' # *args
+          if str.start_with?('*') # *args
             hash[str[1..-1].to_sym] = args
             args = []
             next
           end
-          if str.include? ':' # keyword argument
+          if str.include?(':') # keyword argument
             key, val = str.split(':', 2)
             key = key.strip.to_sym
             hash[key] = args_hash.key?(key) ? args_hash[key] : instance_eval(val) # roooooock
