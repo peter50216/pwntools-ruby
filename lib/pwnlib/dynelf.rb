@@ -39,7 +39,7 @@ module Pwnlib
 
     # Function used to generated GNU-style hashes for strings.
     def gnu_hash(s)
-      s.bytes.inject(5381) { |a, e| (a * 33 + e) & 0xffffffff }
+      s.bytes.inject(5381) { |acc, elem| (acc * 33 + elem) & 0xffffffff }
     end
 
     def find_dynamic
