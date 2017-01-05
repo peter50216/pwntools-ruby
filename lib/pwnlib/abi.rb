@@ -7,6 +7,7 @@ module Pwnlib
   module ABI
     # A super class for recording registers and stack's information.
     class ABI
+      attr_reader :register_arguments
       def initialize(regs, align, minimum)
         @register_arguments = regs
         @arg_alignment      = align
@@ -53,9 +54,9 @@ module Pwnlib
     # The syscall ABI treats the syscall number as the zeroth argument,
     # which must be loaded into the specified register.
     class SyscallABI < ABI
-      def initialize(register_arguments, *args, **kwargs)
+      def initialize(regs, align, minimum)
         super
-        @syscall_register = register_arguments[0]
+        @syscall_register = regs[0]
       end
     end
 

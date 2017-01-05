@@ -184,7 +184,8 @@ module Pwnlib
           v_k[v] << k if !all_regs.include?(v) && v != 0
         end
         post_mov = {}
-        v_k.sort.each do |_, ks|
+        # no need v_k.sort
+        v_k.each do |_, ks|
           1.upto(ks.size - 1) do |i|
             post_mov[ks[i]] = ks[0]
             in_out.delete ks[i]
