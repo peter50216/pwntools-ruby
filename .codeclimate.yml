@@ -16,8 +16,6 @@ engines:
     enabled: true
   rubocop:
     enabled: true
-  rubymotion:
-    enabled: true
 ratings:
   paths:
   - Gemfile.lock
