@@ -12,25 +12,28 @@ module Pwnlib
       AsmErbParser.parse(method.to_s, *args) || super
     end
 
-    def okay(s, *a, **kw)
-      s = ::Pwnlib::Util::Packing.pack(s, *a, **kw) if s.is_a? Integer
-      ! (s.include?("\x00") || s.include?("\n"))
-    end
-
-    def eval(item)
-      return item if item.is_a? Integer
-      ::Pwnlib::Constants.eval(item)
-    end
-
-    def pretty(n, comment: true)
-      return n.inspect if n.is_a? String
-      return n unless n.is_a? Numeric
-      if n.instance_of? ::Pwnlib::Constants::Constant
-        return format(comment ? '%s /* %s */' : '%s (%s)', n, pretty(n.to_i))
+    # For *.asm.erb use
+    module ClassMethod
+      def okay(s, *a, **kw)
+        s = ::Pwnlib::Util::Packing.pack(s, *a, **kw) if s.is_a? Integer
+        ! (s.include?("\x00") || s.include?("\n"))
       end
-      return n if n.abs < 10
-      # TODO(david942j): n.hex
-      format("#{n < 0 ? '-' : ''}0x%x", n.abs)
+
+      def eval(item)
+        return item if item.is_a? Integer
+        ::Pwnlib::Constants.eval(item)
+      end
+
+      def pretty(n, comment: true)
+        return n.inspect if n.is_a? String
+        return n unless n.is_a? Numeric
+        if n.instance_of? ::Pwnlib::Constants::Constant
+          return format(comment ? '%s /* %s */' : '%s (%s)', n, pretty(n.to_i))
+        end
+        return n if n.abs < 10
+        # TODO(david942j): n.hex
+        format("#{n < 0 ? '-' : ''}0x%x", n.abs)
+      end
     end
 
     # There're a few custom defined formats in erb, use a class to parse it.

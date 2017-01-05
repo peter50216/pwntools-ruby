@@ -6,7 +6,7 @@
   require 'pwnlib/shellcraft/registers'
   extend ::Pwnlib::Shellcraft::Registers::ClassMethod
   require 'pwnlib/shellcraft/shellcraft'
-  extend ::Pwnlib::Shellcraft
+  extend ::Pwnlib::Shellcraft::ClassMethod
   # XXX(david942j): How to do this DRY?
   def cat str
     @erbout += ' ' * 2 + str + "\n"
