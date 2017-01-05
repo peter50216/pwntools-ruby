@@ -1,6 +1,7 @@
 # encoding: ASCII-8BIT
 require 'pwnlib/context'
 require 'pwnlib/util/packing'
+require 'pwnlib/constants/constant'
 require 'tilt'
 
 module Pwnlib
@@ -16,10 +17,17 @@ module Pwnlib
       ! (s.include?("\x00") || s.include?("\n"))
     end
 
-    def pretty(n) # , comment: true)
+    def eval(item)
+      return item if item.is_a? Integer
+      ::Pwnlib::Constants.eval(item)
+    end
+
+    def pretty(n, comment: true)
       return n.inspect if n.is_a? String
-      return n unless n.is_a? Integer
-      # TODO(david942j): constants
+      return n unless n.is_a? Numeric
+      if n.instance_of? ::Pwnlib::Constants::Constant
+        return format(comment ? '%s /* %s */' : '%s (%s)', n, pretty(n.to_i))
+      end
       return n if n.abs < 10
       # TODO(david942j): n.hex
       format("#{n < 0 ? '-' : ''}0x%x", n.abs)

@@ -30,9 +30,8 @@
     # Downgrade our register choice if possible.
     # Opcodes for operating on 32-bit registers are always (?) shorter.
     @dest = get_register(@dest.native32) if @dest.size == 64 && @src.size <= 32
-
-  # TODO(david942j): eval
-  elsif @src.is_a? Integer # should be immi
+  else
+    context.local(arch: 'amd64') { @src = eval(@src) }
     raise ArgumentError, "cannot mov %s, %d: dest is smaller than src" % [@dest, @src] unless @dest.fits(@src)
     @dest = get_register(@dest.native32) if @dest.size == 64 && bits_required(@src) <= 32
 
@@ -55,10 +54,10 @@
     else
       cat "mov #{@dest}, #{@src}"
     end
-  elsif @src.is_a? Integer
+  elsif @src.is_a? Numeric # Constant or immi
     # Special case for zeroes
     # XORing the 32-bit register clears the high 32 bits as well
-    if src == 0
+    if @src == 0
       cat "xor #{@dest}, #{@dest} /* #{@src} */"
     elsif stack_allowed && [32, 64].include?(@dest.size) && @src == 10
       cat "push 9 /* mov #{@dest}, '\\n' */"

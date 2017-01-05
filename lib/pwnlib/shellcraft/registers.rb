@@ -36,7 +36,8 @@ module Pwnlib
       class Register
         # @return [String] register's name
         attr_reader :name
-        attr_reader :bigger, :smaller, :size, :ff00, :is64bit, :native64, :native32, :xor
+        attr_reader :bigger, :smaller, :ff00, :is64bit, :native64, :native32, :xor
+        attr_reader :size, :sizes
 
         def initialize(name, size)
           @name = name
@@ -47,12 +48,11 @@ module Pwnlib
             @smaller  = row[(row.index(name) + 1)..-1]
             @native64 = row[0]
             @native32 = row[1]
-            # XXX(david942j): not use?
-            sizes     = row.each_with_object({}).with_index { |(r, h), i| h[64 >> i] = r }
-            @xor      = sizes[[size, 32].min]
+            @sizes    = row.each_with_object({}).with_index { |(r, h), i| h[64 >> i] = r }
+            @xor      = @sizes[[size, 32].min]
           end
           @ff00 = name[1] + 'h' if @size >= 32 && @name.end_with?('x')
-          # XXX(david942j): str.numberic?
+          # XXX(david942j): str.numeric?
           @is64bit = true if @name.start_with?('r') || @name[1...3] =~ /\A[[:digit:]]+\Z/
         end
 
