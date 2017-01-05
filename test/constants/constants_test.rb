@@ -15,7 +15,7 @@ class ConstantsTest < MiniTest::Test
     # test coerce
     assert_operator(0, :==, Constant.new('ZERO', 0))
     assert_operator(a1, :==, Constant.new('b', 1))
-    assert_equal(false, a1 == Constant.new('a', 3))
+    refute_operator(a1, :==, Constant.new('a', 3))
     assert_equal(3, a1 | Constant.new('a', 2))
   end
 
