@@ -40,6 +40,21 @@ module Pwnlib
           [s].pack('H*')
         end
 
+        # Present number in hex format, same as python hex() do.
+        #
+        # @parasm [Integer] n The number.
+        #
+        # @return [String]
+        #   The hex format string.
+        #
+        # @example
+        #   hex(0) #=> '0x0'
+        #   hex(-10) #=> '-0xa'
+        #   hex(0xfaceb00cdeadbeef) #=> '0xfaceb00cdeadbeef'
+        def hex(n)
+          (n < 0 ? '-' : '') + format('0x%x', n.abs)
+        end
+
         # URL-encodes a string.
         #
         # @param [String] s

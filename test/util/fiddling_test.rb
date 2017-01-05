@@ -21,6 +21,13 @@ class FiddlingTest < MiniTest::Test
                  unhex('21402324255e262a28295f2b5f29282a265e2524234040213f7b7d5d5b2f2f5c60607e'))
   end
 
+  def test_hex
+    assert_equal('0x0', hex(0))
+    assert_equal('0x64', hex(100))
+    assert_equal('-0xa', hex(-10))
+    assert_equal('0xfaceb00cdeadbeef', hex(0xfaceb00cdeadbeef))
+  end
+
   def test_urlencode
     assert_equal('%74%65%73%74%20%41', urlencode('test A'))
     assert_equal('%00%ff%01%fe', urlencode("\x00\xff\x01\xfe"))
