@@ -31,7 +31,9 @@
       if how == 'xchg'
         cat "xchg #{src}, #{dst}"
       else
-        @erbout += Shellcraft.mov(src, dst)
+        # bug in python-pwntools, which missing `stack_allowed`
+        # pwnlib.shellcraft.amd64.setregs({'rax': 1}, stack_allowed=False)
+        @erbout += Shellcraft.mov(src, dst, stack_allowed: stack_allowed)
       end
     end
   end
