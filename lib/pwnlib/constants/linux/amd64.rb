@@ -1,1562 +1,1558 @@
-# XXX(david42j): should this file be ignored by rubocop?
-require 'pwnlib/constants/constants'
-::Pwnlib::Constants.define do |hash|
-  hash[:__NR_read] = 0
-  hash[:__NR_write] = 1
-  hash[:__NR_open] = 2
-  hash[:__NR_close] = 3
-  hash[:__NR_stat] = 4
-  hash[:__NR_fstat] = 5
-  hash[:__NR_lstat] = 6
-  hash[:__NR_poll] = 7
-  hash[:__NR_lseek] = 8
-  hash[:__NR_mmap] = 9
-  hash[:__NR_mprotect] = 10
-  hash[:__NR_munmap] = 11
-  hash[:__NR_brk] = 12
-  hash[:__NR_rt_sigaction] = 13
-  hash[:__NR_rt_sigprocmask] = 14
-  hash[:__NR_rt_sigreturn] = 15
-  hash[:__NR_ioctl] = 16
-  hash[:__NR_pread] = 17
-  hash[:__NR_pwrite] = 18
-  hash[:__NR_readv] = 19
-  hash[:__NR_writev] = 20
-  hash[:__NR_access] = 21
-  hash[:__NR_pipe] = 22
-  hash[:__NR_select] = 23
-  hash[:__NR_sched_yield] = 24
-  hash[:__NR_mremap] = 25
-  hash[:__NR_msync] = 26
-  hash[:__NR_mincore] = 27
-  hash[:__NR_madvise] = 28
-  hash[:__NR_shmget] = 29
-  hash[:__NR_shmat] = 30
-  hash[:__NR_shmctl] = 31
-  hash[:__NR_dup] = 32
-  hash[:__NR_dup2] = 33
-  hash[:__NR_pause] = 34
-  hash[:__NR_nanosleep] = 35
-  hash[:__NR_getitimer] = 36
-  hash[:__NR_alarm] = 37
-  hash[:__NR_setitimer] = 38
-  hash[:__NR_getpid] = 39
-  hash[:__NR_sendfile] = 40
-  hash[:__NR_socket] = 41
-  hash[:__NR_connect] = 42
-  hash[:__NR_accept] = 43
-  hash[:__NR_sendto] = 44
-  hash[:__NR_recvfrom] = 45
-  hash[:__NR_sendmsg] = 46
-  hash[:__NR_recvmsg] = 47
-  hash[:__NR_shutdown] = 48
-  hash[:__NR_bind] = 49
-  hash[:__NR_listen] = 50
-  hash[:__NR_getsockname] = 51
-  hash[:__NR_getpeername] = 52
-  hash[:__NR_socketpair] = 53
-  hash[:__NR_setsockopt] = 54
-  hash[:__NR_getsockopt] = 55
-  hash[:__NR_clone] = 56
-  hash[:__NR_fork] = 57
-  hash[:__NR_vfork] = 58
-  hash[:__NR_execve] = 59
-  hash[:__NR_exit] = 60
-  hash[:__NR_wait4] = 61
-  hash[:__NR_kill] = 62
-  hash[:__NR_uname] = 63
-  hash[:__NR_semget] = 64
-  hash[:__NR_semop] = 65
-  hash[:__NR_semctl] = 66
-  hash[:__NR_shmdt] = 67
-  hash[:__NR_msgget] = 68
-  hash[:__NR_msgsnd] = 69
-  hash[:__NR_msgrcv] = 70
-  hash[:__NR_msgctl] = 71
-  hash[:__NR_fcntl] = 72
-  hash[:__NR_flock] = 73
-  hash[:__NR_fsync] = 74
-  hash[:__NR_fdatasync] = 75
-  hash[:__NR_truncate] = 76
-  hash[:__NR_ftruncate] = 77
-  hash[:__NR_getdents] = 78
-  hash[:__NR_getcwd] = 79
-  hash[:__NR_chdir] = 80
-  hash[:__NR_fchdir] = 81
-  hash[:__NR_rename] = 82
-  hash[:__NR_mkdir] = 83
-  hash[:__NR_rmdir] = 84
-  hash[:__NR_creat] = 85
-  hash[:__NR_link] = 86
-  hash[:__NR_unlink] = 87
-  hash[:__NR_symlink] = 88
-  hash[:__NR_readlink] = 89
-  hash[:__NR_chmod] = 90
-  hash[:__NR_fchmod] = 91
-  hash[:__NR_chown] = 92
-  hash[:__NR_fchown] = 93
-  hash[:__NR_lchown] = 94
-  hash[:__NR_umask] = 95
-  hash[:__NR_gettimeofday] = 96
-  hash[:__NR_getrlimit] = 97
-  hash[:__NR_getrusage] = 98
-  hash[:__NR_sysinfo] = 99
-  hash[:__NR_times] = 100
-  hash[:__NR_ptrace] = 101
-  hash[:__NR_getuid] = 102
-  hash[:__NR_syslog] = 103
-  hash[:__NR_getgid] = 104
-  hash[:__NR_setuid] = 105
-  hash[:__NR_setgid] = 106
-  hash[:__NR_geteuid] = 107
-  hash[:__NR_getegid] = 108
-  hash[:__NR_setpgid] = 109
-  hash[:__NR_getppid] = 110
-  hash[:__NR_getpgrp] = 111
-  hash[:__NR_setsid] = 112
-  hash[:__NR_setreuid] = 113
-  hash[:__NR_setregid] = 114
-  hash[:__NR_getgroups] = 115
-  hash[:__NR_setgroups] = 116
-  hash[:__NR_setresuid] = 117
-  hash[:__NR_getresuid] = 118
-  hash[:__NR_setresgid] = 119
-  hash[:__NR_getresgid] = 120
-  hash[:__NR_getpgid] = 121
-  hash[:__NR_setfsuid] = 122
-  hash[:__NR_setfsgid] = 123
-  hash[:__NR_getsid] = 124
-  hash[:__NR_capget] = 125
-  hash[:__NR_capset] = 126
-  hash[:__NR_rt_sigpending] = 127
-  hash[:__NR_rt_sigtimedwait] = 128
-  hash[:__NR_rt_sigqueueinfo] = 129
-  hash[:__NR_rt_sigsuspend] = 130
-  hash[:__NR_sigaltstack] = 131
-  hash[:__NR_utime] = 132
-  hash[:__NR_mknod] = 133
-  hash[:__NR_uselib] = 134
-  hash[:__NR_personality] = 135
-  hash[:__NR_ustat] = 136
-  hash[:__NR_statfs] = 137
-  hash[:__NR_fstatfs] = 138
-  hash[:__NR_sysfs] = 139
-  hash[:__NR_getpriority] = 140
-  hash[:__NR_setpriority] = 141
-  hash[:__NR_sched_setparam] = 142
-  hash[:__NR_sched_getparam] = 143
-  hash[:__NR_sched_setscheduler] = 144
-  hash[:__NR_sched_getscheduler] = 145
-  hash[:__NR_sched_get_priority_max] = 146
-  hash[:__NR_sched_get_priority_min] = 147
-  hash[:__NR_sched_rr_get_interval] = 148
-  hash[:__NR_mlock] = 149
-  hash[:__NR_munlock] = 150
-  hash[:__NR_mlockall] = 151
-  hash[:__NR_munlockall] = 152
-  hash[:__NR_vhangup] = 153
-  hash[:__NR_modify_ldt] = 154
-  hash[:__NR_pivot_root] = 155
-  hash[:__NR__sysctl] = 156
-  hash[:__NR_prctl] = 157
-  hash[:__NR_arch_prctl] = 158
-  hash[:__NR_adjtimex] = 159
-  hash[:__NR_setrlimit] = 160
-  hash[:__NR_chroot] = 161
-  hash[:__NR_sync] = 162
-  hash[:__NR_acct] = 163
-  hash[:__NR_settimeofday] = 164
-  hash[:__NR_mount] = 165
-  hash[:__NR_umount2] = 166
-  hash[:__NR_swapon] = 167
-  hash[:__NR_swapoff] = 168
-  hash[:__NR_reboot] = 169
-  hash[:__NR_sethostname] = 170
-  hash[:__NR_setdomainname] = 171
-  hash[:__NR_iopl] = 172
-  hash[:__NR_ioperm] = 173
-  hash[:__NR_create_module] = 174
-  hash[:__NR_init_module] = 175
-  hash[:__NR_delete_module] = 176
-  hash[:__NR_get_kernel_syms] = 177
-  hash[:__NR_query_module] = 178
-  hash[:__NR_quotactl] = 179
-  hash[:__NR_nfsservctl] = 180
-  hash[:__NR_getpmsg] = 181
-  hash[:__NR_putpmsg] = 182
-  hash[:__NR_afs_syscall] = 183
-  hash[:__NR_tuxcall] = 184
-  hash[:__NR_security] = 185
-  hash[:__NR_gettid] = 186
-  hash[:__NR_readahead] = 187
-  hash[:__NR_setxattr] = 188
-  hash[:__NR_lsetxattr] = 189
-  hash[:__NR_fsetxattr] = 190
-  hash[:__NR_getxattr] = 191
-  hash[:__NR_lgetxattr] = 192
-  hash[:__NR_fgetxattr] = 193
-  hash[:__NR_listxattr] = 194
-  hash[:__NR_llistxattr] = 195
-  hash[:__NR_flistxattr] = 196
-  hash[:__NR_removexattr] = 197
-  hash[:__NR_lremovexattr] = 198
-  hash[:__NR_fremovexattr] = 199
-  hash[:__NR_tkill] = 200
-  hash[:__NR_time] = 201
-  hash[:__NR_futex] = 202
-  hash[:__NR_sched_setaffinity] = 203
-  hash[:__NR_sched_getaffinity] = 204
-  hash[:__NR_set_thread_area] = 205
-  hash[:__NR_io_setup] = 206
-  hash[:__NR_io_destroy] = 207
-  hash[:__NR_io_getevents] = 208
-  hash[:__NR_io_submit] = 209
-  hash[:__NR_io_cancel] = 210
-  hash[:__NR_get_thread_area] = 211
-  hash[:__NR_lookup_dcookie] = 212
-  hash[:__NR_epoll_create] = 213
-  hash[:__NR_epoll_ctl_old] = 214
-  hash[:__NR_epoll_wait_old] = 215
-  hash[:__NR_remap_file_pages] = 216
-  hash[:__NR_getdents64] = 217
-  hash[:__NR_set_tid_address] = 218
-  hash[:__NR_restart_syscall] = 219
-  hash[:__NR_semtimedop] = 220
-  hash[:__NR_fadvise64] = 221
-  hash[:__NR_timer_create] = 222
-  hash[:__NR_timer_settime] = 223
-  hash[:__NR_timer_gettime] = 224
-  hash[:__NR_timer_getoverrun] = 225
-  hash[:__NR_timer_delete] = 226
-  hash[:__NR_clock_settime] = 227
-  hash[:__NR_clock_gettime] = 228
-  hash[:__NR_clock_getres] = 229
-  hash[:__NR_clock_nanosleep] = 230
-  hash[:__NR_exit_group] = 231
-  hash[:__NR_epoll_wait] = 232
-  hash[:__NR_epoll_ctl] = 233
-  hash[:__NR_tgkill] = 234
-  hash[:__NR_utimes] = 235
-  hash[:__NR_vserver] = 236
-  hash[:__NR_vserver] = 236
-  hash[:__NR_mbind] = 237
-  hash[:__NR_set_mempolicy] = 238
-  hash[:__NR_get_mempolicy] = 239
-  hash[:__NR_mq_open] = 240
-  hash[:__NR_mq_unlink] = 241
-  hash[:__NR_mq_timedsend] = 242
-  hash[:__NR_mq_timedreceive] = 243
-  hash[:__NR_mq_notify] = 244
-  hash[:__NR_mq_getsetattr] = 245
-  hash[:__NR_kexec_load] = 246
-  hash[:__NR_waitid] = 247
-  hash[:__NR_add_key] = 248
-  hash[:__NR_request_key] = 249
-  hash[:__NR_keyctl] = 250
-  hash[:__NR_ioprio_set] = 251
-  hash[:__NR_ioprio_get] = 252
-  hash[:__NR_inotify_init] = 253
-  hash[:__NR_inotify_add_watch] = 254
-  hash[:__NR_inotify_rm_watch] = 255
-  hash[:__NR_migrate_pages] = 256
-  hash[:__NR_openat] = 257
-  hash[:__NR_mkdirat] = 258
-  hash[:__NR_mknodat] = 259
-  hash[:__NR_fchownat] = 260
-  hash[:__NR_futimesat] = 261
-  hash[:__NR_newfstatat] = 262
-  hash[:__NR_unlinkat] = 263
-  hash[:__NR_renameat] = 264
-  hash[:__NR_linkat] = 265
-  hash[:__NR_symlinkat] = 266
-  hash[:__NR_readlinkat] = 267
-  hash[:__NR_fchmodat] = 268
-  hash[:__NR_faccessat] = 269
-  hash[:__NR_pselect6] = 270
-  hash[:__NR_ppoll] = 271
-  hash[:__NR_unshare] = 272
-  hash[:__NR_set_robust_list] = 273
-  hash[:__NR_get_robust_list] = 274
-  hash[:__NR_splice] = 275
-  hash[:__NR_tee] = 276
-  hash[:__NR_sync_file_range] = 277
-  hash[:__NR_vmsplice] = 278
-  hash[:__NR_move_pages] = 279
-  hash[:__NR_utimensat] = 280
-  hash[:__NR_epoll_pwait] = 281
-  hash[:__NR_signalfd] = 282
-  hash[:__NR_timerfd] = 283
-  hash[:__NR_eventfd] = 284
-  hash[:__NR_fallocate] = 285
-  hash[:__NR_timerfd_settime] = 286
-  hash[:__NR_timerfd_gettime] = 287
-  hash[:__NR_accept4] = 288
-  hash[:__NR_signalfd4] = 289
-  hash[:__NR_eventfd2] = 290
-  hash[:__NR_epoll_create1] = 291
-  hash[:__NR_dup3] = 292
-  hash[:__NR_pipe2] = 293
-  hash[:__NR_inotify_init1] = 294
-  hash[:__NR_preadv] = 295
-  hash[:__NR_pwritev] = 296
-  hash[:__NR_rt_tgsigqueueinfo] = 297
-  hash[:__NR_perf_event_open] = 298
-  hash[:__NR_recvmmsg] = 299
-  hash[:__NR_fanotify_init] = 300
-  hash[:__NR_fanotify_mark] = 301
-  hash[:__NR_prlimit64] = 302
-  hash[:SYS32_restart_syscall] = 0
-  hash[:SYS32_exit] = 1
-  hash[:SYS32_fork] = 2
-  hash[:SYS32_read] = 3
-  hash[:SYS32_write] = 4
-  hash[:SYS32_open] = 5
-  hash[:SYS32_close] = 6
-  hash[:SYS32_waitpid] = 7
-  hash[:SYS32_creat] = 8
-  hash[:SYS32_link] = 9
-  hash[:SYS32_unlink] = 10
-  hash[:SYS32_execve] = 11
-  hash[:SYS32_chdir] = 12
-  hash[:SYS32_time] = 13
-  hash[:SYS32_mknod] = 14
-  hash[:SYS32_chmod] = 15
-  hash[:SYS32_lchown] = 16
-  hash[:SYS32_break] = 17
-  hash[:SYS32_oldstat] = 18
-  hash[:SYS32_lseek] = 19
-  hash[:SYS32_getpid] = 20
-  hash[:SYS32_mount] = 21
-  hash[:SYS32_umount] = 22
-  hash[:SYS32_setuid] = 23
-  hash[:SYS32_getuid] = 24
-  hash[:SYS32_stime] = 25
-  hash[:SYS32_ptrace] = 26
-  hash[:SYS32_alarm] = 27
-  hash[:SYS32_oldfstat] = 28
-  hash[:SYS32_pause] = 29
-  hash[:SYS32_utime] = 30
-  hash[:SYS32_stty] = 31
-  hash[:SYS32_gtty] = 32
-  hash[:SYS32_access] = 33
-  hash[:SYS32_nice] = 34
-  hash[:SYS32_ftime] = 35
-  hash[:SYS32_sync] = 36
-  hash[:SYS32_kill] = 37
-  hash[:SYS32_rename] = 38
-  hash[:SYS32_mkdir] = 39
-  hash[:SYS32_rmdir] = 40
-  hash[:SYS32_dup] = 41
-  hash[:SYS32_pipe] = 42
-  hash[:SYS32_times] = 43
-  hash[:SYS32_prof] = 44
-  hash[:SYS32_brk] = 45
-  hash[:SYS32_setgid] = 46
-  hash[:SYS32_getgid] = 47
-  hash[:SYS32_signal] = 48
-  hash[:SYS32_geteuid] = 49
-  hash[:SYS32_getegid] = 50
-  hash[:SYS32_acct] = 51
-  hash[:SYS32_umount2] = 52
-  hash[:SYS32_lock] = 53
-  hash[:SYS32_ioctl] = 54
-  hash[:SYS32_fcntl] = 55
-  hash[:SYS32_mpx] = 56
-  hash[:SYS32_setpgid] = 57
-  hash[:SYS32_ulimit] = 58
-  hash[:SYS32_oldolduname] = 59
-  hash[:SYS32_umask] = 60
-  hash[:SYS32_chroot] = 61
-  hash[:SYS32_ustat] = 62
-  hash[:SYS32_dup2] = 63
-  hash[:SYS32_getppid] = 64
-  hash[:SYS32_getpgrp] = 65
-  hash[:SYS32_setsid] = 66
-  hash[:SYS32_sigaction] = 67
-  hash[:SYS32_sgetmask] = 68
-  hash[:SYS32_ssetmask] = 69
-  hash[:SYS32_setreuid] = 70
-  hash[:SYS32_setregid] = 71
-  hash[:SYS32_sigsuspend] = 72
-  hash[:SYS32_sigpending] = 73
-  hash[:SYS32_sethostname] = 74
-  hash[:SYS32_setrlimit] = 75
-  hash[:SYS32_getrlimit] = 76
-  hash[:SYS32_getrusage] = 77
-  hash[:SYS32_gettimeofday] = 78
-  hash[:SYS32_settimeofday] = 79
-  hash[:SYS32_getgroups] = 80
-  hash[:SYS32_setgroups] = 81
-  hash[:SYS32_select] = 82
-  hash[:SYS32_symlink] = 83
-  hash[:SYS32_oldlstat] = 84
-  hash[:SYS32_readlink] = 85
-  hash[:SYS32_uselib] = 86
-  hash[:SYS32_swapon] = 87
-  hash[:SYS32_reboot] = 88
-  hash[:SYS32_readdir] = 89
-  hash[:SYS32_mmap] = 90
-  hash[:SYS32_munmap] = 91
-  hash[:SYS32_truncate] = 92
-  hash[:SYS32_ftruncate] = 93
-  hash[:SYS32_fchmod] = 94
-  hash[:SYS32_fchown] = 95
-  hash[:SYS32_getpriority] = 96
-  hash[:SYS32_setpriority] = 97
-  hash[:SYS32_profil] = 98
-  hash[:SYS32_statfs] = 99
-  hash[:SYS32_fstatfs] = 100
-  hash[:SYS32_ioperm] = 101
-  hash[:SYS32_socketcall] = 102
-  hash[:SYS32_syslog] = 103
-  hash[:SYS32_setitimer] = 104
-  hash[:SYS32_getitimer] = 105
-  hash[:SYS32_stat] = 106
-  hash[:SYS32_lstat] = 107
-  hash[:SYS32_fstat] = 108
-  hash[:SYS32_olduname] = 109
-  hash[:SYS32_iopl] = 110
-  hash[:SYS32_vhangup] = 111
-  hash[:SYS32_idle] = 112
-  hash[:SYS32_vm86old] = 113
-  hash[:SYS32_wait4] = 114
-  hash[:SYS32_swapoff] = 115
-  hash[:SYS32_sysinfo] = 116
-  hash[:SYS32_ipc] = 117
-  hash[:SYS32_fsync] = 118
-  hash[:SYS32_sigreturn] = 119
-  hash[:SYS32_clone] = 120
-  hash[:SYS32_setdomainname] = 121
-  hash[:SYS32_uname] = 122
-  hash[:SYS32_modify_ldt] = 123
-  hash[:SYS32_adjtimex] = 124
-  hash[:SYS32_mprotect] = 125
-  hash[:SYS32_sigprocmask] = 126
-  hash[:SYS32_create_module] = 127
-  hash[:SYS32_init_module] = 128
-  hash[:SYS32_delete_module] = 129
-  hash[:SYS32_get_kernel_syms] = 130
-  hash[:SYS32_quotactl] = 131
-  hash[:SYS32_getpgid] = 132
-  hash[:SYS32_fchdir] = 133
-  hash[:SYS32_bdflush] = 134
-  hash[:SYS32_sysfs] = 135
-  hash[:SYS32_personality] = 136
-  hash[:SYS32_afs_syscall] = 137
-  hash[:SYS32_setfsuid] = 138
-  hash[:SYS32_setfsgid] = 139
-  hash[:SYS32__llseek] = 140
-  hash[:SYS32_getdents] = 141
-  hash[:SYS32__newselect] = 142
-  hash[:SYS32_flock] = 143
-  hash[:SYS32_msync] = 144
-  hash[:SYS32_readv] = 145
-  hash[:SYS32_writev] = 146
-  hash[:SYS32_getsid] = 147
-  hash[:SYS32_fdatasync] = 148
-  hash[:SYS32__sysctl] = 149
-  hash[:SYS32_mlock] = 150
-  hash[:SYS32_munlock] = 151
-  hash[:SYS32_mlockall] = 152
-  hash[:SYS32_munlockall] = 153
-  hash[:SYS32_sched_setparam] = 154
-  hash[:SYS32_sched_getparam] = 155
-  hash[:SYS32_sched_setscheduler] = 156
-  hash[:SYS32_sched_getscheduler] = 157
-  hash[:SYS32_sched_yield] = 158
-  hash[:SYS32_sched_get_priority_max] = 159
-  hash[:SYS32_sched_get_priority_min] = 160
-  hash[:SYS32_sched_rr_get_interval] = 161
-  hash[:SYS32_nanosleep] = 162
-  hash[:SYS32_mremap] = 163
-  hash[:SYS32_setresuid] = 164
-  hash[:SYS32_getresuid] = 165
-  hash[:SYS32_vm86] = 166
-  hash[:SYS32_query_module] = 167
-  hash[:SYS32_poll] = 168
-  hash[:SYS32_nfsservctl] = 169
-  hash[:SYS32_setresgid] = 170
-  hash[:SYS32_getresgid] = 171
-  hash[:SYS32_prctl] = 172
-  hash[:SYS32_rt_sigreturn] = 173
-  hash[:SYS32_rt_sigaction] = 174
-  hash[:SYS32_rt_sigprocmask] = 175
-  hash[:SYS32_rt_sigpending] = 176
-  hash[:SYS32_rt_sigtimedwait] = 177
-  hash[:SYS32_rt_sigqueueinfo] = 178
-  hash[:SYS32_rt_sigsuspend] = 179
-  hash[:SYS32_pread64] = 180
-  hash[:SYS32_pwrite64] = 181
-  hash[:SYS32_chown] = 182
-  hash[:SYS32_getcwd] = 183
-  hash[:SYS32_capget] = 184
-  hash[:SYS32_capset] = 185
-  hash[:SYS32_sigaltstack] = 186
-  hash[:SYS32_sendfile] = 187
-  hash[:SYS32_getpmsg] = 188
-  hash[:SYS32_putpmsg] = 189
-  hash[:SYS32_vfork] = 190
-  hash[:SYS32_ugetrlimit] = 191
-  hash[:SYS32_mmap2] = 192
-  hash[:SYS32_truncate64] = 193
-  hash[:SYS32_ftruncate64] = 194
-  hash[:SYS32_stat64] = 195
-  hash[:SYS32_lstat64] = 196
-  hash[:SYS32_fstat64] = 197
-  hash[:SYS32_lchown32] = 198
-  hash[:SYS32_getuid32] = 199
-  hash[:SYS32_getgid32] = 200
-  hash[:SYS32_geteuid32] = 201
-  hash[:SYS32_getegid32] = 202
-  hash[:SYS32_setreuid32] = 203
-  hash[:SYS32_setregid32] = 204
-  hash[:SYS32_getgroups32] = 205
-  hash[:SYS32_setgroups32] = 206
-  hash[:SYS32_fchown32] = 207
-  hash[:SYS32_setresuid32] = 208
-  hash[:SYS32_getresuid32] = 209
-  hash[:SYS32_setresgid32] = 210
-  hash[:SYS32_getresgid32] = 211
-  hash[:SYS32_chown32] = 212
-  hash[:SYS32_setuid32] = 213
-  hash[:SYS32_setgid32] = 214
-  hash[:SYS32_setfsuid32] = 215
-  hash[:SYS32_setfsgid32] = 216
-  hash[:SYS32_pivot_root] = 217
-  hash[:SYS32_mincore] = 218
-  hash[:SYS32_madvise] = 219
-  hash[:SYS32_madvise1] = 219
-  hash[:SYS32_getdents64] = 220
-  hash[:SYS32_fcntl64] = 221
-  hash[:SYS32_gettid] = 224
-  hash[:SYS32_readahead] = 225
-  hash[:SYS32_setxattr] = 226
-  hash[:SYS32_lsetxattr] = 227
-  hash[:SYS32_fsetxattr] = 228
-  hash[:SYS32_getxattr] = 229
-  hash[:SYS32_lgetxattr] = 230
-  hash[:SYS32_fgetxattr] = 231
-  hash[:SYS32_listxattr] = 232
-  hash[:SYS32_llistxattr] = 233
-  hash[:SYS32_flistxattr] = 234
-  hash[:SYS32_removexattr] = 235
-  hash[:SYS32_lremovexattr] = 236
-  hash[:SYS32_fremovexattr] = 237
-  hash[:SYS32_tkill] = 238
-  hash[:SYS32_sendfile64] = 239
-  hash[:SYS32_futex] = 240
-  hash[:SYS32_sched_setaffinity] = 241
-  hash[:SYS32_sched_getaffinity] = 242
-  hash[:SYS32_set_thread_area] = 243
-  hash[:SYS32_get_thread_area] = 244
-  hash[:SYS32_io_setup] = 245
-  hash[:SYS32_io_destroy] = 246
-  hash[:SYS32_io_getevents] = 247
-  hash[:SYS32_io_submit] = 248
-  hash[:SYS32_io_cancel] = 249
-  hash[:SYS32_fadvise64] = 250
-  hash[:SYS32_exit_group] = 252
-  hash[:SYS32_lookup_dcookie] = 253
-  hash[:SYS32_epoll_create] = 254
-  hash[:SYS32_epoll_ctl] = 255
-  hash[:SYS32_epoll_wait] = 256
-  hash[:SYS32_remap_file_pages] = 257
-  hash[:SYS32_set_tid_address] = 258
-  hash[:SYS32_timer_create] = 259
-  hash[:SYS32_timer_settime] = (222 + 1)
-  hash[:SYS32_timer_gettime] = (222 + 2)
-  hash[:SYS32_timer_getoverrun] = (222 + 3)
-  hash[:SYS32_timer_delete] = (222 + 4)
-  hash[:SYS32_clock_settime] = (222 + 5)
-  hash[:SYS32_clock_gettime] = (222 + 6)
-  hash[:SYS32_clock_getres] = (222 + 7)
-  hash[:SYS32_clock_nanosleep] = (222 + 8)
-  hash[:SYS32_statfs64] = 268
-  hash[:SYS32_fstatfs64] = 269
-  hash[:SYS32_tgkill] = 270
-  hash[:SYS32_utimes] = 271
-  hash[:SYS32_fadvise64_64] = 272
-  hash[:SYS32_vserver] = 273
-  hash[:SYS32_mbind] = 274
-  hash[:SYS32_get_mempolicy] = 275
-  hash[:SYS32_set_mempolicy] = 276
-  hash[:SYS32_mq_open] = 277
-  hash[:SYS32_mq_unlink] = (240 + 1)
-  hash[:SYS32_mq_timedsend] = (240 + 2)
-  hash[:SYS32_mq_timedreceive] = (240 + 3)
-  hash[:SYS32_mq_notify] = (240 + 4)
-  hash[:SYS32_mq_getsetattr] = (240 + 5)
-  hash[:SYS32_kexec_load] = 283
-  hash[:SYS32_waitid] = 284
-  hash[:SYS32_add_key] = 286
-  hash[:SYS32_request_key] = 287
-  hash[:SYS32_keyctl] = 288
-  hash[:SYS32_ioprio_set] = 289
-  hash[:SYS32_ioprio_get] = 290
-  hash[:SYS32_inotify_init] = 291
-  hash[:SYS32_inotify_add_watch] = 292
-  hash[:SYS32_inotify_rm_watch] = 293
-  hash[:SYS32_migrate_pages] = 294
-  hash[:SYS32_openat] = 295
-  hash[:SYS32_mkdirat] = 296
-  hash[:SYS32_mknodat] = 297
-  hash[:SYS32_fchownat] = 298
-  hash[:SYS32_futimesat] = 299
-  hash[:SYS32_fstatat64] = 300
-  hash[:SYS32_unlinkat] = 301
-  hash[:SYS32_renameat] = 302
-  hash[:SYS32_linkat] = 303
-  hash[:SYS32_symlinkat] = 304
-  hash[:SYS32_readlinkat] = 305
-  hash[:SYS32_fchmodat] = 306
-  hash[:SYS32_faccessat] = 307
-  hash[:SYS32_pselect6] = 308
-  hash[:SYS32_ppoll] = 309
-  hash[:SYS32_unshare] = 310
-  hash[:SYS32_set_robust_list] = 311
-  hash[:SYS32_get_robust_list] = 312
-  hash[:SYS32_splice] = 313
-  hash[:SYS32_sync_file_range] = 314
-  hash[:SYS32_tee] = 315
-  hash[:SYS32_vmsplice] = 316
-  hash[:SYS32_move_pages] = 317
-  hash[:SYS32_getcpu] = 318
-  hash[:SYS32_epoll_pwait] = 319
-  hash[:SYS32_utimensat] = 320
-  hash[:SYS32_signalfd] = 321
-  hash[:SYS32_timerfd_create] = 322
-  hash[:SYS32_eventfd] = 323
-  hash[:SYS32_fallocate] = 324
-  hash[:SYS32_timerfd_settime] = 325
-  hash[:SYS32_timerfd_gettime] = 326
-  hash[:SYS32_signalfd4] = 327
-  hash[:SYS32_eventfd2] = 328
-  hash[:SYS32_epoll_create1] = 329
-  hash[:SYS32_dup3] = 330
-  hash[:SYS32_pipe2] = 331
-  hash[:SYS32_inotify_init1] = 332
-  hash[:SYS32_preadv] = 333
-  hash[:SYS32_pwritev] = 334
-  hash[:SYS32_rt_tgsigqueueinfo] = 335
-  hash[:SYS32_perf_event_open] = 336
-  hash[:SYS32_recvmmsg] = 337
-  hash[:SYS32_fanotify_init] = 338
-  hash[:SYS32_fanotify_mark] = 339
-  hash[:SYS32_prlimit64] = 340
-  hash[:SYS32_name_to_handle_at] = 341
-  hash[:SYS32_open_by_handle_at] = 342
-  hash[:SYS32_clock_adjtime] = 343
-  hash[:SYS32_syncfs] = 344
-  hash[:SYS32_sendmmsg] = 345
-  hash[:SYS32_setns] = 346
-  hash[:SYS32_process_vm_readv] = 347
-  hash[:SYS32_process_vm_writev] = 348
-  hash[:MAP_32BIT] = 0x40
-  hash[:INADDR_ANY] = 0
-  hash[:INADDR_BROADCAST] = 0xffffffff
-  hash[:INADDR_NONE] = 0xffffffff
-  hash[:INADDR_LOOPBACK] = 0x7f000001
-  hash[:EPERM] = 1
-  hash[:ENOENT] = 2
-  hash[:ESRCH] = 3
-  hash[:EINTR] = 4
-  hash[:EIO] = 5
-  hash[:ENXIO] = 6
-  hash[:E2BIG] = 7
-  hash[:ENOEXEC] = 8
-  hash[:EBADF] = 9
-  hash[:ECHILD] = 10
-  hash[:EAGAIN] = 11
-  hash[:ENOMEM] = 12
-  hash[:EACCES] = 13
-  hash[:EFAULT] = 14
-  hash[:ENOTBLK] = 15
-  hash[:EBUSY] = 16
-  hash[:EEXIST] = 17
-  hash[:EXDEV] = 18
-  hash[:ENODEV] = 19
-  hash[:ENOTDIR] = 20
-  hash[:EISDIR] = 21
-  hash[:EINVAL] = 22
-  hash[:ENFILE] = 23
-  hash[:EMFILE] = 24
-  hash[:ENOTTY] = 25
-  hash[:ETXTBSY] = 26
-  hash[:EFBIG] = 27
-  hash[:ENOSPC] = 28
-  hash[:ESPIPE] = 29
-  hash[:EROFS] = 30
-  hash[:EMLINK] = 31
-  hash[:EPIPE] = 32
-  hash[:EDOM] = 33
-  hash[:ERANGE] = 34
-  hash[:EDEADLK] = 35
-  hash[:ENAMETOOLONG] = 36
-  hash[:ENOLCK] = 37
-  hash[:ENOSYS] = 38
-  hash[:ENOTEMPTY] = 39
-  hash[:ELOOP] = 40
-  hash[:EWOULDBLOCK] = 11
-  hash[:ENOMSG] = 42
-  hash[:EIDRM] = 43
-  hash[:ECHRNG] = 44
-  hash[:EL2NSYNC] = 45
-  hash[:EL3HLT] = 46
-  hash[:EL3RST] = 47
-  hash[:ELNRNG] = 48
-  hash[:EUNATCH] = 49
-  hash[:ENOCSI] = 50
-  hash[:EL2HLT] = 51
-  hash[:EBADE] = 52
-  hash[:EBADR] = 53
-  hash[:EXFULL] = 54
-  hash[:ENOANO] = 55
-  hash[:EBADRQC] = 56
-  hash[:EBADSLT] = 57
-  hash[:EDEADLOCK] = 35
-  hash[:EBFONT] = 59
-  hash[:ENOSTR] = 60
-  hash[:ENODATA] = 61
-  hash[:ETIME] = 62
-  hash[:ENOSR] = 63
-  hash[:ENONET] = 64
-  hash[:ENOPKG] = 65
-  hash[:EREMOTE] = 66
-  hash[:ENOLINK] = 67
-  hash[:EADV] = 68
-  hash[:ESRMNT] = 69
-  hash[:ECOMM] = 70
-  hash[:EPROTO] = 71
-  hash[:EMULTIHOP] = 72
-  hash[:EDOTDOT] = 73
-  hash[:EBADMSG] = 74
-  hash[:EOVERFLOW] = 75
-  hash[:ENOTUNIQ] = 76
-  hash[:EBADFD] = 77
-  hash[:EREMCHG] = 78
-  hash[:ELIBACC] = 79
-  hash[:ELIBBAD] = 80
-  hash[:ELIBSCN] = 81
-  hash[:ELIBMAX] = 82
-  hash[:ELIBEXEC] = 83
-  hash[:EILSEQ] = 84
-  hash[:ERESTART] = 85
-  hash[:ESTRPIPE] = 86
-  hash[:EUSERS] = 87
-  hash[:ENOTSOCK] = 88
-  hash[:EDESTADDRREQ] = 89
-  hash[:EMSGSIZE] = 90
-  hash[:EPROTOTYPE] = 91
-  hash[:ENOPROTOOPT] = 92
-  hash[:EPROTONOSUPPORT] = 93
-  hash[:ESOCKTNOSUPPORT] = 94
-  hash[:EOPNOTSUPP] = 95
-  hash[:ENOTSUP] = 95
-  hash[:EPFNOSUPPORT] = 96
-  hash[:EAFNOSUPPORT] = 97
-  hash[:EADDRINUSE] = 98
-  hash[:EADDRNOTAVAIL] = 99
-  hash[:ENETDOWN] = 100
-  hash[:ENETUNREACH] = 101
-  hash[:ENETRESET] = 102
-  hash[:ECONNABORTED] = 103
-  hash[:ECONNRESET] = 104
-  hash[:ENOBUFS] = 105
-  hash[:EISCONN] = 106
-  hash[:ENOTCONN] = 107
-  hash[:ESHUTDOWN] = 108
-  hash[:ETOOMANYREFS] = 109
-  hash[:ETIMEDOUT] = 110
-  hash[:ECONNREFUSED] = 111
-  hash[:EHOSTDOWN] = 112
-  hash[:EHOSTUNREACH] = 113
-  hash[:EALREADY] = 114
-  hash[:EINPROGRESS] = 115
-  hash[:ESTALE] = 116
-  hash[:EUCLEAN] = 117
-  hash[:ENOTNAM] = 118
-  hash[:ENAVAIL] = 119
-  hash[:EISNAM] = 120
-  hash[:EREMOTEIO] = 121
-  hash[:EDQUOT] = 122
-  hash[:ENOMEDIUM] = 123
-  hash[:EMEDIUMTYPE] = 124
-  hash[:ECANCELED] = 125
-  hash[:ENOKEY] = 126
-  hash[:EKEYEXPIRED] = 127
-  hash[:EKEYREVOKED] = 128
-  hash[:EKEYREJECTED] = 129
-  hash[:__SYS_NERR] = ((129) + 1)
-  hash[:__LITTLE_ENDIAN] = 1234
-  hash[:__BIG_ENDIAN] = 4321
-  hash[:__BYTE_ORDER] = 1234
-  hash[:__FLOAT_WORD_ORDER] = 1234
-  hash[:LITTLE_ENDIAN] = 1234
-  hash[:BIG_ENDIAN] = 4321
-  hash[:BYTE_ORDER] = 1234
-  hash[:__WORDSIZE] = 64
-  hash[:__WORDSIZE_COMPAT32] = 1
-  hash[:__FSUID_H] = 1
-  hash[:NSIG] = 32
-  hash[:_NSIG] = 64
-  hash[:SIGHUP] = 1
-  hash[:SIGINT] = 2
-  hash[:SIGQUIT] = 3
-  hash[:SIGILL] = 4
-  hash[:SIGTRAP] = 5
-  hash[:SIGABRT] = 6
-  hash[:SIGIOT] = 6
-  hash[:SIGFPE] = 8
-  hash[:SIGKILL] = 9
-  hash[:SIGSEGV] = 11
-  hash[:SIGPIPE] = 13
-  hash[:SIGALRM] = 14
-  hash[:SIGTERM] = 15
-  hash[:SIGUNUSED] = 31
-  hash[:SIGBUS] = 7
-  hash[:SIGUSR1] = 10
-  hash[:SIGUSR2] = 12
-  hash[:SIGSTKFLT] = 16
-  hash[:SIGCHLD] = 17
-  hash[:SIGCONT] = 18
-  hash[:SIGSTOP] = 19
-  hash[:SIGTSTP] = 20
-  hash[:SIGTTIN] = 21
-  hash[:SIGTTOU] = 22
-  hash[:SIGURG] = 23
-  hash[:SIGXCPU] = 24
-  hash[:SIGXFSZ] = 25
-  hash[:SIGVTALRM] = 26
-  hash[:SIGPROF] = 27
-  hash[:SIGWINCH] = 28
-  hash[:SIGIO] = 29
-  hash[:SIGPWR] = 30
-  hash[:SIGSYS] = 31
-  hash[:SIGCLD] = 17
-  hash[:SIGPOLL] = 29
-  hash[:SIGLOST] = 30
-  hash[:SIGRTMIN] = 32
-  hash[:SIGRTMAX] = (64 - 1)
-  hash[:SA_NOCLDSTOP] = 0x00000001
-  hash[:SA_NOCLDWAIT] = 0x00000002
-  hash[:SA_SIGINFO] = 0x00000004
-  hash[:SA_RESTORER] = 0x04000000
-  hash[:SA_ONSTACK] = 0x08000000
-  hash[:SA_RESTART] = 0x10000000
-  hash[:SA_INTERRUPT] = 0x20000000
-  hash[:SA_NODEFER] = 0x40000000
-  hash[:SA_RESETHAND] = 0x80000000
-  hash[:SA_NOMASK] = 0x40000000
-  hash[:SA_ONESHOT] = 0x80000000
-  hash[:SS_ONSTACK] = 1
-  hash[:SS_DISABLE] = 2
-  hash[:MINSIGSTKSZ] = 2048
-  hash[:SIGSTKSZ] = 8192
-  hash[:SIG_BLOCK] = 0
-  hash[:SIG_UNBLOCK] = 1
-  hash[:SIG_SETMASK] = 2
-  hash[:SI_MAX_SIZE] = 128
-  hash[:SIGEV_SIGNAL] = 0
-  hash[:SIGEV_NONE] = 1
-  hash[:SIGEV_THREAD] = 2
-  hash[:SIGEV_THREAD_ID] = 4
-  hash[:SIGEV_MAX_SIZE] = 64
-  hash[:_SYS_TIME_H] = 1
-  hash[:ITIMER_REAL] = 0
-  hash[:ITIMER_VIRTUAL] = 1
-  hash[:ITIMER_PROF] = 2
-  hash[:FD_SETSIZE] = 1024
-  hash[:R_OK] = 4
-  hash[:W_OK] = 2
-  hash[:X_OK] = 1
-  hash[:F_OK] = 0
-  hash[:SEEK_SET] = 0
-  hash[:SEEK_CUR] = 1
-  hash[:SEEK_END] = 2
-  hash[:STDIN_FILENO] = 0
-  hash[:STDOUT_FILENO] = 1
-  hash[:STDERR_FILENO] = 2
-  hash[:_CS_PATH] = 1
-  hash[:_SC_CLK_TCK] = 1
-  hash[:_SC_ARG_MAX] = 2
-  hash[:_SC_NGROUPS_MAX] = 3
-  hash[:_SC_OPEN_MAX] = 4
-  hash[:_SC_PAGESIZE] = 5
-  hash[:_SC_NPROCESSORS_ONLN] = 6
-  hash[:_SC_NPROCESSORS_CONF] = 6
-  hash[:_SC_PHYS_PAGES] = 7
-  hash[:_PC_PATH_MAX] = 1
-  hash[:_PC_VDISABLE] = 2
-  hash[:L_cuserid] = 17
-  hash[:_POSIX_VERSION] = 199_506
-  hash[:F_ULOCK] = 0
-  hash[:F_LOCK] = 1
-  hash[:F_TLOCK] = 2
-  hash[:F_TEST] = 3
-  hash[:S_IFMT] = 00170000
-  hash[:S_IFSOCK] = 0140000
-  hash[:S_IFLNK] = 0120000
-  hash[:S_IFREG] = 0100000
-  hash[:S_IFBLK] = 0060000
-  hash[:S_IFDIR] = 0040000
-  hash[:S_IFCHR] = 0020000
-  hash[:S_IFIFO] = 0010000
-  hash[:S_ISUID] = 0004000
-  hash[:S_ISGID] = 0002000
-  hash[:S_ISVTX] = 0001000
-  hash[:S_IRWXU] = 00700
-  hash[:S_IRUSR] = 00400
-  hash[:S_IWUSR] = 00200
-  hash[:S_IXUSR] = 00100
-  hash[:S_IRWXG] = 00070
-  hash[:S_IRGRP] = 00040
-  hash[:S_IWGRP] = 00020
-  hash[:S_IXGRP] = 00010
-  hash[:S_IRWXO] = 00007
-  hash[:S_IROTH] = 00004
-  hash[:S_IWOTH] = 00002
-  hash[:S_IXOTH] = 00001
-  hash[:S_IREAD] = 00400
-  hash[:S_IWRITE] = 00200
-  hash[:S_IEXEC] = 00100
-  hash[:F_LINUX_SPECIFIC_BASE] = 1024
-  hash[:O_ACCMODE] = 0003
-  hash[:O_RDONLY] = 00
-  hash[:O_WRONLY] = 01
-  hash[:O_RDWR] = 02
-  hash[:O_CREAT] = 0100
-  hash[:O_EXCL] = 0200
-  hash[:O_NOCTTY] = 0400
-  hash[:O_TRUNC] = 01000
-  hash[:O_APPEND] = 02000
-  hash[:O_NONBLOCK] = 04000
-  hash[:O_NDELAY] = 04000
-  hash[:O_SYNC] = 010000
-  hash[:FASYNC] = 020000
-  hash[:O_DIRECT] = 040000
-  hash[:O_LARGEFILE] = 0100000
-  hash[:O_DIRECTORY] = 0200000
-  hash[:O_NOFOLLOW] = 0400000
-  hash[:O_NOATIME] = 01000000
-  hash[:F_DUPFD] = 0
-  hash[:F_GETFD] = 1
-  hash[:F_SETFD] = 2
-  hash[:F_GETFL] = 3
-  hash[:F_SETFL] = 4
-  hash[:F_GETLK] = 5
-  hash[:F_SETLK] = 6
-  hash[:F_SETLKW] = 7
-  hash[:F_SETOWN] = 8
-  hash[:F_GETOWN] = 9
-  hash[:F_SETSIG] = 10
-  hash[:F_GETSIG] = 11
-  hash[:F_GETLK64] = 12
-  hash[:F_SETLK64] = 13
-  hash[:F_SETLKW64] = 14
-  hash[:FD_CLOEXEC] = 1
-  hash[:F_RDLCK] = 0
-  hash[:F_WRLCK] = 1
-  hash[:F_UNLCK] = 2
-  hash[:F_EXLCK] = 4
-  hash[:F_SHLCK] = 8
-  hash[:F_INPROGRESS] = 16
-  hash[:LOCK_SH] = 1
-  hash[:LOCK_EX] = 2
-  hash[:LOCK_NB] = 4
-  hash[:LOCK_UN] = 8
-  hash[:LOCK_MAND] = 32
-  hash[:LOCK_READ] = 64
-  hash[:LOCK_WRITE] = 128
-  hash[:LOCK_RW] = 192
-  hash[:O_ASYNC] = 020000
-  hash[:MREMAP_MAYMOVE] = 1
-  hash[:MREMAP_FIXED] = 2
-  hash[:PROT_READ] = 0x1
-  hash[:PROT_WRITE] = 0x2
-  hash[:PROT_EXEC] = 0x4
-  hash[:PROT_NONE] = 0x0
-  hash[:MAP_SHARED] = 0x01
-  hash[:MAP_PRIVATE] = 0x02
-  hash[:MAP_FIXED] = 0x10
-  hash[:MAP_ANONYMOUS] = 0x20
-  hash[:MAP_GROWSDOWN] = 0x0100
-  hash[:MAP_DENYWRITE] = 0x0800
-  hash[:MAP_EXECUTABLE] = 0x1000
-  hash[:MAP_LOCKED] = 0x2000
-  hash[:MAP_NORESERVE] = 0x4000
-  hash[:MAP_POPULATE] = 0x8000
-  hash[:MS_ASYNC] = 1
-  hash[:MS_INVALIDATE] = 2
-  hash[:MS_SYNC] = 4
-  hash[:MCL_CURRENT] = 1
-  hash[:MCL_FUTURE] = 2
-  hash[:MADV_NORMAL] = 0x0
-  hash[:MADV_RANDOM] = 0x1
-  hash[:MADV_SEQUENTIAL] = 0x2
-  hash[:MADV_WILLNEED] = 0x3
-  hash[:MADV_DONTNEED] = 0x4
-  hash[:MAP_ANON] = 0x20
-  hash[:MAP_FILE] = 0
-  hash[:SOL_SOCKET] = 1
-  hash[:SO_DEBUG] = 1
-  hash[:SO_REUSEADDR] = 2
-  hash[:SO_TYPE] = 3
-  hash[:SO_ERROR] = 4
-  hash[:SO_DONTROUTE] = 5
-  hash[:SO_BROADCAST] = 6
-  hash[:SO_SNDBUF] = 7
-  hash[:SO_RCVBUF] = 8
-  hash[:SO_KEEPALIVE] = 9
-  hash[:SO_OOBINLINE] = 10
-  hash[:SO_NO_CHECK] = 11
-  hash[:SO_PRIORITY] = 12
-  hash[:SO_LINGER] = 13
-  hash[:SO_BSDCOMPAT] = 14
-  hash[:SO_PASSCRED] = 16
-  hash[:SO_PEERCRED] = 17
-  hash[:SO_RCVLOWAT] = 18
-  hash[:SO_SNDLOWAT] = 19
-  hash[:SO_RCVTIMEO] = 20
-  hash[:SO_SNDTIMEO] = 21
-  hash[:SO_ACCEPTCONN] = 30
-  hash[:SO_SNDBUFFORCE] = 32
-  hash[:SO_RCVBUFFORCE] = 33
-  hash[:SO_SECURITY_AUTHENTICATION] = 22
-  hash[:SO_SECURITY_ENCRYPTION_TRANSPORT] = 23
-  hash[:SO_SECURITY_ENCRYPTION_NETWORK] = 24
-  hash[:SO_BINDTODEVICE] = 25
-  hash[:SO_ATTACH_FILTER] = 26
-  hash[:SO_DETACH_FILTER] = 27
-  hash[:SO_PEERNAME] = 28
-  hash[:SO_TIMESTAMP] = 29
-  hash[:SCM_TIMESTAMP] = 29
-  hash[:SOCK_STREAM] = 1
-  hash[:SOCK_DGRAM] = 2
-  hash[:SOCK_RAW] = 3
-  hash[:SOCK_RDM] = 4
-  hash[:SOCK_SEQPACKET] = 5
-  hash[:SOCK_PACKET] = 10
-  hash[:UIO_FASTIOV] = 8
-  hash[:UIO_MAXIOV] = 1024
-  hash[:SCM_RIGHTS] = 0x01
-  hash[:SCM_CREDENTIALS] = 0x02
-  hash[:SCM_CONNECT] = 0x03
-  hash[:AF_UNSPEC] = 0
-  hash[:AF_UNIX] = 1
-  hash[:AF_LOCAL] = 1
-  hash[:AF_INET] = 2
-  hash[:AF_AX25] = 3
-  hash[:AF_IPX] = 4
-  hash[:AF_APPLETALK] = 5
-  hash[:AF_NETROM] = 6
-  hash[:AF_BRIDGE] = 7
-  hash[:AF_ATMPVC] = 8
-  hash[:AF_X25] = 9
-  hash[:AF_INET6] = 10
-  hash[:AF_ROSE] = 11
-  hash[:AF_DECnet] = 12
-  hash[:AF_NETBEUI] = 13
-  hash[:AF_SECURITY] = 14
-  hash[:AF_KEY] = 15
-  hash[:AF_NETLINK] = 16
-  hash[:AF_ROUTE] = 16
-  hash[:AF_PACKET] = 17
-  hash[:AF_ASH] = 18
-  hash[:AF_ECONET] = 19
-  hash[:AF_ATMSVC] = 20
-  hash[:AF_SNA] = 22
-  hash[:AF_IRDA] = 23
-  hash[:AF_PPPOX] = 24
-  hash[:AF_WANPIPE] = 25
-  hash[:AF_MAX] = 32
-  hash[:PF_UNSPEC] = 0
-  hash[:PF_UNIX] = 1
-  hash[:PF_LOCAL] = 1
-  hash[:PF_INET] = 2
-  hash[:PF_AX25] = 3
-  hash[:PF_IPX] = 4
-  hash[:PF_APPLETALK] = 5
-  hash[:PF_NETROM] = 6
-  hash[:PF_BRIDGE] = 7
-  hash[:PF_ATMPVC] = 8
-  hash[:PF_X25] = 9
-  hash[:PF_INET6] = 10
-  hash[:PF_ROSE] = 11
-  hash[:PF_DECnet] = 12
-  hash[:PF_NETBEUI] = 13
-  hash[:PF_SECURITY] = 14
-  hash[:PF_KEY] = 15
-  hash[:PF_NETLINK] = 16
-  hash[:PF_ROUTE] = 16
-  hash[:PF_PACKET] = 17
-  hash[:PF_ASH] = 18
-  hash[:PF_ECONET] = 19
-  hash[:PF_ATMSVC] = 20
-  hash[:PF_SNA] = 22
-  hash[:PF_IRDA] = 23
-  hash[:PF_PPPOX] = 24
-  hash[:PF_WANPIPE] = 25
-  hash[:PF_MAX] = 32
-  hash[:SOMAXCONN] = 128
-  hash[:MSG_OOB] = 1
-  hash[:MSG_PEEK] = 2
-  hash[:MSG_DONTROUTE] = 4
-  hash[:MSG_TRYHARD] = 4
-  hash[:MSG_CTRUNC] = 8
-  hash[:MSG_PROBE] = 0x10
-  hash[:MSG_TRUNC] = 0x20
-  hash[:MSG_DONTWAIT] = 0x40
-  hash[:MSG_EOR] = 0x80
-  hash[:MSG_WAITALL] = 0x100
-  hash[:MSG_FIN] = 0x200
-  hash[:MSG_EOF] = 0x200
-  hash[:MSG_SYN] = 0x400
-  hash[:MSG_CONFIRM] = 0x800
-  hash[:MSG_RST] = 0x1000
-  hash[:MSG_ERRQUEUE] = 0x2000
-  hash[:MSG_NOSIGNAL] = 0x4000
-  hash[:MSG_MORE] = 0x8000
-  hash[:SOL_IP] = 0
-  hash[:SOL_TCP] = 6
-  hash[:SOL_UDP] = 17
-  hash[:SOL_IPV6] = 41
-  hash[:SOL_ICMPV6] = 58
-  hash[:SOL_RAW] = 255
-  hash[:SOL_IPX] = 256
-  hash[:SOL_AX25] = 257
-  hash[:SOL_ATALK] = 258
-  hash[:SOL_NETROM] = 259
-  hash[:SOL_ROSE] = 260
-  hash[:SOL_DECNET] = 261
-  hash[:SOL_X25] = 262
-  hash[:SOL_PACKET] = 263
-  hash[:SOL_ATM] = 264
-  hash[:SOL_AAL] = 265
-  hash[:SOL_IRDA] = 266
-  hash[:IPX_TYPE] = 1
-  hash[:SHUT_RD] = 0
-  hash[:SHUT_WR] = 1
-  hash[:SHUT_RDWR] = 2
-  hash[:NI_NOFQDN] = 1
-  hash[:NI_NUMERICHOST] = 2
-  hash[:NI_NAMEREQD] = 4
-  hash[:NI_NUMERICSERV] = 8
-  hash[:NI_DGRAM] = 16
-  hash[:EAI_FAMILY] = -1
-  hash[:EAI_SOCKTYPE] = -2
-  hash[:EAI_BADFLAGS] = -3
-  hash[:EAI_NONAME] = -4
-  hash[:EAI_SERVICE] = -5
-  hash[:EAI_ADDRFAMILY] = -6
-  hash[:EAI_NODATA] = -7
-  hash[:EAI_MEMORY] = -8
-  hash[:EAI_FAIL] = -9
-  hash[:EAI_AGAIN] = -10
-  hash[:EAI_SYSTEM] = -11
-  hash[:AI_NUMERICHOST] = 1
-  hash[:AI_CANONNAME] = 2
-  hash[:AI_PASSIVE] = 4
-  hash[:SIOCADDRT] = 0x890B
-  hash[:SIOCDELRT] = 0x890C
-  hash[:SIOCRTMSG] = 0x890D
-  hash[:SIOCGIFNAME] = 0x8910
-  hash[:SIOCSIFLINK] = 0x8911
-  hash[:SIOCGIFCONF] = 0x8912
-  hash[:SIOCGIFFLAGS] = 0x8913
-  hash[:SIOCSIFFLAGS] = 0x8914
-  hash[:SIOCGIFADDR] = 0x8915
-  hash[:SIOCSIFADDR] = 0x8916
-  hash[:SIOCGIFDSTADDR] = 0x8917
-  hash[:SIOCSIFDSTADDR] = 0x8918
-  hash[:SIOCGIFBRDADDR] = 0x8919
-  hash[:SIOCSIFBRDADDR] = 0x891a
-  hash[:SIOCGIFNETMASK] = 0x891b
-  hash[:SIOCSIFNETMASK] = 0x891c
-  hash[:SIOCGIFMETRIC] = 0x891d
-  hash[:SIOCSIFMETRIC] = 0x891e
-  hash[:SIOCGIFMEM] = 0x891f
-  hash[:SIOCSIFMEM] = 0x8920
-  hash[:SIOCGIFMTU] = 0x8921
-  hash[:SIOCSIFMTU] = 0x8922
-  hash[:SIOCSIFNAME] = 0x8923
-  hash[:SIOCSIFHWADDR] = 0x8924
-  hash[:SIOCGIFENCAP] = 0x8925
-  hash[:SIOCSIFENCAP] = 0x8926
-  hash[:SIOCGIFHWADDR] = 0x8927
-  hash[:SIOCGIFSLAVE] = 0x8929
-  hash[:SIOCSIFSLAVE] = 0x8930
-  hash[:SIOCADDMULTI] = 0x8931
-  hash[:SIOCDELMULTI] = 0x8932
-  hash[:SIOCGIFINDEX] = 0x8933
-  hash[:SIOGIFINDEX] = 0x8933
-  hash[:SIOCSIFPFLAGS] = 0x8934
-  hash[:SIOCGIFPFLAGS] = 0x8935
-  hash[:SIOCDIFADDR] = 0x8936
-  hash[:SIOCSIFHWBROADCAST] = 0x8937
-  hash[:SIOCGIFCOUNT] = 0x8938
-  hash[:SIOCGIFBR] = 0x8940
-  hash[:SIOCSIFBR] = 0x8941
-  hash[:SIOCGIFTXQLEN] = 0x8942
-  hash[:SIOCSIFTXQLEN] = 0x8943
-  hash[:SIOCGIFDIVERT] = 0x8944
-  hash[:SIOCSIFDIVERT] = 0x8945
-  hash[:SIOCETHTOOL] = 0x8946
-  hash[:SIOCDARP] = 0x8953
-  hash[:SIOCGARP] = 0x8954
-  hash[:SIOCSARP] = 0x8955
-  hash[:SIOCDRARP] = 0x8960
-  hash[:SIOCGRARP] = 0x8961
-  hash[:SIOCSRARP] = 0x8962
-  hash[:SIOCGIFMAP] = 0x8970
-  hash[:SIOCSIFMAP] = 0x8971
-  hash[:SIOCADDDLCI] = 0x8980
-  hash[:SIOCDELDLCI] = 0x8981
-  hash[:SIOCDEVPRIVATE] = 0x89F0
-  hash[:PTRACE_TRACEME] = 0
-  hash[:PTRACE_PEEKTEXT] = 1
-  hash[:PTRACE_PEEKDATA] = 2
-  hash[:PTRACE_PEEKUSR] = 3
-  hash[:PTRACE_PEEKUSER] = 3
-  hash[:PTRACE_POKETEXT] = 4
-  hash[:PTRACE_POKEDATA] = 5
-  hash[:PTRACE_POKEUSR] = 6
-  hash[:PTRACE_POKEUSER] = 6
-  hash[:PTRACE_CONT] = 7
-  hash[:PTRACE_KILL] = 8
-  hash[:PTRACE_SINGLESTEP] = 9
-  hash[:PTRACE_ATTACH] = 0x10
-  hash[:PTRACE_DETACH] = 0x11
-  hash[:PTRACE_SYSCALL] = 24
-  hash[:PTRACE_GETEVENTMSG] = 0x4201
-  hash[:PTRACE_GETSIGINFO] = 0x4202
-  hash[:PTRACE_SETSIGINFO] = 0x4203
-  hash[:PTRACE_O_TRACESYSGOOD] = 0x00000001
-  hash[:PTRACE_O_TRACEFORK] = 0x00000002
-  hash[:PTRACE_O_TRACEVFORK] = 0x00000004
-  hash[:PTRACE_O_TRACECLONE] = 0x00000008
-  hash[:PTRACE_O_TRACEEXEC] = 0x00000010
-  hash[:PTRACE_O_TRACEVFORKDONE] = 0x00000020
-  hash[:PTRACE_O_TRACEEXIT] = 0x00000040
-  hash[:PTRACE_O_MASK] = 0x0000007f
-  hash[:PTRACE_EVENT_FORK] = 1
-  hash[:PTRACE_EVENT_VFORK] = 2
-  hash[:PTRACE_EVENT_CLONE] = 3
-  hash[:PTRACE_EVENT_EXEC] = 4
-  hash[:PTRACE_EVENT_VFORK_DONE] = 5
-  hash[:PTRACE_EVENT_EXIT] = 6
-  hash[:PT_TRACE_ME] = 0
-  hash[:PT_READ_I] = 1
-  hash[:PT_READ_D] = 2
-  hash[:PT_READ_U] = 3
-  hash[:PT_WRITE_I] = 4
-  hash[:PT_WRITE_D] = 5
-  hash[:PT_WRITE_U] = 6
-  hash[:PT_CONTINUE] = 7
-  hash[:PT_KILL] = 8
-  hash[:PT_STEP] = 9
-  hash[:PT_ATTACH] = 0x10
-  hash[:PT_DETACH] = 0x11
-  hash[:SYS_accept] = 43
-  hash[:SYS_accept4] = 288
-  hash[:SYS_access] = 21
-  hash[:SYS_acct] = 163
-  hash[:SYS_add_key] = 248
-  hash[:SYS_adjtimex] = 159
-  hash[:SYS_afs_syscall] = 183
-  hash[:SYS_alarm] = 37
-  hash[:SYS_arch_prctl] = 158
-  hash[:SYS_bind] = 49
-  hash[:SYS_brk] = 12
-  hash[:SYS_capget] = 125
-  hash[:SYS_capset] = 126
-  hash[:SYS_chdir] = 80
-  hash[:SYS_chmod] = 90
-  hash[:SYS_chown] = 92
-  hash[:SYS_chroot] = 161
-  hash[:SYS_clock_getres] = 229
-  hash[:SYS_clock_gettime] = 228
-  hash[:SYS_clock_nanosleep] = 230
-  hash[:SYS_clock_settime] = 227
-  hash[:SYS_clone] = 56
-  hash[:SYS_close] = 3
-  hash[:SYS_connect] = 42
-  hash[:SYS_creat] = 85
-  hash[:SYS_create_module] = 174
-  hash[:SYS_delete_module] = 176
-  hash[:SYS_dup] = 32
-  hash[:SYS_dup2] = 33
-  hash[:SYS_dup3] = 292
-  hash[:SYS_epoll_create] = 213
-  hash[:SYS_epoll_create1] = 291
-  hash[:SYS_epoll_ctl] = 233
-  hash[:SYS_epoll_ctl_old] = 214
-  hash[:SYS_epoll_pwait] = 281
-  hash[:SYS_epoll_wait] = 232
-  hash[:SYS_epoll_wait_old] = 215
-  hash[:SYS_eventfd] = 284
-  hash[:SYS_eventfd2] = 290
-  hash[:SYS_execve] = 59
-  hash[:SYS_exit] = 60
-  hash[:SYS_exit_group] = 231
-  hash[:SYS_faccessat] = 269
-  hash[:SYS_fadvise64] = 221
-  hash[:SYS_fallocate] = 285
-  hash[:SYS_fanotify_init] = 300
-  hash[:SYS_fanotify_mark] = 301
-  hash[:SYS_fchdir] = 81
-  hash[:SYS_fchmod] = 91
-  hash[:SYS_fchmodat] = 268
-  hash[:SYS_fchown] = 93
-  hash[:SYS_fchownat] = 260
-  hash[:SYS_fcntl] = 72
-  hash[:SYS_fdatasync] = 75
-  hash[:SYS_fgetxattr] = 193
-  hash[:SYS_flistxattr] = 196
-  hash[:SYS_flock] = 73
-  hash[:SYS_fork] = 57
-  hash[:SYS_fremovexattr] = 199
-  hash[:SYS_fsetxattr] = 190
-  hash[:SYS_fstat] = 5
-  hash[:SYS_fstatfs] = 138
-  hash[:SYS_fsync] = 74
-  hash[:SYS_ftruncate] = 77
-  hash[:SYS_futex] = 202
-  hash[:SYS_futimesat] = 261
-  hash[:SYS_getcwd] = 79
-  hash[:SYS_getdents] = 78
-  hash[:SYS_getdents64] = 217
-  hash[:SYS_getegid] = 108
-  hash[:SYS_geteuid] = 107
-  hash[:SYS_getgid] = 104
-  hash[:SYS_getgroups] = 115
-  hash[:SYS_getitimer] = 36
-  hash[:SYS_get_kernel_syms] = 177
-  hash[:SYS_get_mempolicy] = 239
-  hash[:SYS_getpeername] = 52
-  hash[:SYS_getpgid] = 121
-  hash[:SYS_getpgrp] = 111
-  hash[:SYS_getpid] = 39
-  hash[:SYS_getpmsg] = 181
-  hash[:SYS_getppid] = 110
-  hash[:SYS_getpriority] = 140
-  hash[:SYS_getresgid] = 120
-  hash[:SYS_getresuid] = 118
-  hash[:SYS_getrlimit] = 97
-  hash[:SYS_get_robust_list] = 274
-  hash[:SYS_getrusage] = 98
-  hash[:SYS_getsid] = 124
-  hash[:SYS_getsockname] = 51
-  hash[:SYS_getsockopt] = 55
-  hash[:SYS_get_thread_area] = 211
-  hash[:SYS_gettid] = 186
-  hash[:SYS_gettimeofday] = 96
-  hash[:SYS_getuid] = 102
-  hash[:SYS_getxattr] = 191
-  hash[:SYS_init_module] = 175
-  hash[:SYS_inotify_add_watch] = 254
-  hash[:SYS_inotify_init] = 253
-  hash[:SYS_inotify_init1] = 294
-  hash[:SYS_inotify_rm_watch] = 255
-  hash[:SYS_io_cancel] = 210
-  hash[:SYS_ioctl] = 16
-  hash[:SYS_io_destroy] = 207
-  hash[:SYS_io_getevents] = 208
-  hash[:SYS_ioperm] = 173
-  hash[:SYS_iopl] = 172
-  hash[:SYS_ioprio_get] = 252
-  hash[:SYS_ioprio_set] = 251
-  hash[:SYS_io_setup] = 206
-  hash[:SYS_io_submit] = 209
-  hash[:SYS_kexec_load] = 246
-  hash[:SYS_keyctl] = 250
-  hash[:SYS_kill] = 62
-  hash[:SYS_lchown] = 94
-  hash[:SYS_lgetxattr] = 192
-  hash[:SYS_link] = 86
-  hash[:SYS_linkat] = 265
-  hash[:SYS_listen] = 50
-  hash[:SYS_listxattr] = 194
-  hash[:SYS_llistxattr] = 195
-  hash[:SYS_lookup_dcookie] = 212
-  hash[:SYS_lremovexattr] = 198
-  hash[:SYS_lseek] = 8
-  hash[:SYS_lsetxattr] = 189
-  hash[:SYS_lstat] = 6
-  hash[:SYS_madvise] = 28
-  hash[:SYS_mbind] = 237
-  hash[:SYS_migrate_pages] = 256
-  hash[:SYS_mincore] = 27
-  hash[:SYS_mkdir] = 83
-  hash[:SYS_mkdirat] = 258
-  hash[:SYS_mknod] = 133
-  hash[:SYS_mknodat] = 259
-  hash[:SYS_mlock] = 149
-  hash[:SYS_mlockall] = 151
-  hash[:SYS_mmap] = 9
-  hash[:SYS_modify_ldt] = 154
-  hash[:SYS_mount] = 165
-  hash[:SYS_move_pages] = 279
-  hash[:SYS_mprotect] = 10
-  hash[:SYS_mq_getsetattr] = 245
-  hash[:SYS_mq_notify] = 244
-  hash[:SYS_mq_open] = 240
-  hash[:SYS_mq_timedreceive] = 243
-  hash[:SYS_mq_timedsend] = 242
-  hash[:SYS_mq_unlink] = 241
-  hash[:SYS_mremap] = 25
-  hash[:SYS_msgctl] = 71
-  hash[:SYS_msgget] = 68
-  hash[:SYS_msgrcv] = 70
-  hash[:SYS_msgsnd] = 69
-  hash[:SYS_msync] = 26
-  hash[:SYS_munlock] = 150
-  hash[:SYS_munlockall] = 152
-  hash[:SYS_munmap] = 11
-  hash[:SYS_nanosleep] = 35
-  hash[:SYS_newfstatat] = 262
-  hash[:SYS_nfsservctl] = 180
-  hash[:SYS_open] = 2
-  hash[:SYS_openat] = 257
-  hash[:SYS_pause] = 34
-  hash[:SYS_perf_event_open] = 298
-  hash[:SYS_personality] = 135
-  hash[:SYS_pipe] = 22
-  hash[:SYS_pipe2] = 293
-  hash[:SYS_pivot_root] = 155
-  hash[:SYS_poll] = 7
-  hash[:SYS_ppoll] = 271
-  hash[:SYS_prctl] = 157
-  hash[:SYS_pread] = 17
-  hash[:SYS_preadv] = 295
-  hash[:SYS_prlimit64] = 302
-  hash[:SYS_pselect6] = 270
-  hash[:SYS_ptrace] = 101
-  hash[:SYS_putpmsg] = 182
-  hash[:SYS_pwrite] = 18
-  hash[:SYS_pwritev] = 296
-  hash[:SYS_query_module] = 178
-  hash[:SYS_quotactl] = 179
-  hash[:SYS_read] = 0
-  hash[:SYS_readahead] = 187
-  hash[:SYS_readlink] = 89
-  hash[:SYS_readlinkat] = 267
-  hash[:SYS_readv] = 19
-  hash[:SYS_reboot] = 169
-  hash[:SYS_recvfrom] = 45
-  hash[:SYS_recvmmsg] = 299
-  hash[:SYS_recvmsg] = 47
-  hash[:SYS_remap_file_pages] = 216
-  hash[:SYS_removexattr] = 197
-  hash[:SYS_rename] = 82
-  hash[:SYS_renameat] = 264
-  hash[:SYS_request_key] = 249
-  hash[:SYS_restart_syscall] = 219
-  hash[:SYS_rmdir] = 84
-  hash[:SYS_rt_sigaction] = 13
-  hash[:SYS_rt_sigpending] = 127
-  hash[:SYS_rt_sigprocmask] = 14
-  hash[:SYS_rt_sigqueueinfo] = 129
-  hash[:SYS_rt_sigreturn] = 15
-  hash[:SYS_rt_sigsuspend] = 130
-  hash[:SYS_rt_sigtimedwait] = 128
-  hash[:SYS_rt_tgsigqueueinfo] = 297
-  hash[:SYS_sched_getaffinity] = 204
-  hash[:SYS_sched_getparam] = 143
-  hash[:SYS_sched_get_priority_max] = 146
-  hash[:SYS_sched_get_priority_min] = 147
-  hash[:SYS_sched_getscheduler] = 145
-  hash[:SYS_sched_rr_get_interval] = 148
-  hash[:SYS_sched_setaffinity] = 203
-  hash[:SYS_sched_setparam] = 142
-  hash[:SYS_sched_setscheduler] = 144
-  hash[:SYS_sched_yield] = 24
-  hash[:SYS_security] = 185
-  hash[:SYS_select] = 23
-  hash[:SYS_semctl] = 66
-  hash[:SYS_semget] = 64
-  hash[:SYS_semop] = 65
-  hash[:SYS_semtimedop] = 220
-  hash[:SYS_sendfile] = 40
-  hash[:SYS_sendmsg] = 46
-  hash[:SYS_sendto] = 44
-  hash[:SYS_setdomainname] = 171
-  hash[:SYS_setfsgid] = 123
-  hash[:SYS_setfsuid] = 122
-  hash[:SYS_setgid] = 106
-  hash[:SYS_setgroups] = 116
-  hash[:SYS_sethostname] = 170
-  hash[:SYS_setitimer] = 38
-  hash[:SYS_set_mempolicy] = 238
-  hash[:SYS_setpgid] = 109
-  hash[:SYS_setpriority] = 141
-  hash[:SYS_setregid] = 114
-  hash[:SYS_setresgid] = 119
-  hash[:SYS_setresuid] = 117
-  hash[:SYS_setreuid] = 113
-  hash[:SYS_setrlimit] = 160
-  hash[:SYS_set_robust_list] = 273
-  hash[:SYS_setsid] = 112
-  hash[:SYS_setsockopt] = 54
-  hash[:SYS_set_thread_area] = 205
-  hash[:SYS_set_tid_address] = 218
-  hash[:SYS_settimeofday] = 164
-  hash[:SYS_setuid] = 105
-  hash[:SYS_setxattr] = 188
-  hash[:SYS_shmat] = 30
-  hash[:SYS_shmctl] = 31
-  hash[:SYS_shmdt] = 67
-  hash[:SYS_shmget] = 29
-  hash[:SYS_shutdown] = 48
-  hash[:SYS_sigaltstack] = 131
-  hash[:SYS_signalfd] = 282
-  hash[:SYS_signalfd4] = 289
-  hash[:SYS_socket] = 41
-  hash[:SYS_socketpair] = 53
-  hash[:SYS_splice] = 275
-  hash[:SYS_stat] = 4
-  hash[:SYS_statfs] = 137
-  hash[:SYS_swapoff] = 168
-  hash[:SYS_swapon] = 167
-  hash[:SYS_symlink] = 88
-  hash[:SYS_symlinkat] = 266
-  hash[:SYS_sync] = 162
-  hash[:SYS_sync_file_range] = 277
-  hash[:SYS__sysctl] = 156
-  hash[:SYS_sysfs] = 139
-  hash[:SYS_sysinfo] = 99
-  hash[:SYS_syslog] = 103
-  hash[:SYS_tee] = 276
-  hash[:SYS_tgkill] = 234
-  hash[:SYS_time] = 201
-  hash[:SYS_timer_create] = 222
-  hash[:SYS_timer_delete] = 226
-  hash[:SYS_timerfd] = 283
-  hash[:SYS_timerfd_gettime] = 287
-  hash[:SYS_timerfd_settime] = 286
-  hash[:SYS_timer_getoverrun] = 225
-  hash[:SYS_timer_gettime] = 224
-  hash[:SYS_timer_settime] = 223
-  hash[:SYS_times] = 100
-  hash[:SYS_tkill] = 200
-  hash[:SYS_truncate] = 76
-  hash[:SYS_tuxcall] = 184
-  hash[:SYS_umask] = 95
-  hash[:SYS_umount2] = 166
-  hash[:SYS_uname] = 63
-  hash[:SYS_unlink] = 87
-  hash[:SYS_unlinkat] = 263
-  hash[:SYS_unshare] = 272
-  hash[:SYS_uselib] = 134
-  hash[:SYS_ustat] = 136
-  hash[:SYS_utime] = 132
-  hash[:SYS_utimensat] = 280
-  hash[:SYS_utimes] = 235
-  hash[:SYS_vfork] = 58
-  hash[:SYS_vhangup] = 153
-  hash[:SYS_vmsplice] = 278
-  hash[:SYS_vserver] = 236
-  hash[:SYS_wait4] = 61
-  hash[:SYS_waitid] = 247
-  hash[:SYS_write] = 1
-  hash[:SYS_writev] = 20
-end
+const :__NR_read, 0
+const :__NR_write, 1
+const :__NR_open, 2
+const :__NR_close, 3
+const :__NR_stat, 4
+const :__NR_fstat, 5
+const :__NR_lstat, 6
+const :__NR_poll, 7
+const :__NR_lseek, 8
+const :__NR_mmap, 9
+const :__NR_mprotect, 10
+const :__NR_munmap, 11
+const :__NR_brk, 12
+const :__NR_rt_sigaction, 13
+const :__NR_rt_sigprocmask, 14
+const :__NR_rt_sigreturn, 15
+const :__NR_ioctl, 16
+const :__NR_pread, 17
+const :__NR_pwrite, 18
+const :__NR_readv, 19
+const :__NR_writev, 20
+const :__NR_access, 21
+const :__NR_pipe, 22
+const :__NR_select, 23
+const :__NR_sched_yield, 24
+const :__NR_mremap, 25
+const :__NR_msync, 26
+const :__NR_mincore, 27
+const :__NR_madvise, 28
+const :__NR_shmget, 29
+const :__NR_shmat, 30
+const :__NR_shmctl, 31
+const :__NR_dup, 32
+const :__NR_dup2, 33
+const :__NR_pause, 34
+const :__NR_nanosleep, 35
+const :__NR_getitimer, 36
+const :__NR_alarm, 37
+const :__NR_setitimer, 38
+const :__NR_getpid, 39
+const :__NR_sendfile, 40
+const :__NR_socket, 41
+const :__NR_connect, 42
+const :__NR_accept, 43
+const :__NR_sendto, 44
+const :__NR_recvfrom, 45
+const :__NR_sendmsg, 46
+const :__NR_recvmsg, 47
+const :__NR_shutdown, 48
+const :__NR_bind, 49
+const :__NR_listen, 50
+const :__NR_getsockname, 51
+const :__NR_getpeername, 52
+const :__NR_socketpair, 53
+const :__NR_setsockopt, 54
+const :__NR_getsockopt, 55
+const :__NR_clone, 56
+const :__NR_fork, 57
+const :__NR_vfork, 58
+const :__NR_execve, 59
+const :__NR_exit, 60
+const :__NR_wait4, 61
+const :__NR_kill, 62
+const :__NR_uname, 63
+const :__NR_semget, 64
+const :__NR_semop, 65
+const :__NR_semctl, 66
+const :__NR_shmdt, 67
+const :__NR_msgget, 68
+const :__NR_msgsnd, 69
+const :__NR_msgrcv, 70
+const :__NR_msgctl, 71
+const :__NR_fcntl, 72
+const :__NR_flock, 73
+const :__NR_fsync, 74
+const :__NR_fdatasync, 75
+const :__NR_truncate, 76
+const :__NR_ftruncate, 77
+const :__NR_getdents, 78
+const :__NR_getcwd, 79
+const :__NR_chdir, 80
+const :__NR_fchdir, 81
+const :__NR_rename, 82
+const :__NR_mkdir, 83
+const :__NR_rmdir, 84
+const :__NR_creat, 85
+const :__NR_link, 86
+const :__NR_unlink, 87
+const :__NR_symlink, 88
+const :__NR_readlink, 89
+const :__NR_chmod, 90
+const :__NR_fchmod, 91
+const :__NR_chown, 92
+const :__NR_fchown, 93
+const :__NR_lchown, 94
+const :__NR_umask, 95
+const :__NR_gettimeofday, 96
+const :__NR_getrlimit, 97
+const :__NR_getrusage, 98
+const :__NR_sysinfo, 99
+const :__NR_times, 100
+const :__NR_ptrace, 101
+const :__NR_getuid, 102
+const :__NR_syslog, 103
+const :__NR_getgid, 104
+const :__NR_setuid, 105
+const :__NR_setgid, 106
+const :__NR_geteuid, 107
+const :__NR_getegid, 108
+const :__NR_setpgid, 109
+const :__NR_getppid, 110
+const :__NR_getpgrp, 111
+const :__NR_setsid, 112
+const :__NR_setreuid, 113
+const :__NR_setregid, 114
+const :__NR_getgroups, 115
+const :__NR_setgroups, 116
+const :__NR_setresuid, 117
+const :__NR_getresuid, 118
+const :__NR_setresgid, 119
+const :__NR_getresgid, 120
+const :__NR_getpgid, 121
+const :__NR_setfsuid, 122
+const :__NR_setfsgid, 123
+const :__NR_getsid, 124
+const :__NR_capget, 125
+const :__NR_capset, 126
+const :__NR_rt_sigpending, 127
+const :__NR_rt_sigtimedwait, 128
+const :__NR_rt_sigqueueinfo, 129
+const :__NR_rt_sigsuspend, 130
+const :__NR_sigaltstack, 131
+const :__NR_utime, 132
+const :__NR_mknod, 133
+const :__NR_uselib, 134
+const :__NR_personality, 135
+const :__NR_ustat, 136
+const :__NR_statfs, 137
+const :__NR_fstatfs, 138
+const :__NR_sysfs, 139
+const :__NR_getpriority, 140
+const :__NR_setpriority, 141
+const :__NR_sched_setparam, 142
+const :__NR_sched_getparam, 143
+const :__NR_sched_setscheduler, 144
+const :__NR_sched_getscheduler, 145
+const :__NR_sched_get_priority_max, 146
+const :__NR_sched_get_priority_min, 147
+const :__NR_sched_rr_get_interval, 148
+const :__NR_mlock, 149
+const :__NR_munlock, 150
+const :__NR_mlockall, 151
+const :__NR_munlockall, 152
+const :__NR_vhangup, 153
+const :__NR_modify_ldt, 154
+const :__NR_pivot_root, 155
+const :__NR__sysctl, 156
+const :__NR_prctl, 157
+const :__NR_arch_prctl, 158
+const :__NR_adjtimex, 159
+const :__NR_setrlimit, 160
+const :__NR_chroot, 161
+const :__NR_sync, 162
+const :__NR_acct, 163
+const :__NR_settimeofday, 164
+const :__NR_mount, 165
+const :__NR_umount2, 166
+const :__NR_swapon, 167
+const :__NR_swapoff, 168
+const :__NR_reboot, 169
+const :__NR_sethostname, 170
+const :__NR_setdomainname, 171
+const :__NR_iopl, 172
+const :__NR_ioperm, 173
+const :__NR_create_module, 174
+const :__NR_init_module, 175
+const :__NR_delete_module, 176
+const :__NR_get_kernel_syms, 177
+const :__NR_query_module, 178
+const :__NR_quotactl, 179
+const :__NR_nfsservctl, 180
+const :__NR_getpmsg, 181
+const :__NR_putpmsg, 182
+const :__NR_afs_syscall, 183
+const :__NR_tuxcall, 184
+const :__NR_security, 185
+const :__NR_gettid, 186
+const :__NR_readahead, 187
+const :__NR_setxattr, 188
+const :__NR_lsetxattr, 189
+const :__NR_fsetxattr, 190
+const :__NR_getxattr, 191
+const :__NR_lgetxattr, 192
+const :__NR_fgetxattr, 193
+const :__NR_listxattr, 194
+const :__NR_llistxattr, 195
+const :__NR_flistxattr, 196
+const :__NR_removexattr, 197
+const :__NR_lremovexattr, 198
+const :__NR_fremovexattr, 199
+const :__NR_tkill, 200
+const :__NR_time, 201
+const :__NR_futex, 202
+const :__NR_sched_setaffinity, 203
+const :__NR_sched_getaffinity, 204
+const :__NR_set_thread_area, 205
+const :__NR_io_setup, 206
+const :__NR_io_destroy, 207
+const :__NR_io_getevents, 208
+const :__NR_io_submit, 209
+const :__NR_io_cancel, 210
+const :__NR_get_thread_area, 211
+const :__NR_lookup_dcookie, 212
+const :__NR_epoll_create, 213
+const :__NR_epoll_ctl_old, 214
+const :__NR_epoll_wait_old, 215
+const :__NR_remap_file_pages, 216
+const :__NR_getdents64, 217
+const :__NR_set_tid_address, 218
+const :__NR_restart_syscall, 219
+const :__NR_semtimedop, 220
+const :__NR_fadvise64, 221
+const :__NR_timer_create, 222
+const :__NR_timer_settime, 223
+const :__NR_timer_gettime, 224
+const :__NR_timer_getoverrun, 225
+const :__NR_timer_delete, 226
+const :__NR_clock_settime, 227
+const :__NR_clock_gettime, 228
+const :__NR_clock_getres, 229
+const :__NR_clock_nanosleep, 230
+const :__NR_exit_group, 231
+const :__NR_epoll_wait, 232
+const :__NR_epoll_ctl, 233
+const :__NR_tgkill, 234
+const :__NR_utimes, 235
+const :__NR_vserver, 236
+const :__NR_vserver, 236
+const :__NR_mbind, 237
+const :__NR_set_mempolicy, 238
+const :__NR_get_mempolicy, 239
+const :__NR_mq_open, 240
+const :__NR_mq_unlink, 241
+const :__NR_mq_timedsend, 242
+const :__NR_mq_timedreceive, 243
+const :__NR_mq_notify, 244
+const :__NR_mq_getsetattr, 245
+const :__NR_kexec_load, 246
+const :__NR_waitid, 247
+const :__NR_add_key, 248
+const :__NR_request_key, 249
+const :__NR_keyctl, 250
+const :__NR_ioprio_set, 251
+const :__NR_ioprio_get, 252
+const :__NR_inotify_init, 253
+const :__NR_inotify_add_watch, 254
+const :__NR_inotify_rm_watch, 255
+const :__NR_migrate_pages, 256
+const :__NR_openat, 257
+const :__NR_mkdirat, 258
+const :__NR_mknodat, 259
+const :__NR_fchownat, 260
+const :__NR_futimesat, 261
+const :__NR_newfstatat, 262
+const :__NR_unlinkat, 263
+const :__NR_renameat, 264
+const :__NR_linkat, 265
+const :__NR_symlinkat, 266
+const :__NR_readlinkat, 267
+const :__NR_fchmodat, 268
+const :__NR_faccessat, 269
+const :__NR_pselect6, 270
+const :__NR_ppoll, 271
+const :__NR_unshare, 272
+const :__NR_set_robust_list, 273
+const :__NR_get_robust_list, 274
+const :__NR_splice, 275
+const :__NR_tee, 276
+const :__NR_sync_file_range, 277
+const :__NR_vmsplice, 278
+const :__NR_move_pages, 279
+const :__NR_utimensat, 280
+const :__NR_epoll_pwait, 281
+const :__NR_signalfd, 282
+const :__NR_timerfd, 283
+const :__NR_eventfd, 284
+const :__NR_fallocate, 285
+const :__NR_timerfd_settime, 286
+const :__NR_timerfd_gettime, 287
+const :__NR_accept4, 288
+const :__NR_signalfd4, 289
+const :__NR_eventfd2, 290
+const :__NR_epoll_create1, 291
+const :__NR_dup3, 292
+const :__NR_pipe2, 293
+const :__NR_inotify_init1, 294
+const :__NR_preadv, 295
+const :__NR_pwritev, 296
+const :__NR_rt_tgsigqueueinfo, 297
+const :__NR_perf_event_open, 298
+const :__NR_recvmmsg, 299
+const :__NR_fanotify_init, 300
+const :__NR_fanotify_mark, 301
+const :__NR_prlimit64, 302
+const :SYS32_restart_syscall, 0
+const :SYS32_exit, 1
+const :SYS32_fork, 2
+const :SYS32_read, 3
+const :SYS32_write, 4
+const :SYS32_open, 5
+const :SYS32_close, 6
+const :SYS32_waitpid, 7
+const :SYS32_creat, 8
+const :SYS32_link, 9
+const :SYS32_unlink, 10
+const :SYS32_execve, 11
+const :SYS32_chdir, 12
+const :SYS32_time, 13
+const :SYS32_mknod, 14
+const :SYS32_chmod, 15
+const :SYS32_lchown, 16
+const :SYS32_break, 17
+const :SYS32_oldstat, 18
+const :SYS32_lseek, 19
+const :SYS32_getpid, 20
+const :SYS32_mount, 21
+const :SYS32_umount, 22
+const :SYS32_setuid, 23
+const :SYS32_getuid, 24
+const :SYS32_stime, 25
+const :SYS32_ptrace, 26
+const :SYS32_alarm, 27
+const :SYS32_oldfstat, 28
+const :SYS32_pause, 29
+const :SYS32_utime, 30
+const :SYS32_stty, 31
+const :SYS32_gtty, 32
+const :SYS32_access, 33
+const :SYS32_nice, 34
+const :SYS32_ftime, 35
+const :SYS32_sync, 36
+const :SYS32_kill, 37
+const :SYS32_rename, 38
+const :SYS32_mkdir, 39
+const :SYS32_rmdir, 40
+const :SYS32_dup, 41
+const :SYS32_pipe, 42
+const :SYS32_times, 43
+const :SYS32_prof, 44
+const :SYS32_brk, 45
+const :SYS32_setgid, 46
+const :SYS32_getgid, 47
+const :SYS32_signal, 48
+const :SYS32_geteuid, 49
+const :SYS32_getegid, 50
+const :SYS32_acct, 51
+const :SYS32_umount2, 52
+const :SYS32_lock, 53
+const :SYS32_ioctl, 54
+const :SYS32_fcntl, 55
+const :SYS32_mpx, 56
+const :SYS32_setpgid, 57
+const :SYS32_ulimit, 58
+const :SYS32_oldolduname, 59
+const :SYS32_umask, 60
+const :SYS32_chroot, 61
+const :SYS32_ustat, 62
+const :SYS32_dup2, 63
+const :SYS32_getppid, 64
+const :SYS32_getpgrp, 65
+const :SYS32_setsid, 66
+const :SYS32_sigaction, 67
+const :SYS32_sgetmask, 68
+const :SYS32_ssetmask, 69
+const :SYS32_setreuid, 70
+const :SYS32_setregid, 71
+const :SYS32_sigsuspend, 72
+const :SYS32_sigpending, 73
+const :SYS32_sethostname, 74
+const :SYS32_setrlimit, 75
+const :SYS32_getrlimit, 76
+const :SYS32_getrusage, 77
+const :SYS32_gettimeofday, 78
+const :SYS32_settimeofday, 79
+const :SYS32_getgroups, 80
+const :SYS32_setgroups, 81
+const :SYS32_select, 82
+const :SYS32_symlink, 83
+const :SYS32_oldlstat, 84
+const :SYS32_readlink, 85
+const :SYS32_uselib, 86
+const :SYS32_swapon, 87
+const :SYS32_reboot, 88
+const :SYS32_readdir, 89
+const :SYS32_mmap, 90
+const :SYS32_munmap, 91
+const :SYS32_truncate, 92
+const :SYS32_ftruncate, 93
+const :SYS32_fchmod, 94
+const :SYS32_fchown, 95
+const :SYS32_getpriority, 96
+const :SYS32_setpriority, 97
+const :SYS32_profil, 98
+const :SYS32_statfs, 99
+const :SYS32_fstatfs, 100
+const :SYS32_ioperm, 101
+const :SYS32_socketcall, 102
+const :SYS32_syslog, 103
+const :SYS32_setitimer, 104
+const :SYS32_getitimer, 105
+const :SYS32_stat, 106
+const :SYS32_lstat, 107
+const :SYS32_fstat, 108
+const :SYS32_olduname, 109
+const :SYS32_iopl, 110
+const :SYS32_vhangup, 111
+const :SYS32_idle, 112
+const :SYS32_vm86old, 113
+const :SYS32_wait4, 114
+const :SYS32_swapoff, 115
+const :SYS32_sysinfo, 116
+const :SYS32_ipc, 117
+const :SYS32_fsync, 118
+const :SYS32_sigreturn, 119
+const :SYS32_clone, 120
+const :SYS32_setdomainname, 121
+const :SYS32_uname, 122
+const :SYS32_modify_ldt, 123
+const :SYS32_adjtimex, 124
+const :SYS32_mprotect, 125
+const :SYS32_sigprocmask, 126
+const :SYS32_create_module, 127
+const :SYS32_init_module, 128
+const :SYS32_delete_module, 129
+const :SYS32_get_kernel_syms, 130
+const :SYS32_quotactl, 131
+const :SYS32_getpgid, 132
+const :SYS32_fchdir, 133
+const :SYS32_bdflush, 134
+const :SYS32_sysfs, 135
+const :SYS32_personality, 136
+const :SYS32_afs_syscall, 137
+const :SYS32_setfsuid, 138
+const :SYS32_setfsgid, 139
+const :SYS32__llseek, 140
+const :SYS32_getdents, 141
+const :SYS32__newselect, 142
+const :SYS32_flock, 143
+const :SYS32_msync, 144
+const :SYS32_readv, 145
+const :SYS32_writev, 146
+const :SYS32_getsid, 147
+const :SYS32_fdatasync, 148
+const :SYS32__sysctl, 149
+const :SYS32_mlock, 150
+const :SYS32_munlock, 151
+const :SYS32_mlockall, 152
+const :SYS32_munlockall, 153
+const :SYS32_sched_setparam, 154
+const :SYS32_sched_getparam, 155
+const :SYS32_sched_setscheduler, 156
+const :SYS32_sched_getscheduler, 157
+const :SYS32_sched_yield, 158
+const :SYS32_sched_get_priority_max, 159
+const :SYS32_sched_get_priority_min, 160
+const :SYS32_sched_rr_get_interval, 161
+const :SYS32_nanosleep, 162
+const :SYS32_mremap, 163
+const :SYS32_setresuid, 164
+const :SYS32_getresuid, 165
+const :SYS32_vm86, 166
+const :SYS32_query_module, 167
+const :SYS32_poll, 168
+const :SYS32_nfsservctl, 169
+const :SYS32_setresgid, 170
+const :SYS32_getresgid, 171
+const :SYS32_prctl, 172
+const :SYS32_rt_sigreturn, 173
+const :SYS32_rt_sigaction, 174
+const :SYS32_rt_sigprocmask, 175
+const :SYS32_rt_sigpending, 176
+const :SYS32_rt_sigtimedwait, 177
+const :SYS32_rt_sigqueueinfo, 178
+const :SYS32_rt_sigsuspend, 179
+const :SYS32_pread64, 180
+const :SYS32_pwrite64, 181
+const :SYS32_chown, 182
+const :SYS32_getcwd, 183
+const :SYS32_capget, 184
+const :SYS32_capset, 185
+const :SYS32_sigaltstack, 186
+const :SYS32_sendfile, 187
+const :SYS32_getpmsg, 188
+const :SYS32_putpmsg, 189
+const :SYS32_vfork, 190
+const :SYS32_ugetrlimit, 191
+const :SYS32_mmap2, 192
+const :SYS32_truncate64, 193
+const :SYS32_ftruncate64, 194
+const :SYS32_stat64, 195
+const :SYS32_lstat64, 196
+const :SYS32_fstat64, 197
+const :SYS32_lchown32, 198
+const :SYS32_getuid32, 199
+const :SYS32_getgid32, 200
+const :SYS32_geteuid32, 201
+const :SYS32_getegid32, 202
+const :SYS32_setreuid32, 203
+const :SYS32_setregid32, 204
+const :SYS32_getgroups32, 205
+const :SYS32_setgroups32, 206
+const :SYS32_fchown32, 207
+const :SYS32_setresuid32, 208
+const :SYS32_getresuid32, 209
+const :SYS32_setresgid32, 210
+const :SYS32_getresgid32, 211
+const :SYS32_chown32, 212
+const :SYS32_setuid32, 213
+const :SYS32_setgid32, 214
+const :SYS32_setfsuid32, 215
+const :SYS32_setfsgid32, 216
+const :SYS32_pivot_root, 217
+const :SYS32_mincore, 218
+const :SYS32_madvise, 219
+const :SYS32_madvise1, 219
+const :SYS32_getdents64, 220
+const :SYS32_fcntl64, 221
+const :SYS32_gettid, 224
+const :SYS32_readahead, 225
+const :SYS32_setxattr, 226
+const :SYS32_lsetxattr, 227
+const :SYS32_fsetxattr, 228
+const :SYS32_getxattr, 229
+const :SYS32_lgetxattr, 230
+const :SYS32_fgetxattr, 231
+const :SYS32_listxattr, 232
+const :SYS32_llistxattr, 233
+const :SYS32_flistxattr, 234
+const :SYS32_removexattr, 235
+const :SYS32_lremovexattr, 236
+const :SYS32_fremovexattr, 237
+const :SYS32_tkill, 238
+const :SYS32_sendfile64, 239
+const :SYS32_futex, 240
+const :SYS32_sched_setaffinity, 241
+const :SYS32_sched_getaffinity, 242
+const :SYS32_set_thread_area, 243
+const :SYS32_get_thread_area, 244
+const :SYS32_io_setup, 245
+const :SYS32_io_destroy, 246
+const :SYS32_io_getevents, 247
+const :SYS32_io_submit, 248
+const :SYS32_io_cancel, 249
+const :SYS32_fadvise64, 250
+const :SYS32_exit_group, 252
+const :SYS32_lookup_dcookie, 253
+const :SYS32_epoll_create, 254
+const :SYS32_epoll_ctl, 255
+const :SYS32_epoll_wait, 256
+const :SYS32_remap_file_pages, 257
+const :SYS32_set_tid_address, 258
+const :SYS32_timer_create, 259
+const :SYS32_timer_settime, (222 + 1)
+const :SYS32_timer_gettime, (222 + 2)
+const :SYS32_timer_getoverrun, (222 + 3)
+const :SYS32_timer_delete, (222 + 4)
+const :SYS32_clock_settime, (222 + 5)
+const :SYS32_clock_gettime, (222 + 6)
+const :SYS32_clock_getres, (222 + 7)
+const :SYS32_clock_nanosleep, (222 + 8)
+const :SYS32_statfs64, 268
+const :SYS32_fstatfs64, 269
+const :SYS32_tgkill, 270
+const :SYS32_utimes, 271
+const :SYS32_fadvise64_64, 272
+const :SYS32_vserver, 273
+const :SYS32_mbind, 274
+const :SYS32_get_mempolicy, 275
+const :SYS32_set_mempolicy, 276
+const :SYS32_mq_open, 277
+const :SYS32_mq_unlink, (240 + 1)
+const :SYS32_mq_timedsend, (240 + 2)
+const :SYS32_mq_timedreceive, (240 + 3)
+const :SYS32_mq_notify, (240 + 4)
+const :SYS32_mq_getsetattr, (240 + 5)
+const :SYS32_kexec_load, 283
+const :SYS32_waitid, 284
+const :SYS32_add_key, 286
+const :SYS32_request_key, 287
+const :SYS32_keyctl, 288
+const :SYS32_ioprio_set, 289
+const :SYS32_ioprio_get, 290
+const :SYS32_inotify_init, 291
+const :SYS32_inotify_add_watch, 292
+const :SYS32_inotify_rm_watch, 293
+const :SYS32_migrate_pages, 294
+const :SYS32_openat, 295
+const :SYS32_mkdirat, 296
+const :SYS32_mknodat, 297
+const :SYS32_fchownat, 298
+const :SYS32_futimesat, 299
+const :SYS32_fstatat64, 300
+const :SYS32_unlinkat, 301
+const :SYS32_renameat, 302
+const :SYS32_linkat, 303
+const :SYS32_symlinkat, 304
+const :SYS32_readlinkat, 305
+const :SYS32_fchmodat, 306
+const :SYS32_faccessat, 307
+const :SYS32_pselect6, 308
+const :SYS32_ppoll, 309
+const :SYS32_unshare, 310
+const :SYS32_set_robust_list, 311
+const :SYS32_get_robust_list, 312
+const :SYS32_splice, 313
+const :SYS32_sync_file_range, 314
+const :SYS32_tee, 315
+const :SYS32_vmsplice, 316
+const :SYS32_move_pages, 317
+const :SYS32_getcpu, 318
+const :SYS32_epoll_pwait, 319
+const :SYS32_utimensat, 320
+const :SYS32_signalfd, 321
+const :SYS32_timerfd_create, 322
+const :SYS32_eventfd, 323
+const :SYS32_fallocate, 324
+const :SYS32_timerfd_settime, 325
+const :SYS32_timerfd_gettime, 326
+const :SYS32_signalfd4, 327
+const :SYS32_eventfd2, 328
+const :SYS32_epoll_create1, 329
+const :SYS32_dup3, 330
+const :SYS32_pipe2, 331
+const :SYS32_inotify_init1, 332
+const :SYS32_preadv, 333
+const :SYS32_pwritev, 334
+const :SYS32_rt_tgsigqueueinfo, 335
+const :SYS32_perf_event_open, 336
+const :SYS32_recvmmsg, 337
+const :SYS32_fanotify_init, 338
+const :SYS32_fanotify_mark, 339
+const :SYS32_prlimit64, 340
+const :SYS32_name_to_handle_at, 341
+const :SYS32_open_by_handle_at, 342
+const :SYS32_clock_adjtime, 343
+const :SYS32_syncfs, 344
+const :SYS32_sendmmsg, 345
+const :SYS32_setns, 346
+const :SYS32_process_vm_readv, 347
+const :SYS32_process_vm_writev, 348
+const :MAP_32BIT, 0x40
+const :INADDR_ANY, 0
+const :INADDR_BROADCAST, 0xffffffff
+const :INADDR_NONE, 0xffffffff
+const :INADDR_LOOPBACK, 0x7f000001
+const :EPERM, 1
+const :ENOENT, 2
+const :ESRCH, 3
+const :EINTR, 4
+const :EIO, 5
+const :ENXIO, 6
+const :E2BIG, 7
+const :ENOEXEC, 8
+const :EBADF, 9
+const :ECHILD, 10
+const :EAGAIN, 11
+const :ENOMEM, 12
+const :EACCES, 13
+const :EFAULT, 14
+const :ENOTBLK, 15
+const :EBUSY, 16
+const :EEXIST, 17
+const :EXDEV, 18
+const :ENODEV, 19
+const :ENOTDIR, 20
+const :EISDIR, 21
+const :EINVAL, 22
+const :ENFILE, 23
+const :EMFILE, 24
+const :ENOTTY, 25
+const :ETXTBSY, 26
+const :EFBIG, 27
+const :ENOSPC, 28
+const :ESPIPE, 29
+const :EROFS, 30
+const :EMLINK, 31
+const :EPIPE, 32
+const :EDOM, 33
+const :ERANGE, 34
+const :EDEADLK, 35
+const :ENAMETOOLONG, 36
+const :ENOLCK, 37
+const :ENOSYS, 38
+const :ENOTEMPTY, 39
+const :ELOOP, 40
+const :EWOULDBLOCK, 11
+const :ENOMSG, 42
+const :EIDRM, 43
+const :ECHRNG, 44
+const :EL2NSYNC, 45
+const :EL3HLT, 46
+const :EL3RST, 47
+const :ELNRNG, 48
+const :EUNATCH, 49
+const :ENOCSI, 50
+const :EL2HLT, 51
+const :EBADE, 52
+const :EBADR, 53
+const :EXFULL, 54
+const :ENOANO, 55
+const :EBADRQC, 56
+const :EBADSLT, 57
+const :EDEADLOCK, 35
+const :EBFONT, 59
+const :ENOSTR, 60
+const :ENODATA, 61
+const :ETIME, 62
+const :ENOSR, 63
+const :ENONET, 64
+const :ENOPKG, 65
+const :EREMOTE, 66
+const :ENOLINK, 67
+const :EADV, 68
+const :ESRMNT, 69
+const :ECOMM, 70
+const :EPROTO, 71
+const :EMULTIHOP, 72
+const :EDOTDOT, 73
+const :EBADMSG, 74
+const :EOVERFLOW, 75
+const :ENOTUNIQ, 76
+const :EBADFD, 77
+const :EREMCHG, 78
+const :ELIBACC, 79
+const :ELIBBAD, 80
+const :ELIBSCN, 81
+const :ELIBMAX, 82
+const :ELIBEXEC, 83
+const :EILSEQ, 84
+const :ERESTART, 85
+const :ESTRPIPE, 86
+const :EUSERS, 87
+const :ENOTSOCK, 88
+const :EDESTADDRREQ, 89
+const :EMSGSIZE, 90
+const :EPROTOTYPE, 91
+const :ENOPROTOOPT, 92
+const :EPROTONOSUPPORT, 93
+const :ESOCKTNOSUPPORT, 94
+const :EOPNOTSUPP, 95
+const :ENOTSUP, 95
+const :EPFNOSUPPORT, 96
+const :EAFNOSUPPORT, 97
+const :EADDRINUSE, 98
+const :EADDRNOTAVAIL, 99
+const :ENETDOWN, 100
+const :ENETUNREACH, 101
+const :ENETRESET, 102
+const :ECONNABORTED, 103
+const :ECONNRESET, 104
+const :ENOBUFS, 105
+const :EISCONN, 106
+const :ENOTCONN, 107
+const :ESHUTDOWN, 108
+const :ETOOMANYREFS, 109
+const :ETIMEDOUT, 110
+const :ECONNREFUSED, 111
+const :EHOSTDOWN, 112
+const :EHOSTUNREACH, 113
+const :EALREADY, 114
+const :EINPROGRESS, 115
+const :ESTALE, 116
+const :EUCLEAN, 117
+const :ENOTNAM, 118
+const :ENAVAIL, 119
+const :EISNAM, 120
+const :EREMOTEIO, 121
+const :EDQUOT, 122
+const :ENOMEDIUM, 123
+const :EMEDIUMTYPE, 124
+const :ECANCELED, 125
+const :ENOKEY, 126
+const :EKEYEXPIRED, 127
+const :EKEYREVOKED, 128
+const :EKEYREJECTED, 129
+const :__SYS_NERR, ((129) + 1)
+const :__LITTLE_ENDIAN, 1234
+const :__BIG_ENDIAN, 4321
+const :__BYTE_ORDER, 1234
+const :__FLOAT_WORD_ORDER, 1234
+const :LITTLE_ENDIAN, 1234
+const :BIG_ENDIAN, 4321
+const :BYTE_ORDER, 1234
+const :__WORDSIZE, 64
+const :__WORDSIZE_COMPAT32, 1
+const :__FSUID_H, 1
+const :NSIG, 32
+const :_NSIG, 64
+const :SIGHUP, 1
+const :SIGINT, 2
+const :SIGQUIT, 3
+const :SIGILL, 4
+const :SIGTRAP, 5
+const :SIGABRT, 6
+const :SIGIOT, 6
+const :SIGFPE, 8
+const :SIGKILL, 9
+const :SIGSEGV, 11
+const :SIGPIPE, 13
+const :SIGALRM, 14
+const :SIGTERM, 15
+const :SIGUNUSED, 31
+const :SIGBUS, 7
+const :SIGUSR1, 10
+const :SIGUSR2, 12
+const :SIGSTKFLT, 16
+const :SIGCHLD, 17
+const :SIGCONT, 18
+const :SIGSTOP, 19
+const :SIGTSTP, 20
+const :SIGTTIN, 21
+const :SIGTTOU, 22
+const :SIGURG, 23
+const :SIGXCPU, 24
+const :SIGXFSZ, 25
+const :SIGVTALRM, 26
+const :SIGPROF, 27
+const :SIGWINCH, 28
+const :SIGIO, 29
+const :SIGPWR, 30
+const :SIGSYS, 31
+const :SIGCLD, 17
+const :SIGPOLL, 29
+const :SIGLOST, 30
+const :SIGRTMIN, 32
+const :SIGRTMAX, (64 - 1)
+const :SA_NOCLDSTOP, 0x00000001
+const :SA_NOCLDWAIT, 0x00000002
+const :SA_SIGINFO, 0x00000004
+const :SA_RESTORER, 0x04000000
+const :SA_ONSTACK, 0x08000000
+const :SA_RESTART, 0x10000000
+const :SA_INTERRUPT, 0x20000000
+const :SA_NODEFER, 0x40000000
+const :SA_RESETHAND, 0x80000000
+const :SA_NOMASK, 0x40000000
+const :SA_ONESHOT, 0x80000000
+const :SS_ONSTACK, 1
+const :SS_DISABLE, 2
+const :MINSIGSTKSZ, 2048
+const :SIGSTKSZ, 8192
+const :SIG_BLOCK, 0
+const :SIG_UNBLOCK, 1
+const :SIG_SETMASK, 2
+const :SI_MAX_SIZE, 128
+const :SIGEV_SIGNAL, 0
+const :SIGEV_NONE, 1
+const :SIGEV_THREAD, 2
+const :SIGEV_THREAD_ID, 4
+const :SIGEV_MAX_SIZE, 64
+const :_SYS_TIME_H, 1
+const :ITIMER_REAL, 0
+const :ITIMER_VIRTUAL, 1
+const :ITIMER_PROF, 2
+const :FD_SETSIZE, 1024
+const :R_OK, 4
+const :W_OK, 2
+const :X_OK, 1
+const :F_OK, 0
+const :SEEK_SET, 0
+const :SEEK_CUR, 1
+const :SEEK_END, 2
+const :STDIN_FILENO, 0
+const :STDOUT_FILENO, 1
+const :STDERR_FILENO, 2
+const :_CS_PATH, 1
+const :_SC_CLK_TCK, 1
+const :_SC_ARG_MAX, 2
+const :_SC_NGROUPS_MAX, 3
+const :_SC_OPEN_MAX, 4
+const :_SC_PAGESIZE, 5
+const :_SC_NPROCESSORS_ONLN, 6
+const :_SC_NPROCESSORS_CONF, 6
+const :_SC_PHYS_PAGES, 7
+const :_PC_PATH_MAX, 1
+const :_PC_VDISABLE, 2
+const :L_cuserid, 17
+const :_POSIX_VERSION, 199_506
+const :F_ULOCK, 0
+const :F_LOCK, 1
+const :F_TLOCK, 2
+const :F_TEST, 3
+const :S_IFMT, 00170000
+const :S_IFSOCK, 0140000
+const :S_IFLNK, 0120000
+const :S_IFREG, 0100000
+const :S_IFBLK, 0060000
+const :S_IFDIR, 0040000
+const :S_IFCHR, 0020000
+const :S_IFIFO, 0010000
+const :S_ISUID, 0004000
+const :S_ISGID, 0002000
+const :S_ISVTX, 0001000
+const :S_IRWXU, 00700
+const :S_IRUSR, 00400
+const :S_IWUSR, 00200
+const :S_IXUSR, 00100
+const :S_IRWXG, 00070
+const :S_IRGRP, 00040
+const :S_IWGRP, 00020
+const :S_IXGRP, 00010
+const :S_IRWXO, 00007
+const :S_IROTH, 00004
+const :S_IWOTH, 00002
+const :S_IXOTH, 00001
+const :S_IREAD, 00400
+const :S_IWRITE, 00200
+const :S_IEXEC, 00100
+const :F_LINUX_SPECIFIC_BASE, 1024
+const :O_ACCMODE, 0003
+const :O_RDONLY, 00
+const :O_WRONLY, 01
+const :O_RDWR, 02
+const :O_CREAT, 0100
+const :O_EXCL, 0200
+const :O_NOCTTY, 0400
+const :O_TRUNC, 01000
+const :O_APPEND, 02000
+const :O_NONBLOCK, 04000
+const :O_NDELAY, 04000
+const :O_SYNC, 010000
+const :FASYNC, 020000
+const :O_DIRECT, 040000
+const :O_LARGEFILE, 0100000
+const :O_DIRECTORY, 0200000
+const :O_NOFOLLOW, 0400000
+const :O_NOATIME, 01000000
+const :F_DUPFD, 0
+const :F_GETFD, 1
+const :F_SETFD, 2
+const :F_GETFL, 3
+const :F_SETFL, 4
+const :F_GETLK, 5
+const :F_SETLK, 6
+const :F_SETLKW, 7
+const :F_SETOWN, 8
+const :F_GETOWN, 9
+const :F_SETSIG, 10
+const :F_GETSIG, 11
+const :F_GETLK64, 12
+const :F_SETLK64, 13
+const :F_SETLKW64, 14
+const :FD_CLOEXEC, 1
+const :F_RDLCK, 0
+const :F_WRLCK, 1
+const :F_UNLCK, 2
+const :F_EXLCK, 4
+const :F_SHLCK, 8
+const :F_INPROGRESS, 16
+const :LOCK_SH, 1
+const :LOCK_EX, 2
+const :LOCK_NB, 4
+const :LOCK_UN, 8
+const :LOCK_MAND, 32
+const :LOCK_READ, 64
+const :LOCK_WRITE, 128
+const :LOCK_RW, 192
+const :O_ASYNC, 020000
+const :MREMAP_MAYMOVE, 1
+const :MREMAP_FIXED, 2
+const :PROT_READ, 0x1
+const :PROT_WRITE, 0x2
+const :PROT_EXEC, 0x4
+const :PROT_NONE, 0x0
+const :MAP_SHARED, 0x01
+const :MAP_PRIVATE, 0x02
+const :MAP_FIXED, 0x10
+const :MAP_ANONYMOUS, 0x20
+const :MAP_GROWSDOWN, 0x0100
+const :MAP_DENYWRITE, 0x0800
+const :MAP_EXECUTABLE, 0x1000
+const :MAP_LOCKED, 0x2000
+const :MAP_NORESERVE, 0x4000
+const :MAP_POPULATE, 0x8000
+const :MS_ASYNC, 1
+const :MS_INVALIDATE, 2
+const :MS_SYNC, 4
+const :MCL_CURRENT, 1
+const :MCL_FUTURE, 2
+const :MADV_NORMAL, 0x0
+const :MADV_RANDOM, 0x1
+const :MADV_SEQUENTIAL, 0x2
+const :MADV_WILLNEED, 0x3
+const :MADV_DONTNEED, 0x4
+const :MAP_ANON, 0x20
+const :MAP_FILE, 0
+const :SOL_SOCKET, 1
+const :SO_DEBUG, 1
+const :SO_REUSEADDR, 2
+const :SO_TYPE, 3
+const :SO_ERROR, 4
+const :SO_DONTROUTE, 5
+const :SO_BROADCAST, 6
+const :SO_SNDBUF, 7
+const :SO_RCVBUF, 8
+const :SO_KEEPALIVE, 9
+const :SO_OOBINLINE, 10
+const :SO_NO_CHECK, 11
+const :SO_PRIORITY, 12
+const :SO_LINGER, 13
+const :SO_BSDCOMPAT, 14
+const :SO_PASSCRED, 16
+const :SO_PEERCRED, 17
+const :SO_RCVLOWAT, 18
+const :SO_SNDLOWAT, 19
+const :SO_RCVTIMEO, 20
+const :SO_SNDTIMEO, 21
+const :SO_ACCEPTCONN, 30
+const :SO_SNDBUFFORCE, 32
+const :SO_RCVBUFFORCE, 33
+const :SO_SECURITY_AUTHENTICATION, 22
+const :SO_SECURITY_ENCRYPTION_TRANSPORT, 23
+const :SO_SECURITY_ENCRYPTION_NETWORK, 24
+const :SO_BINDTODEVICE, 25
+const :SO_ATTACH_FILTER, 26
+const :SO_DETACH_FILTER, 27
+const :SO_PEERNAME, 28
+const :SO_TIMESTAMP, 29
+const :SCM_TIMESTAMP, 29
+const :SOCK_STREAM, 1
+const :SOCK_DGRAM, 2
+const :SOCK_RAW, 3
+const :SOCK_RDM, 4
+const :SOCK_SEQPACKET, 5
+const :SOCK_PACKET, 10
+const :UIO_FASTIOV, 8
+const :UIO_MAXIOV, 1024
+const :SCM_RIGHTS, 0x01
+const :SCM_CREDENTIALS, 0x02
+const :SCM_CONNECT, 0x03
+const :AF_UNSPEC, 0
+const :AF_UNIX, 1
+const :AF_LOCAL, 1
+const :AF_INET, 2
+const :AF_AX25, 3
+const :AF_IPX, 4
+const :AF_APPLETALK, 5
+const :AF_NETROM, 6
+const :AF_BRIDGE, 7
+const :AF_ATMPVC, 8
+const :AF_X25, 9
+const :AF_INET6, 10
+const :AF_ROSE, 11
+const :AF_DECnet, 12
+const :AF_NETBEUI, 13
+const :AF_SECURITY, 14
+const :AF_KEY, 15
+const :AF_NETLINK, 16
+const :AF_ROUTE, 16
+const :AF_PACKET, 17
+const :AF_ASH, 18
+const :AF_ECONET, 19
+const :AF_ATMSVC, 20
+const :AF_SNA, 22
+const :AF_IRDA, 23
+const :AF_PPPOX, 24
+const :AF_WANPIPE, 25
+const :AF_MAX, 32
+const :PF_UNSPEC, 0
+const :PF_UNIX, 1
+const :PF_LOCAL, 1
+const :PF_INET, 2
+const :PF_AX25, 3
+const :PF_IPX, 4
+const :PF_APPLETALK, 5
+const :PF_NETROM, 6
+const :PF_BRIDGE, 7
+const :PF_ATMPVC, 8
+const :PF_X25, 9
+const :PF_INET6, 10
+const :PF_ROSE, 11
+const :PF_DECnet, 12
+const :PF_NETBEUI, 13
+const :PF_SECURITY, 14
+const :PF_KEY, 15
+const :PF_NETLINK, 16
+const :PF_ROUTE, 16
+const :PF_PACKET, 17
+const :PF_ASH, 18
+const :PF_ECONET, 19
+const :PF_ATMSVC, 20
+const :PF_SNA, 22
+const :PF_IRDA, 23
+const :PF_PPPOX, 24
+const :PF_WANPIPE, 25
+const :PF_MAX, 32
+const :SOMAXCONN, 128
+const :MSG_OOB, 1
+const :MSG_PEEK, 2
+const :MSG_DONTROUTE, 4
+const :MSG_TRYHARD, 4
+const :MSG_CTRUNC, 8
+const :MSG_PROBE, 0x10
+const :MSG_TRUNC, 0x20
+const :MSG_DONTWAIT, 0x40
+const :MSG_EOR, 0x80
+const :MSG_WAITALL, 0x100
+const :MSG_FIN, 0x200
+const :MSG_EOF, 0x200
+const :MSG_SYN, 0x400
+const :MSG_CONFIRM, 0x800
+const :MSG_RST, 0x1000
+const :MSG_ERRQUEUE, 0x2000
+const :MSG_NOSIGNAL, 0x4000
+const :MSG_MORE, 0x8000
+const :SOL_IP, 0
+const :SOL_TCP, 6
+const :SOL_UDP, 17
+const :SOL_IPV6, 41
+const :SOL_ICMPV6, 58
+const :SOL_RAW, 255
+const :SOL_IPX, 256
+const :SOL_AX25, 257
+const :SOL_ATALK, 258
+const :SOL_NETROM, 259
+const :SOL_ROSE, 260
+const :SOL_DECNET, 261
+const :SOL_X25, 262
+const :SOL_PACKET, 263
+const :SOL_ATM, 264
+const :SOL_AAL, 265
+const :SOL_IRDA, 266
+const :IPX_TYPE, 1
+const :SHUT_RD, 0
+const :SHUT_WR, 1
+const :SHUT_RDWR, 2
+const :NI_NOFQDN, 1
+const :NI_NUMERICHOST, 2
+const :NI_NAMEREQD, 4
+const :NI_NUMERICSERV, 8
+const :NI_DGRAM, 16
+const :EAI_FAMILY, -1
+const :EAI_SOCKTYPE, -2
+const :EAI_BADFLAGS, -3
+const :EAI_NONAME, -4
+const :EAI_SERVICE, -5
+const :EAI_ADDRFAMILY, -6
+const :EAI_NODATA, -7
+const :EAI_MEMORY, -8
+const :EAI_FAIL, -9
+const :EAI_AGAIN, -10
+const :EAI_SYSTEM, -11
+const :AI_NUMERICHOST, 1
+const :AI_CANONNAME, 2
+const :AI_PASSIVE, 4
+const :SIOCADDRT, 0x890B
+const :SIOCDELRT, 0x890C
+const :SIOCRTMSG, 0x890D
+const :SIOCGIFNAME, 0x8910
+const :SIOCSIFLINK, 0x8911
+const :SIOCGIFCONF, 0x8912
+const :SIOCGIFFLAGS, 0x8913
+const :SIOCSIFFLAGS, 0x8914
+const :SIOCGIFADDR, 0x8915
+const :SIOCSIFADDR, 0x8916
+const :SIOCGIFDSTADDR, 0x8917
+const :SIOCSIFDSTADDR, 0x8918
+const :SIOCGIFBRDADDR, 0x8919
+const :SIOCSIFBRDADDR, 0x891a
+const :SIOCGIFNETMASK, 0x891b
+const :SIOCSIFNETMASK, 0x891c
+const :SIOCGIFMETRIC, 0x891d
+const :SIOCSIFMETRIC, 0x891e
+const :SIOCGIFMEM, 0x891f
+const :SIOCSIFMEM, 0x8920
+const :SIOCGIFMTU, 0x8921
+const :SIOCSIFMTU, 0x8922
+const :SIOCSIFNAME, 0x8923
+const :SIOCSIFHWADDR, 0x8924
+const :SIOCGIFENCAP, 0x8925
+const :SIOCSIFENCAP, 0x8926
+const :SIOCGIFHWADDR, 0x8927
+const :SIOCGIFSLAVE, 0x8929
+const :SIOCSIFSLAVE, 0x8930
+const :SIOCADDMULTI, 0x8931
+const :SIOCDELMULTI, 0x8932
+const :SIOCGIFINDEX, 0x8933
+const :SIOGIFINDEX, 0x8933
+const :SIOCSIFPFLAGS, 0x8934
+const :SIOCGIFPFLAGS, 0x8935
+const :SIOCDIFADDR, 0x8936
+const :SIOCSIFHWBROADCAST, 0x8937
+const :SIOCGIFCOUNT, 0x8938
+const :SIOCGIFBR, 0x8940
+const :SIOCSIFBR, 0x8941
+const :SIOCGIFTXQLEN, 0x8942
+const :SIOCSIFTXQLEN, 0x8943
+const :SIOCGIFDIVERT, 0x8944
+const :SIOCSIFDIVERT, 0x8945
+const :SIOCETHTOOL, 0x8946
+const :SIOCDARP, 0x8953
+const :SIOCGARP, 0x8954
+const :SIOCSARP, 0x8955
+const :SIOCDRARP, 0x8960
+const :SIOCGRARP, 0x8961
+const :SIOCSRARP, 0x8962
+const :SIOCGIFMAP, 0x8970
+const :SIOCSIFMAP, 0x8971
+const :SIOCADDDLCI, 0x8980
+const :SIOCDELDLCI, 0x8981
+const :SIOCDEVPRIVATE, 0x89F0
+const :PTRACE_TRACEME, 0
+const :PTRACE_PEEKTEXT, 1
+const :PTRACE_PEEKDATA, 2
+const :PTRACE_PEEKUSR, 3
+const :PTRACE_PEEKUSER, 3
+const :PTRACE_POKETEXT, 4
+const :PTRACE_POKEDATA, 5
+const :PTRACE_POKEUSR, 6
+const :PTRACE_POKEUSER, 6
+const :PTRACE_CONT, 7
+const :PTRACE_KILL, 8
+const :PTRACE_SINGLESTEP, 9
+const :PTRACE_ATTACH, 0x10
+const :PTRACE_DETACH, 0x11
+const :PTRACE_SYSCALL, 24
+const :PTRACE_GETEVENTMSG, 0x4201
+const :PTRACE_GETSIGINFO, 0x4202
+const :PTRACE_SETSIGINFO, 0x4203
+const :PTRACE_O_TRACESYSGOOD, 0x00000001
+const :PTRACE_O_TRACEFORK, 0x00000002
+const :PTRACE_O_TRACEVFORK, 0x00000004
+const :PTRACE_O_TRACECLONE, 0x00000008
+const :PTRACE_O_TRACEEXEC, 0x00000010
+const :PTRACE_O_TRACEVFORKDONE, 0x00000020
+const :PTRACE_O_TRACEEXIT, 0x00000040
+const :PTRACE_O_MASK, 0x0000007f
+const :PTRACE_EVENT_FORK, 1
+const :PTRACE_EVENT_VFORK, 2
+const :PTRACE_EVENT_CLONE, 3
+const :PTRACE_EVENT_EXEC, 4
+const :PTRACE_EVENT_VFORK_DONE, 5
+const :PTRACE_EVENT_EXIT, 6
+const :PT_TRACE_ME, 0
+const :PT_READ_I, 1
+const :PT_READ_D, 2
+const :PT_READ_U, 3
+const :PT_WRITE_I, 4
+const :PT_WRITE_D, 5
+const :PT_WRITE_U, 6
+const :PT_CONTINUE, 7
+const :PT_KILL, 8
+const :PT_STEP, 9
+const :PT_ATTACH, 0x10
+const :PT_DETACH, 0x11
+const :SYS_accept, 43
+const :SYS_accept4, 288
+const :SYS_access, 21
+const :SYS_acct, 163
+const :SYS_add_key, 248
+const :SYS_adjtimex, 159
+const :SYS_afs_syscall, 183
+const :SYS_alarm, 37
+const :SYS_arch_prctl, 158
+const :SYS_bind, 49
+const :SYS_brk, 12
+const :SYS_capget, 125
+const :SYS_capset, 126
+const :SYS_chdir, 80
+const :SYS_chmod, 90
+const :SYS_chown, 92
+const :SYS_chroot, 161
+const :SYS_clock_getres, 229
+const :SYS_clock_gettime, 228
+const :SYS_clock_nanosleep, 230
+const :SYS_clock_settime, 227
+const :SYS_clone, 56
+const :SYS_close, 3
+const :SYS_connect, 42
+const :SYS_creat, 85
+const :SYS_create_module, 174
+const :SYS_delete_module, 176
+const :SYS_dup, 32
+const :SYS_dup2, 33
+const :SYS_dup3, 292
+const :SYS_epoll_create, 213
+const :SYS_epoll_create1, 291
+const :SYS_epoll_ctl, 233
+const :SYS_epoll_ctl_old, 214
+const :SYS_epoll_pwait, 281
+const :SYS_epoll_wait, 232
+const :SYS_epoll_wait_old, 215
+const :SYS_eventfd, 284
+const :SYS_eventfd2, 290
+const :SYS_execve, 59
+const :SYS_exit, 60
+const :SYS_exit_group, 231
+const :SYS_faccessat, 269
+const :SYS_fadvise64, 221
+const :SYS_fallocate, 285
+const :SYS_fanotify_init, 300
+const :SYS_fanotify_mark, 301
+const :SYS_fchdir, 81
+const :SYS_fchmod, 91
+const :SYS_fchmodat, 268
+const :SYS_fchown, 93
+const :SYS_fchownat, 260
+const :SYS_fcntl, 72
+const :SYS_fdatasync, 75
+const :SYS_fgetxattr, 193
+const :SYS_flistxattr, 196
+const :SYS_flock, 73
+const :SYS_fork, 57
+const :SYS_fremovexattr, 199
+const :SYS_fsetxattr, 190
+const :SYS_fstat, 5
+const :SYS_fstatfs, 138
+const :SYS_fsync, 74
+const :SYS_ftruncate, 77
+const :SYS_futex, 202
+const :SYS_futimesat, 261
+const :SYS_getcwd, 79
+const :SYS_getdents, 78
+const :SYS_getdents64, 217
+const :SYS_getegid, 108
+const :SYS_geteuid, 107
+const :SYS_getgid, 104
+const :SYS_getgroups, 115
+const :SYS_getitimer, 36
+const :SYS_get_kernel_syms, 177
+const :SYS_get_mempolicy, 239
+const :SYS_getpeername, 52
+const :SYS_getpgid, 121
+const :SYS_getpgrp, 111
+const :SYS_getpid, 39
+const :SYS_getpmsg, 181
+const :SYS_getppid, 110
+const :SYS_getpriority, 140
+const :SYS_getresgid, 120
+const :SYS_getresuid, 118
+const :SYS_getrlimit, 97
+const :SYS_get_robust_list, 274
+const :SYS_getrusage, 98
+const :SYS_getsid, 124
+const :SYS_getsockname, 51
+const :SYS_getsockopt, 55
+const :SYS_get_thread_area, 211
+const :SYS_gettid, 186
+const :SYS_gettimeofday, 96
+const :SYS_getuid, 102
+const :SYS_getxattr, 191
+const :SYS_init_module, 175
+const :SYS_inotify_add_watch, 254
+const :SYS_inotify_init, 253
+const :SYS_inotify_init1, 294
+const :SYS_inotify_rm_watch, 255
+const :SYS_io_cancel, 210
+const :SYS_ioctl, 16
+const :SYS_io_destroy, 207
+const :SYS_io_getevents, 208
+const :SYS_ioperm, 173
+const :SYS_iopl, 172
+const :SYS_ioprio_get, 252
+const :SYS_ioprio_set, 251
+const :SYS_io_setup, 206
+const :SYS_io_submit, 209
+const :SYS_kexec_load, 246
+const :SYS_keyctl, 250
+const :SYS_kill, 62
+const :SYS_lchown, 94
+const :SYS_lgetxattr, 192
+const :SYS_link, 86
+const :SYS_linkat, 265
+const :SYS_listen, 50
+const :SYS_listxattr, 194
+const :SYS_llistxattr, 195
+const :SYS_lookup_dcookie, 212
+const :SYS_lremovexattr, 198
+const :SYS_lseek, 8
+const :SYS_lsetxattr, 189
+const :SYS_lstat, 6
+const :SYS_madvise, 28
+const :SYS_mbind, 237
+const :SYS_migrate_pages, 256
+const :SYS_mincore, 27
+const :SYS_mkdir, 83
+const :SYS_mkdirat, 258
+const :SYS_mknod, 133
+const :SYS_mknodat, 259
+const :SYS_mlock, 149
+const :SYS_mlockall, 151
+const :SYS_mmap, 9
+const :SYS_modify_ldt, 154
+const :SYS_mount, 165
+const :SYS_move_pages, 279
+const :SYS_mprotect, 10
+const :SYS_mq_getsetattr, 245
+const :SYS_mq_notify, 244
+const :SYS_mq_open, 240
+const :SYS_mq_timedreceive, 243
+const :SYS_mq_timedsend, 242
+const :SYS_mq_unlink, 241
+const :SYS_mremap, 25
+const :SYS_msgctl, 71
+const :SYS_msgget, 68
+const :SYS_msgrcv, 70
+const :SYS_msgsnd, 69
+const :SYS_msync, 26
+const :SYS_munlock, 150
+const :SYS_munlockall, 152
+const :SYS_munmap, 11
+const :SYS_nanosleep, 35
+const :SYS_newfstatat, 262
+const :SYS_nfsservctl, 180
+const :SYS_open, 2
+const :SYS_openat, 257
+const :SYS_pause, 34
+const :SYS_perf_event_open, 298
+const :SYS_personality, 135
+const :SYS_pipe, 22
+const :SYS_pipe2, 293
+const :SYS_pivot_root, 155
+const :SYS_poll, 7
+const :SYS_ppoll, 271
+const :SYS_prctl, 157
+const :SYS_pread, 17
+const :SYS_preadv, 295
+const :SYS_prlimit64, 302
+const :SYS_pselect6, 270
+const :SYS_ptrace, 101
+const :SYS_putpmsg, 182
+const :SYS_pwrite, 18
+const :SYS_pwritev, 296
+const :SYS_query_module, 178
+const :SYS_quotactl, 179
+const :SYS_read, 0
+const :SYS_readahead, 187
+const :SYS_readlink, 89
+const :SYS_readlinkat, 267
+const :SYS_readv, 19
+const :SYS_reboot, 169
+const :SYS_recvfrom, 45
+const :SYS_recvmmsg, 299
+const :SYS_recvmsg, 47
+const :SYS_remap_file_pages, 216
+const :SYS_removexattr, 197
+const :SYS_rename, 82
+const :SYS_renameat, 264
+const :SYS_request_key, 249
+const :SYS_restart_syscall, 219
+const :SYS_rmdir, 84
+const :SYS_rt_sigaction, 13
+const :SYS_rt_sigpending, 127
+const :SYS_rt_sigprocmask, 14
+const :SYS_rt_sigqueueinfo, 129
+const :SYS_rt_sigreturn, 15
+const :SYS_rt_sigsuspend, 130
+const :SYS_rt_sigtimedwait, 128
+const :SYS_rt_tgsigqueueinfo, 297
+const :SYS_sched_getaffinity, 204
+const :SYS_sched_getparam, 143
+const :SYS_sched_get_priority_max, 146
+const :SYS_sched_get_priority_min, 147
+const :SYS_sched_getscheduler, 145
+const :SYS_sched_rr_get_interval, 148
+const :SYS_sched_setaffinity, 203
+const :SYS_sched_setparam, 142
+const :SYS_sched_setscheduler, 144
+const :SYS_sched_yield, 24
+const :SYS_security, 185
+const :SYS_select, 23
+const :SYS_semctl, 66
+const :SYS_semget, 64
+const :SYS_semop, 65
+const :SYS_semtimedop, 220
+const :SYS_sendfile, 40
+const :SYS_sendmsg, 46
+const :SYS_sendto, 44
+const :SYS_setdomainname, 171
+const :SYS_setfsgid, 123
+const :SYS_setfsuid, 122
+const :SYS_setgid, 106
+const :SYS_setgroups, 116
+const :SYS_sethostname, 170
+const :SYS_setitimer, 38
+const :SYS_set_mempolicy, 238
+const :SYS_setpgid, 109
+const :SYS_setpriority, 141
+const :SYS_setregid, 114
+const :SYS_setresgid, 119
+const :SYS_setresuid, 117
+const :SYS_setreuid, 113
+const :SYS_setrlimit, 160
+const :SYS_set_robust_list, 273
+const :SYS_setsid, 112
+const :SYS_setsockopt, 54
+const :SYS_set_thread_area, 205
+const :SYS_set_tid_address, 218
+const :SYS_settimeofday, 164
+const :SYS_setuid, 105
+const :SYS_setxattr, 188
+const :SYS_shmat, 30
+const :SYS_shmctl, 31
+const :SYS_shmdt, 67
+const :SYS_shmget, 29
+const :SYS_shutdown, 48
+const :SYS_sigaltstack, 131
+const :SYS_signalfd, 282
+const :SYS_signalfd4, 289
+const :SYS_socket, 41
+const :SYS_socketpair, 53
+const :SYS_splice, 275
+const :SYS_stat, 4
+const :SYS_statfs, 137
+const :SYS_swapoff, 168
+const :SYS_swapon, 167
+const :SYS_symlink, 88
+const :SYS_symlinkat, 266
+const :SYS_sync, 162
+const :SYS_sync_file_range, 277
+const :SYS__sysctl, 156
+const :SYS_sysfs, 139
+const :SYS_sysinfo, 99
+const :SYS_syslog, 103
+const :SYS_tee, 276
+const :SYS_tgkill, 234
+const :SYS_time, 201
+const :SYS_timer_create, 222
+const :SYS_timer_delete, 226
+const :SYS_timerfd, 283
+const :SYS_timerfd_gettime, 287
+const :SYS_timerfd_settime, 286
+const :SYS_timer_getoverrun, 225
+const :SYS_timer_gettime, 224
+const :SYS_timer_settime, 223
+const :SYS_times, 100
+const :SYS_tkill, 200
+const :SYS_truncate, 76
+const :SYS_tuxcall, 184
+const :SYS_umask, 95
+const :SYS_umount2, 166
+const :SYS_uname, 63
+const :SYS_unlink, 87
+const :SYS_unlinkat, 263
+const :SYS_unshare, 272
+const :SYS_uselib, 134
+const :SYS_ustat, 136
+const :SYS_utime, 132
+const :SYS_utimensat, 280
+const :SYS_utimes, 235
+const :SYS_vfork, 58
+const :SYS_vhangup, 153
+const :SYS_vmsplice, 278
+const :SYS_vserver, 236
+const :SYS_wait4, 61
+const :SYS_waitid, 247
+const :SYS_write, 1
+const :SYS_writev, 20

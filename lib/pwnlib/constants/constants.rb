@@ -19,28 +19,44 @@ module Pwnlib
       end
 
       def eval(str)
-        return str unless str.instance_of? String
+        return str unless str.instance_of?(String)
         # TODO(david942j): safeeval
-        const = send(str.strip.to_sym)
-        ::Pwnlib::Constants::Constant.new(format('(%s)', str), const.val)
+        const = get_constant(str.strip.to_sym)
+        ::Pwnlib::Constants::Constant.new("(#{str})", const.val)
       end
 
-      def define
-        ENV_STORE[cur_arch_key] = {}
-        yield(ENV_STORE[cur_arch_key])
-      end
+      private
 
-      def cur_arch_key
+      def current_arch_key
         [context.os, context.arch]
       end
 
+      def current_store
+        ENV_STORE[current_arch_key] ||= load_constants(current_arch_key)
+      end
+
       def get_constant(symbol)
-        filename = File.join(__dir__, context.os, "#{context.arch}.rb")
-        return nil unless File.exist? filename
-        require filename # require will not do twice, so no need to check if key exists
-        val = ENV_STORE[cur_arch_key][symbol]
-        return nil if val.nil?
-        Constant.new(symbol.to_s, val)
+        current_store[symbol]
+      end
+
+      # Small class for instance_eval loaded file
+      class ConstantBuilder
+        attr_reader :tbl
+        def initialize
+          @tbl = {}
+        end
+
+        def const(sym, val)
+          @tbl[sym.to_sym] = Constant.new(sym.to_s, val)
+        end
+      end
+
+      def load_constants((os, arch))
+        filename = File.join(__dir__, os, "#{arch}.rb")
+        return {} unless File.exist?(filename)
+        ConstantBuilder.new.tap do |c|
+          c.instance_eval(IO.read(filename))
+        end.tbl
       end
     end
 
