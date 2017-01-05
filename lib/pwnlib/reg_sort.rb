@@ -20,17 +20,17 @@ module Pwnlib
       #   check_cycle('a', {a: 'b', b: 'c', c: 'd', d: 'a'})
       #   #=> ['a', 'b', 'c', 'd']
       def check_cycle(reg, assignments)
-        check_cycle_(reg, assignments, [])
+        check_cycle_(reg, assignments.map { |k, v| [k.to_s, v] }.to_h, [])
       end
 
       def check_cycle_(reg, assignments, path) # :nodoc:
-        target = assignments[reg.to_sym]
+        target = assignments[reg]
         path << reg
         # No cycle, some other value (e.g. 1)
-        return [] unless assignments.key?(target.to_sym)
+        return [] unless assignments.key?(target)
         # Found a cycle
         return target == path[0] ? path : [] if path.include?(target)
-        check_cycle_(reg, assignments, path)
+        check_cycle_(target, assignments, path)
       end
 
       # Return a list of all registers which directly
@@ -46,7 +46,7 @@ module Pwnlib
       #  => ['b', 'c']
       def extract_dependencies(reg, assignments)
         # .sort is only for determinism
-        assignments.select { |_, v| v == reg }.keys.map(&:str).sort
+        assignments.select { |_, v| v == reg }.keys.map(&:to_s).sort
       end
 
       # Resolve the order of all dependencies starting at a given register.
@@ -62,7 +62,11 @@ module Pwnlib
       #   resolve_order('d', deps)
       #   => ['b', 'c', 'x', 'd']
       def resolve_order(reg, deps)
-        deps[reg.to_sym].map { |dep| resolve_order(dep, deps) }.flatten + [reg]
+        resolve_order_(reg, deps.map { |k, v| [k.to_s, v] }.to_h)
+      end
+
+      def resolve_order_(reg, deps) # :nodoc:
+        deps[reg].map { |dep| resolve_order_(dep, deps) }.flatten + [reg]
       end
 
       # Check if any dependencies of `reg` appears in cycles.
@@ -70,22 +74,111 @@ module Pwnlib
         return false if reg.nil?
         loop do
           return true if in_cycles.include?(reg)
-          reg = assignments[reg.to_sym]
+          reg = assignments[reg]
           break unless reg
         end
         false
       end
 
+      # Sorts register dependencies.
+      #
+      # Given a dictionary of registers to desired register contents,
+      # return the optimal order in which to set the registers to
+      # those contents.
+      #
+      # The implementation assumes that it is possible to move from
+      # any register to any other register.
+      #
+      # If a dependency cycle is encountered, one of the following will
+      # occur:
+      #
+      # - If ``xchg`` is ``True``, it is assumed that dependency cyles can
+      #   be broken by swapping the contents of two register (a la the
+      #   ``xchg`` instruction on i386).
+      # - If ``xchg`` is not set, but not all destination registers in
+      #   ``in_out`` are involved in a cycle, one of the registers
+      #   outside the cycle will be used as a temporary register,
+      #   and then overwritten with its final value.
+      # - If ``xchg`` is not set, and all registers are involved in
+      #   a dependency cycle, the named register ``temporary`` is used
+      #   as a temporary register.
+      # - If the dependency cycle cannot be resolved as described above,
+      #   an exception is raised.
+      #
+      # @param [Hash] in_out
+      #   Dictionary of desired register states.
+      #   Keys are registers, values are either registers or any other value.
+      # @param [Hash] all_regs
+      #   List of all possible registers.
+      #   Used to determine which values in ``in_out`` are registers, versus
+      #   regular values.
+      # @option [String, Boolean] tmp
+      #   Named register (or other sentinel value) to use as a temporary
+      #   register.  If ``tmp`` is a named register **and** appears
+      #   as a source value in ``in_out``, dependencies are handled
+      #   appropriately.  ``tmp`` cannot be a destination register
+      #   in ``in_out``.
+      #   If ``tmp === true``, this mode is enabled.
+      # @option [Boolean] xchg
+      #   Indicates the existence of an instruction which can swap the
+      # @option [Boolean] randomize
+      #   Randomize as much as possible about the order or registers.
+      #
+      # @return [Array]
+      #   Array of instructions, see examples for more details.
+      #
+      # @example
+      #   regs = %w(a b c d x y z)
+      #   regsort({a: 1, b: 2}, regs)
+      #   => [['mov', 'a', 1], ['mov', 'b', 2]]
+      #   regsort({a: 'b', b: 'a'}, regs, tmp: 'X')
+      #   => [['mov', 'X', 'a'], ['mov', 'a', 'b'], ['mov', 'b', 'X']]
+      #   regsort({a: 1, b: 'a'}, regs)
+      #   => [['mov', 'b', 'a'], ['mov', 'a', 1]]
+      #   regsort({a: 'b', b: 'a', c: 3}, regs)
+      #   => [['mov', 'c', 3], ['xchg', 'a', 'b']]
+      #   regsort({a: 'b', b: 'a', c: 'b'}, regs)
+      #   => [['mov', 'c', 'b'], ['xchg', 'a', 'b']]
+      #   regsort({a: 'b', b: 'a', x: 'b'}, regs, tmp: 'y', xchg: false)
+      #   => [['mov', 'x', 'b'],
+      #       ['mov', 'y', 'a'],
+      #       ['mov', 'a', 'b'],
+      #       ['mov', 'b', 'y']]
+      #   regsort({a: 'b', b: 'a', x: 'b'}, regs, tmp: 'x', xchg: false)
+      #   => ArgumentError: Cannot break dependency cycles ...
+      #   regsort({a: 'b', b: 'c', c: 'a', x: '1', y: 'z', z: 'c'}, regs)
+      #   => [['mov', 'x', '1'],
+      #       ['mov', 'y', 'z'],
+      #       ['mov', 'z', 'c'],
+      #       ['xchg', 'a', 'b'],
+      #       ['xchg', 'b', 'c']]
+      #   regsort({a: 'b', b: 'c', c: 'a', x: '1', y: 'z', z: 'c'}, regs, tmp: 'x')
+      #   => [['mov', 'y', 'z'],
+      #       ['mov', 'z', 'c'],
+      #       ['mov', 'x', 'a'],
+      #       ['mov', 'a', 'b'],
+      #       ['mov', 'b', 'c'],
+      #       ['mov', 'c', 'x'],
+      #       ['mov', 'x', '1']]
+      #   regsort({a: 'b', b: 'c', c: 'a', x: '1', y: 'z', z: 'c'}, regs, xchg: false)
+      #   => [['mov', 'y', 'z'],
+      #       ['mov', 'z', 'c'],
+      #       ['mov', 'x', 'a'],
+      #       ['mov', 'a', 'b'],
+      #       ['mov', 'b', 'c'],
+      #       ['mov', 'c', 'x'],
+      #       ['mov', 'x', '1']]
       def regsort(in_out, all_regs, tmp: nil, xchg: true, randomize: nil)
         # randomize = context.randomize if randomize.nil?
 
+        in_out = in_out.map { |k, v| [k.to_s, v] }.to_h
         # Drop all registers which will be set to themselves.
         # For example, {eax: 'eax'}
-        in_out.select! { |k, v| k.to_s == v }
+        in_out.reject! { |k, v| k == v }
 
         # Collapse constant values
         #
-        # For eaxmple, {eax: 0, ebx: 0} => {eax: 0, ebx: 'eax'}
+        # For eaxmple, {eax: 1, ebx: 1} => {eax: 1, ebx: 'eax'}
         v_k = Hash.new { |k, v| k[v] = [] }
         in_out.sort.each do |k, v|
           v_k[v] << k if !all_regs.include?(v) && v != 0
@@ -99,7 +192,7 @@ module Pwnlib
         end
 
         # Check input
-        if (in_out.keys - all_regs).any?
+        if (in_out.keys.map(&:to_s) - all_regs).any?
           raise ArgumentError, format('Unknown register! Know: %s.  Got: %s', all_regs.inspect, in_out.inspect)
         end
 
@@ -107,7 +200,7 @@ module Pwnlib
         # which are also 'outputs'.
         #
         # For example, {eax: 1, ebx: 2, ecx: 'edx'}
-        unless in_out.values.any? { |v| in_out.key?(v.to_sym) }
+        unless in_out.values.any? { |v| in_out.key?(v) }
           result = in_out.sort.map { |k, v| ['mov', k, v] }
           result.shuffle! if randomize
           post_mov.sort.each do |dreg, sreg|
@@ -122,7 +215,7 @@ module Pwnlib
         # Output:  {'A': [], 'B': ['A', 'C'], 'C': []}
         #
         # In this case, both A and C must be set before B.
-        deps = in_out.each_with_object({}) { |r, h| h[r] = extract_dependencies(r, in_out) }
+        deps = in_out.each_with_object({}) { |(k, _), h| h[k] = extract_dependencies(k, in_out) }
 
         # Final result which will be returned.
         result = []
