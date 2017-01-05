@@ -34,11 +34,13 @@ module Pwnlib
         [context.os, context.arch]
       end
 
-      def get_constant(name)
+      def get_constant(symbol)
         filename = File.join(__dir__, context.os, "#{context.arch}.rb")
         return nil unless File.exist? filename
         require filename # require will not do twice, so no need to check if key exists
-        ENV_STORE[cur_arch_key][name.to_sym] || ENV_STORE[cur_arch_key][name.to_s]
+        val = ENV_STORE[cur_arch_key][symbol]
+        return nil if val.nil?
+        Constant.new(symbol.to_s, val)
       end
     end
 
