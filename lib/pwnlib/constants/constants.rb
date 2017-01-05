@@ -1,12 +1,14 @@
 # encoding: ASCII-8BIT
 
 require 'pwnlib/context'
+require 'pwnlib/constants/constant'
+
 module Pwnlib
   # Module containing constants
   # @example
   #   context.arch = 'amd64'
   #   Pwnlib::Constants.SYS_read
-  #   # => Constant('SYS_read', 0)
+  #   # => Constant('SYS_read', 0x0)
   module Constants
     # @note Do not create and call instance method here. Instead, call module method on {Constants}.
     module ClassMethod
@@ -19,7 +21,8 @@ module Pwnlib
       def eval(str)
         return str unless str.instance_of? String
         # TODO(david942j): safeeval
-        send(str.to_sym)
+        const = send(str.strip.to_sym)
+        ::Pwnlib::Constants::Constant.new(format('(%s)', str), const.val)
       end
 
       def define
