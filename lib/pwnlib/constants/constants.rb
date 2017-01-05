@@ -14,8 +14,8 @@ module Pwnlib
     module ClassMethod
       include ::Pwnlib::Context
       ENV_STORE = {}
-      def method_missing(method, *_)
-        get_constant(method) || super
+      def method_missing(method, *args)
+        args.empty? && get_constant(method) || super
       end
 
       def eval(str)

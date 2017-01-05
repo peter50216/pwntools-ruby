@@ -14,18 +14,8 @@ module Pwnlib
         @val.send(method, *args, &block)
       end
 
-      # @example
-      #   Constant.new('SYS_read', 0) == 0 #=> true
-      #   Constant.new('SYS_read', 0) == Constant.new('SYS_read', 0) #=> true
-      #   Constant.new('SYS_read', 0) == Constant.new('__NR_read', 0) #=> false
-      def ==(other)
-        return @str == other.str && @val == other.val if other.is_a? Constant
-        return @val == other if other.is_a? Numeric
-        super
-      end
-
       def coerce(other)
-        [other.to_i, val]
+        [other.to_i, to_i]
       end
 
       def to_i
@@ -38,6 +28,10 @@ module Pwnlib
 
       def inspect
         format('Constant(%s, 0x%x)', @str.inspect, @val)
+      end
+
+      def <=>(other)
+        to_i <=> other.to_i
       end
     end
   end
