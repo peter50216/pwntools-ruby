@@ -12,7 +12,11 @@ engines:
       - php
   fixme:
     enabled: false
+  reek:
+    enabled: true
   rubocop:
+    enabled: true
+  rubymotion:
     enabled: true
 ratings:
   paths:
