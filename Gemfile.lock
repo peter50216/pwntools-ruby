@@ -14,6 +14,7 @@ GEM
     json (2.0.2)
     method_source (0.8.2)
     minitest (5.10.1)
+    os (0.9.6)
     parser (2.3.3.1)
       ast (~> 2.2)
     powerpack (0.1.1)
@@ -44,6 +45,7 @@ PLATFORMS
 DEPENDENCIES
   codeclimate-test-reporter (~> 0.5)
   minitest (~> 5.8)
+  os (~> 0.9)
   pry (~> 0.10)
   pwntools!
   rake (~> 11.1)
