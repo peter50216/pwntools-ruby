@@ -42,7 +42,8 @@ module Pwnlib
 
         # Present number in hex format, same as python hex() do.
         #
-        # @parasm [Integer] n The number.
+        # @param [Integer] n
+        #   The number.
         #
         # @return [String]
         #   The hex format string.

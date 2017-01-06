@@ -25,16 +25,15 @@ module Pwnlib
       #   The string to be evaluate.
       #
       # @return [Constant]
-      #   The evaluate result
+      #   The evaluate result.
       #
       # @example
       #   eval('O_CREAT')
       #   => Constant('(O_CREAT)', 0x40)
       #
-      # @todo Support eval('O_CREAT | O_APPEND')
+      # @todo(david942j): Support eval('O_CREAT | O_APPEND') (i.e. safeeval)
       def eval(str)
         return str unless str.instance_of?(String)
-        # TODO(david942j): safeeval
         const = get_constant(str.strip.to_sym)
         ::Pwnlib::Constants::Constant.new("(#{str})", const.val)
       end

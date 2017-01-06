@@ -29,7 +29,7 @@ module Pwnlib
       end
 
       def inspect
-        format('Constant(%s, %s)', @str.inspect, ::Pwnlib::Util::Fiddling.hex(@val))
+        format('Constant(%p, %s)', @str, ::Pwnlib::Util::Fiddling.hex(@val))
       end
 
       def <=>(other)
