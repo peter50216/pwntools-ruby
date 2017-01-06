@@ -1,10 +1,7 @@
-require 'pwnlib/shellcraft/shellcraft'
 require 'pwnlib/shellcraft/registers'
-Registers = ::Pwnlib::Shellcraft::Registers
 require 'pwnlib/reg_sort'
-extend ::Pwnlib::RegSort::ClassMethod
+extend RegSort::ClassMethod
 def setregs(reg_context, stack_allowed: true)
-  amd64 = ::Pwnlib::Shellcraft.amd64
   reg_context = reg_context.reject { |_, v| v.nil? }.map { |k, v| [k.to_s, v] }.to_h
   eax = reg_context['rax']
   edx = reg_context['rdx']

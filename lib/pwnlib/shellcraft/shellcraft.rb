@@ -49,11 +49,17 @@ module Pwnlib
 
     # Class for running .rb to acquire the result assembly.
     class AsmRender
+      include ::Pwnlib
       TEMPLATES = File.join(__dir__, 'templates')
       def initialize(method, filename, args)
         @method = method
         @filename = filename
         @args = args
+      end
+
+      # Pass to module Shellcraft when method missing.
+      def method_missing(method, *args, &block)
+        Shellcraft.send(method, *args, &block)
       end
 
       def work
@@ -81,24 +87,24 @@ module Pwnlib
       end
 
       def okay(s, *a, **kw)
-        s = ::Pwnlib::Util::Packing.pack(s, *a, **kw) if s.is_a?(Integer)
+        s = Util::Packing.pack(s, *a, **kw) if s.is_a?(Integer)
         !(s.include?("\x00") || s.include?("\n"))
       end
 
       def eval(item)
         return item if item.is_a?(Integer)
-        ::Pwnlib::Constants.eval(item)
+        Constants.eval(item)
       end
       alias evaluate eval
 
       def pretty(n, comment: true)
         return n.inspect if n.is_a?(String)
         return n unless n.is_a?(Numeric)
-        if n.instance_of?(::Pwnlib::Constants::Constant)
+        if n.instance_of?(Constants::Constant)
           return format(comment ? '%s /* %s */' : '%s (%s)', n, pretty(n.to_i))
         end
         return n if n.abs < 10
-        ::Pwnlib::Util::Fiddling.hex(n)
+        Util::Fiddling.hex(n)
       end
       # Static methods.
       class << self

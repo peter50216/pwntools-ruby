@@ -1,10 +1,9 @@
 require 'pwnlib/util/packing'
-extend ::Pwnlib::Util::Packing::ClassMethod
+extend Util::Packing::ClassMethod
 require 'pwnlib/util/fiddling'
-extend ::Pwnlib::Util::Fiddling::ClassMethod
+extend Util::Fiddling::ClassMethod
 require 'pwnlib/shellcraft/registers'
-extend ::Pwnlib::Shellcraft::Registers::ClassMethod
-require 'pwnlib/shellcraft/shellcraft'
+extend Shellcraft::Registers::ClassMethod
 
 # Move src into dest without newlines and null bytes.
 def mov(dest, src, stack_allowed: true)
