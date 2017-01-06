@@ -1,0 +1,3 @@
+def nop
+  'nop'
+end

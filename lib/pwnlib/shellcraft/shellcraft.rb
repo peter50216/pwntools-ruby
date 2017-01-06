@@ -10,11 +10,42 @@ module Pwnlib
   module Shellcraft
     def self.method_missing(method, *args, &_)
       # no asm need block?
-      AsmErbParser.parse(method.to_s, *args) || super
+      # TODO(david942j): support Shellcraft.amd64.linux.syscall
+      AsmRender.run(method, *args) || super
     end
 
-    # For *.asm.erb use
-    module ClassMethod
+    # Class for running .rb to acquire the result assembly.
+    class AsmRender
+      def initialize(method, *args)
+        @method = method
+        @args = args
+      end
+
+      def work
+        @_output = ''
+        filename = self.class.file_of(@method)
+        # method {@method} must be defined after instance_eval.
+        instance_eval(File.read(filename))
+        send(@method, *@args)
+        typesetting
+      end
+
+      private
+
+      # Indent each line 2 space.
+      # TODO(david942j): consider labels
+      def typesetting
+        @_output.lines.map do |line|
+          ' ' * 2 + line.lstrip
+        end.join
+      end
+
+      # For templates/*.rb use
+
+      def cat(str)
+        @_output.concat str + (str.end_with?("\n") ? '' : "\n")
+      end
+
       def okay(s, *a, **kw)
         s = ::Pwnlib::Util::Packing.pack(s, *a, **kw) if s.is_a?(Integer)
         !(s.include?("\x00") || s.include?("\n"))
@@ -24,6 +55,7 @@ module Pwnlib
         return item if item.is_a?(Integer)
         ::Pwnlib::Constants.eval(item)
       end
+      alias evaluate eval
 
       def pretty(n, comment: true)
         return n.inspect if n.is_a?(String)
@@ -34,73 +66,24 @@ module Pwnlib
         return n if n.abs < 10
         ::Pwnlib::Util::Fiddling.hex(n)
       end
-    end
-
-    # There're a few custom defined formats in erb, use a class to parse it.
-    class AsmErbParser
-      ARGUMENT_REGEXP = /^<%#\s+Argument\((.*)\)\s+%>/
-      # Check if can find {name}.asm.erb in current context.
-      # @return [Boolean] if {name}.asm.erb exists.
-      def self.exists?(name)
-        file_of(name) != nil
-      end
-
-      def self.file_of(name)
-        Dir.glob(File.join(__dir__, 'templates', context.arch, '**', format('%s.asm.erb', name))).first
-      end
-
-      def self.parse(name, *args)
-        return nil unless exists?(name)
-        filename = file_of(name)
-        Tilt.new(filename, trim: '>', outvar: '@erbout').render(nil, get_locals(filename, *args))
-      end
-
-      def self.get_locals(filename, *args)
-        arg_line = IO.binread(filename).lines.find do |line|
-          line =~ ARGUMENT_REGEXP
+      # Static methods.
+      class << self
+        # Check if can find {name}.rb in current context.
+        # @return [Boolean] if {name}.rb exists.
+        def exists?(name)
+          file_of(name) != nil
         end
-        return nil if arg_line.nil?
-        arg_to_hash(arg_line.scan(ARGUMENT_REGEXP)[0][0], args)
-      end
 
-      # Parse the argument line and combine args to hash
-      #
-      # @param [String] args_str The argument line specified in *.asm.erb.
-      # @param [Array] args The arguments array from callee.
-      #
-      # @return [Hash] The result locals hash.
-      #
-      # @example
-      #   arg_to_hash('dest, src, stack_allowed: true', ['rax', 'rcx', {stack_allowed: false}]
-      #   # => {dest: 'rax', src: 'rcx', stack_allowed: false}
-      #   arg_to_hash('*args', [1, 2, 3, 4])
-      #   # => {args: [1, 2, 3, 4]}
-      #
-      # @note Not support '**kwargs' and '&block'
-      # @bug Fails when default value includes ',', e.g. 'key: "123,"'
-      def self.arg_to_hash(args_str, args)
-        # TODO(david942j): raise ArgumentError when args invalid
-        args_hash = args.last.is_a?(Hash) ? args.last : {}
-        args_str.split(',').each_with_object({}) do |str, hash|
-          str.strip!
-          next if str.empty?
-          if str.start_with?('*') # *args
-            hash[str[1..-1].to_sym] = args
-            args = []
-            next
-          end
-          if str.include?(':') # keyword argument
-            key, val = str.split(':', 2)
-            key = key.strip.to_sym
-            hash[key] = args_hash.key?(key) ? args_hash[key] : instance_eval(val) # roooooock
-            next
-          end
-          hash[str.to_sym] = args.shift
+        def file_of(name)
+          Dir.glob(File.join(__dir__, 'templates', context.arch, '**', "#{name}.rb")).first
         end
-      end
 
-      # XXX(david942j, peter50216) is this correct usage of context?
-      extend ::Pwnlib::Context
+        def run(name, *args)
+          return nil unless exists?(name)
+          AsmRender.new(name, *args).work
+        end
+        include ::Pwnlib::Context
+      end
     end
   end
 end

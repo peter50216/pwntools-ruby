@@ -1,0 +1,3 @@
+def infloop
+  'jmp $'
+end

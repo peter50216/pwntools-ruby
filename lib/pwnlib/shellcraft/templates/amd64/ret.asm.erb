@@ -1,6 +1,0 @@
-<% require 'pwnlib/shellcraft/shellcraft' %>
-<%# Argument(return_value: nil) %>
-<% if return_value != nil %>
-<%= Pwnlib::Shellcraft.mov('rax', return_value) %>
-<% end %>
-  ret
