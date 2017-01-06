@@ -1,4 +1,8 @@
 # encoding: ASCII-8BIT
+
+# Make sure we're using local copy for local testing.
+$LOAD_PATH.unshift File.expand_path(File.join(__FILE__, '..', '..', '..', 'lib'))
+
 require 'pwn'
 
 context[arch: 'amd64']
@@ -25,3 +29,6 @@ begin
 rescue NoMethodError
   puts 'good'
 end
+
+# Make sure we can use Util::xxx::yyy directly
+raise 'pack fail' unless Util::Packing.pack(1) == "\x01\0\0\0\0\0\0\0"

@@ -11,6 +11,7 @@ module Pwnlib
 
         def_proxy_method Pwnlib::Util::Packing, %w(pack p8 p16 p32 p64)
         def_proxy_method Pwnlib::Util::Fiddling, %w(bits bits_str), bitswap: 'bitswap_int'
+        def_proxy_method Pwnlib::Util::Fiddling, %w(hex)
       end
     end
   end
