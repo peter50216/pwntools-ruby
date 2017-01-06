@@ -1,6 +1,15 @@
 language: ruby
-sudo: required
-cache: bundler
+sudo: false
+cache:
+  bundler: true
+  apt: true
+addons:
+  apt:
+    packages:
+      - libgd2-xpm
+      - ia32-libs
+      - ia32-libs-multiarch
+      - binutils
 os:
 - linux
 - osx
@@ -17,4 +26,3 @@ before_install:
   - gem update --system
   - gem install bundler
   - gem --version
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install -qq --force-yes libgd2-xpm ia32-libs ia32-libs-multiarch binutils > /dev/null; fi
