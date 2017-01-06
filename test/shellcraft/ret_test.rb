@@ -11,7 +11,16 @@ class RetTest < MiniTest::Test
     context.local(arch: 'amd64') do
       assert_equal("  ret\n", Shellcraft.ret)
       assert_equal("  xor eax, eax /* 0 */\n  ret\n", Shellcraft.ret(0))
-      assert_equal("  mov eax, 0x1010101 /* 12345678 == 0xbc614e */\n  xor eax, 0x1bd604f\n  ret\n", Shellcraft.ret(12_345_678))
+      assert_equal("  mov rax, 0x101010201010101 /* 4294967296 == 0x100000000 */\n  push rax\n  mov rax, 0x101010301010101\n  xor [rsp], rax\n  pop rax\n  ret\n",
+                   Shellcraft.ret(0x100000000))
+    end
+  end
+
+  def test_i386
+    context.local(arch: 'i386') do
+      # should can use amd64.ret
+      assert_equal("  mov rax, 0x101010201010101 /* 4294967296 == 0x100000000 */\n  push rax\n  mov rax, 0x101010301010101\n  xor [rsp], rax\n  pop rax\n  ret\n",
+                   Shellcraft.amd64.ret(0x100000000))
     end
   end
 end

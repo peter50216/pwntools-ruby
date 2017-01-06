@@ -1,9 +1,9 @@
 require 'pwnlib/shellcraft/shellcraft'
-Shellcraft = ::Pwnlib::Shellcraft
 require 'pwnlib/abi'
 
 # Assembly of `syscall`.
 def syscall(*arguments)
+  amd64 = ::Pwnlib::Shellcraft.amd64
   abi = ::Pwnlib::ABI::LINUX_AMD64_SYSCALL
   syscall, arg0, arg1, arg2, arg3, arg4, arg5 = arguments
   if (syscall.is_a?(String) || syscall.is_a?(::Pwnlib::Constants::Constant)) && syscall.to_s.start_with?('SYS_')
@@ -24,7 +24,6 @@ def syscall(*arguments)
   arguments = [syscall, arg0, arg1, arg2, arg3, arg4, arg5]
   reg_ctx   = registers.zip(arguments).to_h
   cat "/* call #{syscall_repr} */"
-  # TODO(david942j): should be amd64.setregs
-  cat Shellcraft.setregs(reg_ctx) if arguments.any? { |v| !v.nil? }
+  cat amd64.setregs(reg_ctx) if arguments.any? { |v| !v.nil? }
   cat 'syscall'
 end

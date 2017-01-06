@@ -1,10 +1,10 @@
 require 'pwnlib/shellcraft/shellcraft'
-Shellcraft = ::Pwnlib::Shellcraft
 require 'pwnlib/shellcraft/registers'
 Registers = ::Pwnlib::Shellcraft::Registers
 require 'pwnlib/reg_sort'
 extend ::Pwnlib::RegSort::ClassMethod
 def setregs(reg_context, stack_allowed: true)
+  amd64 = ::Pwnlib::Shellcraft.amd64
   reg_context = reg_context.reject { |_, v| v.nil? }.map { |k, v| [k.to_s, v] }.to_h
   eax = reg_context['rax']
   edx = reg_context['rdx']
@@ -34,8 +34,7 @@ def setregs(reg_context, stack_allowed: true)
       else
         # bug in python-pwntools, which missing `stack_allowed`
         # pwnlib.shellcraft.amd64.setregs({'rax': 1}, stack_allowed=False)
-        # TODO(david942j): should be amd64.mov
-        cat Shellcraft.mov(src, dst, stack_allowed: stack_allowed)
+        cat amd64.mov(src, dst, stack_allowed: stack_allowed)
       end
     end
   end

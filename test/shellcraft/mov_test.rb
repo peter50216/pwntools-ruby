@@ -27,4 +27,11 @@ class MovTest < MiniTest::Test
       assert_equal("  mov rax, 0x101010101010101 /* 76750323967 == 0x11dead00ff */\n  push rax\n  mov rax, 0x1010110dfac01fe\n  xor [rsp], rax\n  pop rax\n", Shellcraft.mov('rax', 0x11dead00ff))
     end
   end
+
+  def test_i386
+    context.local(arch: 'i386') do
+      # still can use amd64.mov
+      assert_equal("  mov rdx, rbx\n", Shellcraft.amd64.mov('rdx', 'rbx'))
+    end
+  end
 end
