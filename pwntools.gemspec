@@ -26,4 +26,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'minitest', '~> 5.8'
   s.add_development_dependency 'codeclimate-test-reporter', '~> 0.5'
   s.add_development_dependency 'rubocop', '~> 0.39'
+  s.add_development_dependency 'os', '~> 0.9'
 end
