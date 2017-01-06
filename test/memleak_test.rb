@@ -2,6 +2,7 @@
 require 'test_helper'
 require 'pwnlib/memleak'
 require 'open3'
+require 'os'
 
 class MemLeakTest < MiniTest::Test
   def setup
@@ -9,8 +10,12 @@ class MemLeakTest < MiniTest::Test
     @leak = Pwnlib::MemLeak.new { |addr| @binsh[addr] }
   end
 
-  def test_find_elf_base
+  def test_find_elf_base_basic
     assert_equal(0, @leak.find_elf_base(@binsh.length * 2 / 3))
+  end
+
+  def test_find_elf_base_bin
+    skip 'Only tested on linux' unless OS.linux?
     [32, 64].each do |b|
       # TODO(hh): Use process instead of popen2
       Open3.popen2(File.expand_path("../data/victim#{b}", __FILE__)) do |i, o, t|

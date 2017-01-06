@@ -32,3 +32,11 @@ context.local(bits: 16) do
   p pack(0x4142)  # 'AB'
 end
 ```
+
+# Note to irb users
+irb defines `main.context`,
+so `require 'pwn'; print context.class` would print `IRB::Context` instead of `Pwnlib::Context::ContextType` :cry:
+
+In order to do testing in irb, just run `class << self; remove_method(:context); end`.
+
+You can still access the original `IRB::Context` in `irb_context` :wink:
