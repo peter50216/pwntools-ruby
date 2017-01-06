@@ -1,8 +1,7 @@
 # encoding: ASCII-8BIT
 
 # require this file would also require all things in pwnlib, but would not
-# pollute anything. `include Pwn` in a class to use all pwnlib functions in
-# that class instance.
+# pollute anything.
 
 require 'pwnlib/context'
 require 'pwnlib/dynelf'
@@ -11,6 +10,8 @@ require 'pwnlib/util/packing'
 require 'pwnlib/util/cyclic'
 require 'pwnlib/util/fiddling'
 
+# include this module in a class to use all pwnlib functions in that class
+# instance.
 module Pwn
   include Pwnlib::Context
 
