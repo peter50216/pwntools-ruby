@@ -1,10 +1,8 @@
 # encoding: ASCII-8BIT
 require 'test_helper'
-require 'pwnlib/constants/constants'
 require 'pwnlib/constants/constant'
 
 class ConstantTest < MiniTest::Test
-  include Pwnlib::Constants::ClassMethod
   Constant = ::Pwnlib::Constants::Constant
 
   def test_methods
