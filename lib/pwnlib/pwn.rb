@@ -3,6 +3,8 @@
 # require this file would also require all things in pwnlib, but would not
 # pollute anything.
 
+require 'pwnlib/constants/constant'
+require 'pwnlib/constants/constants'
 require 'pwnlib/context'
 require 'pwnlib/dynelf'
 

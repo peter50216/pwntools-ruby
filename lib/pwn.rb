@@ -11,6 +11,4 @@ require 'pwnlib/ext/array'
 
 extend Pwn
 
-require 'pwnlib/constants/constants'
-
 include Pwnlib
