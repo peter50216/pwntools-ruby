@@ -20,7 +20,5 @@ include Pwnlib
 # and the IRB::Context can still be accessible from irb_context, we should be
 # fine removing context.
 class << self
-  if method_defined?(:context)
-    remove_method(:context)
-  end
+  remove_method(:context) if method_defined?(:context)
 end
