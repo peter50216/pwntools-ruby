@@ -86,6 +86,7 @@ module Pwnlib
                          style, highlight: highlight) unless block_given?
 
           style = DEFAULT_STYLE.merge(style)
+          highlight = highlight.dup.force_encoding('ASCII-8BIT')
           highlight.chars.each { |c| style[c] = HIGHLIGHT_STYLE }
           (0..255).map(&:chr).each do |c|
             next if style.include?(c)
