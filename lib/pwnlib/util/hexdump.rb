@@ -30,7 +30,6 @@ module Pwnlib
         # @!macro [new] hexdump_options
         #   @param [Integer] width
         #     The max number of characters per line.
-        #     It may be less if there's not enough data from io.read.
         #   @param [Boolean] skip
         #     Whether repeated lines should be replaced by a +"*"+.
         #   @param [Integer] offset
@@ -44,9 +43,8 @@ module Pwnlib
         #     * +:printable+, for printable bytes that don't have style specified.
         #     * +:unprintable+, for unprintable bytes that don't have style specified.
         #     The proc is called with a single argument, the string to be formatted.
-        #   @param [Array<String>] highlight
+        #   @param [String] highlight
         #     Convenient argument to highlight (red background) some bytes in style.
-        #     All elements should be a single byte string.
 
         # Yields lines of a hexdump-dump of a string. Unless you have massive
         # amounts of data you probably want to use {#hexdump}.
