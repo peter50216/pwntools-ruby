@@ -12,3 +12,15 @@ require 'pwnlib/ext/array'
 extend Pwn
 
 include Pwnlib
+
+# Small "fix" for irb context problem.
+# irb defines main.context for IRB::Context, which overrides our
+# Pwnlib::Context :(
+# Since our "context" should be more important for someone requiring 'pwn',
+# and the IRB::Context can still be accessible from irb_context, we should be
+# fine removing context.
+class << self
+  if method_defined?(:context)
+    remove_method(:context)
+  end
+end

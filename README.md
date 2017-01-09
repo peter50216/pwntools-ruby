@@ -13,6 +13,7 @@ While pwntools is awesome, I always love Ruby far more than Python...
 So this is an attempt to create such library.
 
 There's almost NOTHING here now.
+(Edit: there's something here now, but not much :wink:)
 Going to implement important things (socket, tubes, asm/disasm, pack/unpack utilities) first.
 Would try to have consistent naming with original pwntools, and do things in Ruby style.
 
@@ -34,9 +35,8 @@ end
 ```
 
 # Note to irb users
-irb defines `main.context`,
-so `require 'pwn'; print context.class` would print `IRB::Context` instead of `Pwnlib::Context::ContextType` :cry:
+irb defines `main.context`.
 
-In order to do testing in irb, just run `class << self; remove_method(:context); end`.
+For the ease of exploit development in irb, that method would be removed if you use `require 'pwn'`.
 
-You can still access the original `IRB::Context` in `irb_context` :wink:
+You can still get the `IRB::Context` by `irb_context`.
