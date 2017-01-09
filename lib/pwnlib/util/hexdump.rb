@@ -110,8 +110,9 @@ module Pwnlib
             # We assume that chunk is in ASCII-8BIT encoding.
             chunk = io.read(width)
             break unless chunk
+            chunk_bytes = chunk.bytes
             start_byte_index = byte_index
-            byte_index += chunk.size
+            byte_index += chunk_bytes.size
 
             # Yield * once for repeated lines.
             if skip && last_chunk == chunk
@@ -124,25 +125,21 @@ module Pwnlib
 
             hex_bytes = ''
             printable = ''
-            chunk.bytes.each_with_index do |b, i|
+            chunk_bytes.each_with_index do |b, i|
               left_hex, right_char = styled_bytes[b]
               hex_bytes << left_hex
               printable << right_char
-              if i % 4 == 3 && i != width - 1
+              if i % 4 == 3 && i != chunk_bytes.size - 1
                 hex_bytes << spacer
                 printable << marker
               end
               hex_bytes << ' '
             end
 
-            if chunk.size < width
+            if chunk_bytes.size < width
               padded_hex_length = 3 * width + (width - 1) / 4
-              hex_length = 3 * chunk.size + chunk.size / 4
+              hex_length = 3 * chunk_bytes.size + (chunk_bytes.size - 1) / 4
               hex_bytes << ' ' * (padded_hex_length - hex_length)
-
-              padded_printable_length = width + (width - 1) / 4
-              printable_length = chunk.size + chunk.size / 4
-              printable << ' ' * (padded_printable_length - printable_length)
             end
 
             yield format("%08x  %s #{MARKER}%s#{MARKER}", start_byte_index, hex_bytes, printable)
