@@ -3,6 +3,7 @@ require 'pathname'
 
 require 'bundler/gem_tasks'
 require 'rake/testtask'
+require 'rainbow'
 require 'rubocop/rake_task'
 
 RuboCop::RakeTask.new(:rubocop) do |task|
@@ -20,7 +21,7 @@ Rake::TestTask.new(:test) do |test|
 end
 
 task :install_git_hooks do
-  hooks = %w(pre-commit)
+  hooks = %w(pre-push)
   git_hook_dir = Pathname.new('.git/hooks/')
   hook_dir = Pathname.new('git-hooks/')
   hooks.each do |hook|
@@ -30,5 +31,10 @@ task :install_git_hooks do
     puts "Installing git hook #{hook}..."
     target.unlink if target.exist? || target.symlink?
     target.make_symlink(src.relative_path_from(target.dirname))
+  end
+  git_version = `git version`[/\Agit version (.*)\Z/, 1]
+  if Gem::Version.new(git_version) < Gem::Version.new('1.8.2')
+    puts Rainbow("Your git is older than 1.8.2, and doesn't support pre-push hook...").red.bright
+    puts Rainbow('Please make sure test passed before pushing!!!!!!').red.bright
   end
 end
