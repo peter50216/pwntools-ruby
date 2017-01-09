@@ -1,3 +1,6 @@
+require 'fileutils'
+require 'pathname'
+
 require 'bundler/gem_tasks'
 require 'rake/testtask'
 require 'rubocop/rake_task'
@@ -7,11 +10,25 @@ RuboCop::RakeTask.new(:rubocop) do |task|
   task.formatters = ['files']
 end
 
-task default: [:rubocop, :test]
+task default: [:install_git_hooks, :rubocop, :test]
 
 Rake::TestTask.new(:test) do |test|
   test.libs << 'lib'
   test.libs << 'test'
   test.pattern = 'test/**/*_test.rb'
   test.verbose = true
+end
+
+task :install_git_hooks do
+  hooks = %w(pre-commit)
+  git_hook_dir = Pathname.new('.git/hooks/')
+  hook_dir = Pathname.new('git-hooks/')
+  hooks.each do |hook|
+    src = hook_dir + hook
+    target = git_hook_dir + hook
+    next if target.symlink? && (target.dirname + target.readlink).realpath rescue nil == src.realpath
+    puts "Installing git hook #{hook}..."
+    target.unlink if target.exist? || target.symlink?
+    target.make_symlink(src.relative_path_from(target.dirname))
+  end
 end

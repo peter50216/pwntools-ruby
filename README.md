@@ -34,6 +34,13 @@ context.local(bits: 16) do
 end
 ```
 
+# Development
+```sh
+git clone git@github.com:peter50216/pwntools-ruby.git
+cd pwntools-ruby
+rake
+```
+
 # Note to irb users
 irb defines `main.context`.
 
