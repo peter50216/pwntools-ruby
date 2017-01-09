@@ -2,6 +2,7 @@ PATH
   remote: .
   specs:
     pwntools (0.1.0)
+      rainbow (~> 2.2)
 
 GEM
   remote: https://www.rubygems.org/
@@ -38,6 +39,7 @@ GEM
     simplecov-html (0.10.0)
     slop (3.6.0)
     unicode-display_width (1.1.2)
+    yard (0.9.6)
 
 PLATFORMS
   ruby
@@ -48,9 +50,9 @@ DEPENDENCIES
   os (~> 0.9)
   pry (~> 0.10)
   pwntools!
-  rainbow (~> 2.2)
   rake (~> 11.1)
   rubocop (~> 0.39)
+  yard (~> 0.9)
 
 BUNDLED WITH
    1.13.7

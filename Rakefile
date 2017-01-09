@@ -27,7 +27,7 @@ task :install_git_hooks do
   hooks.each do |hook|
     src = hook_dir + hook
     target = git_hook_dir + hook
-    next if target.symlink? && (target.dirname + target.readlink).realpath rescue nil == src.realpath
+    next if target.symlink? && (target.dirname + target.readlink).realpath == src.realpath
     puts "Installing git hook #{hook}..."
     target.unlink if target.exist? || target.symlink?
     target.make_symlink(src.relative_path_from(target.dirname))
