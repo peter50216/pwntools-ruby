@@ -20,13 +20,33 @@ module Pwnlib
         MARKER = "\u2502"
         HIGHLIGHT_STYLE = ->(s) { Rainbow(s).bg(:red) }
         DEFAULT_STYLE = {
-          "\x00" => ->(s) { Rainbow(s).red },
-          "\x0a" => ->(s) { Rainbow(s).red },
-          "\xff" => ->(s) { Rainbow(s).green },
+          0x00 => ->(s) { Rainbow(s).red },
+          0x0a => ->(s) { Rainbow(s).red },
+          0xff => ->(s) { Rainbow(s).green },
           marker: ->(s) { Rainbow(s).dimgray },
           printable: ->(s) { s },
           unprintable: ->(s) { Rainbow(s).dimgray }
         }
+        # @!macro [new] hexdump_options
+        #   @param [Integer] width
+        #     The max number of characters per line.
+        #     It may be less if there's not enough data from io.read.
+        #   @param [Boolean] skip
+        #     Whether repeated lines should be replaced by a +"*"+.
+        #   @param [Integer] offset
+        #     Offset of the first byte to print in the left column.
+        #   @param [Hash{Integer, Symbol => Proc}] style
+        #     Color scheme to use.
+        #
+        #     Possible keys are:
+        #     * <tt>0x00..0xFF</tt>, for specified byte.
+        #     * +:marker+, for the separator in right column.
+        #     * +:printable+, for printable bytes that don't have style specified.
+        #     * +:unprintable+, for unprintable bytes that don't have style specified.
+        #     The proc is called with a single argument, the string to be formatted.
+        #   @param [Array<String>] highlight
+        #     Convenient argument to highlight (red background) some bytes in style.
+        #     All elements should be a single byte string.
 
         # Yields lines of a hexdump-dump of a string. Unless you have massive
         # amounts of data you probably want to use {#hexdump}.
@@ -35,49 +55,14 @@ module Pwnlib
         # @overload hexdump_iter(io, width: 16, skip: true, offset: 0, style: {}, highlight: '')
         #   @param [#read] io
         #     The object to be dumped.
-        #   @param [Integer] width
-        #     The max number of characters per line.
-        #     It may be less if there's not enough data from io.read.
-        #   @param [Boolean] skip
-        #     Whether repeated lines should be replaced by a +"*"+.
-        #   @param [Integer] offset
-        #     Offset of the first byte to print in the left column.
-        #   @param [Hash{String => Proc}] style
-        #     Color scheme to use.
-        #
-        #     Possible keys are:
-        #     * <tt>"\x00".."\xFF"</tt>, for specified byte.
-        #     * +'marker'+, for the separator in right column.
-        #     * +'printable'+, for printable bytes that don't have style specified.
-        #     * +'unprintable'+, for unprintable bytes that don't have style specified.
-        #     The proc is called with a single argument, the string to be formatted.
-        #   @param [Array<String>] highlight
-        #     Convenient argument to highlight (red background) some bytes in style.
-        #     All elements should be a single byte string.
+        #   @!macro hexdump_options
         #   @return [void]
         #   @yieldparam line
         #     The resulting hexdump, line by line.
         # @overload hexdump_iter(io, width: 16, skip: true, offset: 0, style: {}, highlight: '')
         #   @param [#read] io
         #     The object to be dumped.
-        #   @param [Integer] width
-        #     The max number of characters per line.
-        #     It may be less if there's not enough data from io.read.
-        #   @param [Boolean] skip
-        #     Whether repeated lines should be replaced by a +"*"+.
-        #   @param [Integer] offset
-        #     Offset of the first byte to print in the left column.
-        #   @param [Hash{String, Symbol => Proc}] style
-        #     Color scheme to use. Would be merged with default style.
-        #
-        #     Possible keys are:
-        #     * <tt>"\x00".."\xFF"</tt>, for specified byte.
-        #     * +:marker+, for the separator in right column.
-        #     * +:printable+, for printable bytes that don't have style specified.
-        #     * +:unprintable+, for unprintable bytes that don't have style specified.
-        #     The proc is called with a single argument, the string to be formatted.
-        #   @param [String] highlight
-        #     Convenient argument to highlight (red background) some bytes in style.
+        #   @!macro hexdump_options
         #   @return [Enumerator]
         #     The resulting hexdump, line by line.
         def hexdump_iter(io, width: 16, skip: true, offset: 0, style: {}, highlight: '')
@@ -86,18 +71,17 @@ module Pwnlib
                          style, highlight: highlight) unless block_given?
 
           style = DEFAULT_STYLE.merge(style)
-          highlight = highlight.dup.force_encoding('ASCII-8BIT')
-          highlight.chars.each { |c| style[c] = HIGHLIGHT_STYLE }
-          (0..255).map(&:chr).each do |c|
-            next if style.include?(c)
-            style[c] = (c =~ /[[:print:]]/ ? style[:printable] : style[:unprintable])
+          highlight.bytes.each { |b| style[b] = HIGHLIGHT_STYLE }
+          (0..255).each do |b|
+            next if style.include?(b)
+            style[b] = (b.chr =~ /[[:print:]]/ ? style[:printable] : style[:unprintable])
           end
 
           styled_bytes = (0..255).map do |b|
             left_hex = format('%02x', b)
             c = b.chr
             right_char = (c =~ /[[:print:]]/ ? c : "\u00b7")
-            [style[c].call(left_hex), style[c].call(right_char)]
+            [style[b].call(left_hex), style[b].call(right_char)]
           end
 
           marker = style[:marker].call(MARKER)
@@ -150,25 +134,9 @@ module Pwnlib
         end
 
         # Returns a hexdump-dump of a string.
-        # @param [String] str
-        #   string to be hexdump
-        # @param [Integer] width
-        #   The number of characters per line.
-        # @param [Boolean] skip
-        #   Whether repeated lines should be replaced by a +"*"+.
-        # @param [Integer] offset
-        #   Offset of the first byte to print in the left column.
-        # @param [Hash{String, Symbol => Proc}] style
-        #   Color scheme to use. Would be merged with default style.
-        #
-        #   Possible keys are:
-        #   * <tt>"\x00".."\xFF"</tt>, for specified byte.
-        #   * +:marker+, for the separator in right column.
-        #   * +:printable+, for printable bytes that don't have style specified.
-        #   * +:unprintable+, for unprintable bytes that don't have style specified.
-        #   The proc is called with a single argument, the string to be formatted.
-        # @param [String] highlight
-        #   Convenient argument to highlight (red background) some bytes in style.
+        # @param str
+        #   The string to be hexdumped.
+        # @!macro hexdump_options
         # @return [String]
         #   The resulting hexdump.
         def hexdump(str, width: 16, skip: true, offset: 0, style: {}, highlight: '')
