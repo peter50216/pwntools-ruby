@@ -23,9 +23,9 @@ module Pwnlib
           "\x00" => ->(s) { Rainbow(s).red },
           "\x0a" => ->(s) { Rainbow(s).red },
           "\xff" => ->(s) { Rainbow(s).green },
-          marker: ->(s) { Rainbow(s).gray },
+          marker: ->(s) { Rainbow(s).dimgray },
           printable: ->(s) { s },
-          unprintable: ->(s) { Rainbow(s).gray }
+          unprintable: ->(s) { Rainbow(s).dimgray }
         }
 
         # Yields lines of a hexdump-dump of a string. Unless you have massive
