@@ -48,6 +48,7 @@ DEPENDENCIES
   os (~> 0.9)
   pry (~> 0.10)
   pwntools!
+  rainbow (~> 2.2)
   rake (~> 11.1)
   rubocop (~> 0.39)
 
