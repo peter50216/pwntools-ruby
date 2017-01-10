@@ -23,4 +23,7 @@ module Pwn
   include Pwnlib::Util::Packing::ClassMethod
   include Pwnlib::Util::Cyclic::ClassMethod
   include Pwnlib::Util::Fiddling::ClassMethod
+  def shellcraft
+    ::Pwnlib::Shellcraft::Root.instance
+  end
 end

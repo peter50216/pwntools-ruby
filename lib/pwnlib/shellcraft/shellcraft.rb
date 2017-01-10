@@ -18,11 +18,17 @@ module Pwnlib
     # `directories traversal' for furthur calling.
     class Submodule
       ROOT_DIR = File.join(__dir__, 'templates')
+
+      # @param [String] name
+      #   The `path' to this module.
+      # @example
+      #   Submodule.new('amd64/linux')
       def initialize(name)
         @name = name
         @modules = {}
       end
 
+      # For dynamic define methods.
       def method_missing(method, *args, &_)
         return @modules[method] if add_module(method)
 
@@ -32,12 +38,16 @@ module Pwnlib
         public_send(method, *args)
       end
 
+      def respond_to_missing?(method, _include_private)
+        return true if add_module(method)
+        return true if add_method(method)
+        false
+      end
+
       private
 
-      attr_reader :modules
-
       def add_method(method)
-        return false unless rbfile?(method.to_s)
+        return false unless rbfile?(method)
         define_singleton_method(method) do |*args|
           AsmMethods.call(@name, method, *args)
         end
@@ -47,7 +57,7 @@ module Pwnlib
       # @param [Symbol] method
       def add_module(method)
         return false unless dir?(method) # not a dir
-        @modules[method] = Submodule.get(File.join(@name, method.to_s))
+        @modules[method] = Submodule.new(File.join(@name, method.to_s))
         # add submodule method!
         define_singleton_method(method) { @modules[method] }
         true
@@ -63,12 +73,6 @@ module Pwnlib
 
       def path(method)
         File.join(ROOT_DIR, @name, method.to_s)
-      end
-
-      def self.get(name)
-        name = name.to_s
-        return nil unless File.exist?(File.join(ROOT_DIR, name))
-        Submodule.new(name)
       end
     end
 
@@ -117,18 +121,18 @@ module Pwnlib
       # @param [Symbol] method
       #   Assembly method to be called.
       # @param [Array] args
-      #   Arguments to be pass.
+      #   Arguments to be passed.
       #
       # @return [String]
       #   The assembly codes.
       #
       # @example
-      #   AsmMethods.call('templates/amd64/linux', :syscall, ['SYS_read', 0, 'rsp', 10])
+      #   AsmMethods.call('amd64/linux', :syscall, ['SYS_read', 0, 'rsp', 10])
       #   => <assembly codes>
       def self.call(path, method, *args)
         raise ArgumentError, "Method `#{method}` not found in path \'#{path}\'!" unless File.file?(File.join(Submodule::ROOT_DIR, path, "#{method}.rb"))
         require File.join(Submodule::ROOT_DIR, path, method.to_s) # require 'templates/amd64/linux/syscall'
-        list = [*path.split('/'), method].reject { |s| s == '.' }.map(&:to_sym)
+        list = [*path.split('/').reject { |s| s.include?('.') }.map(&:to_sym), method]
         list.inject(@methods) do |cur, key|
           raise ArgumentError, "Method `#{method}` not been defined by #{path}/#{method}.rb!" unless cur.key?(key)
           cur[key]
@@ -136,6 +140,10 @@ module Pwnlib
       end
 
       # @param [String] name
+      #   The name includes module path to be defined.
+      # @example
+      #   AsmMethods.define('amd64.nop') { cat 'nop' }
+      #   # Now can invoke AsmMethods.call('amd64', :nop).
       def self.define(name, &block)
         list = name.split('.').map(&:to_sym)
         obj = list[0...-1].inject(@methods) do |cur, key|
@@ -152,6 +160,7 @@ module Pwnlib
       end
 
       # A `sandbox' class to run assembly generators (i.e. shellcraft/templates/*.rb).
+      # @note This class should never be used externally, only {Pwnlib::Shellcraft::AsmMethods} can use it.
       class Runner
         def call(*args)
           @_output = ''
@@ -196,7 +205,7 @@ module Pwnlib
           Util::Fiddling.hex(n)
         end
 
-        include Pwnlib
+        include ::Pwnlib
       end
     end
   end
