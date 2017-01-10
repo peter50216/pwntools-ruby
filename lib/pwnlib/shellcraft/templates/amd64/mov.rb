@@ -68,16 +68,6 @@ Pwnlib::Shellcraft.define('amd64.mov') do |dest, src, stack_allowed: true|
     elsif okay(srcp)
       cat "mov #{dest}, #{pretty(src)}"
     # We can push 32-bit values onto the stack and they are sign-extended.
-    elsif stack_allowed && [32, 64].include?(dest.size) && (-2**31 <= srcs && srcs < 2**31) && okay(srcp[0, 4])
-      cat "push #{pretty(src)}"
-      cat "pop #{dest.native64}"
-    # We can also leverage the sign-extension to our advantage.
-    # For example, 0xdeadbeef is sign-extended to 0xffffffffdeadbeef.
-    # Want EAX=0xdeadbeef, we don't care that RAX=0xfff...deadbeef.
-    elsif stack_allowed && dest.size == 32 && srcu < 2**32 && okay(srcp[0, 4])
-      cat "push #{pretty(src)}"
-      cat "pop #{dest.native64}"
-    # Target value is an 8-bit value, use a 8-bit mov
     elsif srcu < 2**8 && okay(srcp[0, 1]) && dest.sizes.include?(8)
       cat "xor #{dest.xor}, #{dest.xor}"
       cat "mov #{dest.sizes[8]}, #{pretty(src)}"
@@ -90,10 +80,6 @@ Pwnlib::Shellcraft.define('amd64.mov') do |dest, src, stack_allowed: true|
     elsif srcu < 2**16 && okay(srcp[0, 2])
       cat "xor #{dest.xor}, #{dest.xor}"
       cat "mov #{dest.sizes[16]}, #{pretty(src)}"
-    # Target value is a 32-bit value, use a 32-bit mov.
-    # Note that this is zero-extended rather than sign-extended (the 32-bit push above).
-    elsif srcu < 2**32 && okay(srcp[0, 4])
-      cat "mov #{dest.sizes[32]}, #{pretty(src)}"
     # All else has failed.  Use some XOR magic to move things around.
     else
       a, b = xor_pair(srcp, avoid: "\x00\n")
@@ -116,7 +102,5 @@ Pwnlib::Shellcraft.define('amd64.mov') do |dest, src, stack_allowed: true|
         raise ArgumentError, "Cannot put #{pretty(src)} into '#{dest}' without using stack."
       end
     end
-  else
-    raise ArgumentError, "#{src} is neither a register nor an immediate."
   end
 end
