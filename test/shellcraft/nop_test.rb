@@ -5,17 +5,20 @@ require 'pwnlib/context'
 
 class NopTest < MiniTest::Test
   include ::Pwnlib::Context
-  Shellcraft = ::Pwnlib::Shellcraft
+
+  def setup
+    @shellcraft = ::Pwnlib::Shellcraft::Root.instance
+  end
 
   def test_amd64
     context.local(arch: 'amd64') do
-      assert_equal("  nop\n", Shellcraft.nop)
+      assert_equal("  nop\n", @shellcraft.nop)
     end
   end
 
   def test_i386
     context.local(arch: 'i386') do
-      assert_equal("  nop\n", Shellcraft.nop)
+      assert_equal("  nop\n", @shellcraft.nop)
     end
   end
 end

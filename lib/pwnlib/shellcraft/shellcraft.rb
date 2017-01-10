@@ -3,120 +3,171 @@ require 'pwnlib/context'
 require 'pwnlib/util/packing'
 require 'pwnlib/util/fiddling'
 require 'pwnlib/constants/constant'
+require 'singleton'
 
 module Pwnlib
   # Implement shellcraft!
   module Shellcraft
-    def self.method_missing(method, *args, &_)
-      # no asm need block?
-      AsmRenderer.run(method, args) || Submodule.get(method) || super
+    def self.define(name, *args, &block)
+      AsmMethods.define(name, *args, &block)
     end
 
-    # To support like Shellcraft.amd64.linux.syscall.
+    # To support like +Shellcraft.amd64.linux.syscall+.
     #
-    # return a Submodule object when call Shellcraft.amd64, and do the
+    # return a {Pwnlib::Shellcraft::Submodule} object when call +Shellcraft.amd64+, and do the
     # `directories traversal' for furthur calling.
     class Submodule
+      ROOT_DIR = File.join(__dir__, 'templates')
       def initialize(name)
         @name = name
+        @modules = {}
       end
 
       def method_missing(method, *args, &_)
-        super unless exists?(method)
-        return Submodule.get(File.join(@name, method.to_s)) if dir?(method)
-        AsmRenderer.run(method, args, path: @name) || super
+        return @modules[method] if add_module(method)
+
+        # not a dir, define method.
+        return super unless add_method(method) # +return super+ when file not found
+        # method must be defined now.
+        public_send(method, *args)
       end
 
       private
+
+      attr_reader :modules
+
+      def add_method(method)
+        return false unless rbfile?(method.to_s)
+        define_singleton_method(method) do |*args|
+          AsmMethods.call(@name, method, *args)
+        end
+        true
+      end
+
+      # @param [Symbol] method
+      def add_module(method)
+        return false unless dir?(method) # not a dir
+        @modules[method] = Submodule.get(File.join(@name, method.to_s))
+        # add submodule method!
+        define_singleton_method(method) { @modules[method] }
+        true
+      end
 
       def dir?(method)
         File.directory?(path(method))
       end
 
-      def exists?(method)
-        File.exist?(path(method)) || File.exist?(path("#{method}.rb"))
+      def rbfile?(method)
+        File.exist?(path("#{method}.rb"))
       end
 
       def path(method)
-        File.join(AsmRenderer::TEMPLATES, @name, method.to_s)
+        File.join(ROOT_DIR, @name, method.to_s)
       end
 
       def self.get(name)
         name = name.to_s
-        return nil unless File.exist?(File.join(AsmRenderer::TEMPLATES, name))
+        return nil unless File.exist?(File.join(ROOT_DIR, name))
         Submodule.new(name)
       end
     end
 
-    # For render templates.
-    module AsmRenderer
-      TEMPLATES = File.join(__dir__, 'templates')
-      # Static methods.
-      class << self
-        # Check if can find {name}.rb in current context.
-        # @return [Boolean] if {name}.rb exists.
-        def exists?(path, name)
-          filename = file_of(path, name)
-          !filename.nil? && File.file?(filename)
-        end
-
-        def file_of(path, name)
-          Dir.glob(File.join(TEMPLATES, path, "#{name}.rb")).first
-        end
-
-        # @param [Symbol] method
-        #   The target shllcraft name.
-        # @param [Array] args
-        #   The arguments will pass to `method`.
-        # @option [String] path
-        #   The relative path to find the desired method.
-        #   Current directories is 'templates/'.
-        #   If `nil` is given, path will be treated as "./#{context.arch}/**/"
-        #
-        # @example
-        #   AsmRenderer.run(:mov, ['rax', 'rbx'], path: './amd64/')
-        #   => " mov rax, rbx\n"
-        def run(method, args, path: nil)
-          path ||= "./#{context.arch}/**/"
-          return nil unless exists?(path, method)
-          typesetting(Render.new(method, file_of(path, method), args).work)
-        end
-
-        # Indent each line 2 space.
-        # TODO(david942j): consider labels
-        def typesetting(result)
-          result.lines.map do |line|
-            ' ' * 2 + line.lstrip
-          end.join
-        end
-
-        include ::Pwnlib::Context
+    # The root module
+    class Root < Submodule
+      include ::Singleton
+      def initialize
+        super('.') # root dir
       end
 
-      # Class for providing a `sandbox' to run *.rb and acquire the result assembly.
-      class Render
-        # Then we don't need Pwnlib:: in templates.
-        include ::Pwnlib
-        def initialize(method, filename, args)
-          @method = method
-          @filename = filename
-          @args = args
-        end
+      private
 
-        # Pass to module Shellcraft when method missing.
-        def method_missing(method, *args, &block)
-          Shellcraft.send(method, *args, &block)
-        end
+      def add_method(method)
+        # If method not presents in current arch, ignore it.
+        filepath = glob(method.to_s)
+        return false unless filepath
 
-        def work
+        # find file path in +context.arch+, and call it.
+        define_singleton_method(method) do |*args|
+          filepath = glob(method.to_s) # find again because context.arch might be changed.
+          # If method already been defined but architecture changed,
+          # needs to raise method_missing.
+          return method_missing(method, *args) unless filepath
+          # here sucks...
+          list = filepath[filepath.rindex("/#{@name}/")..-1].split('/').slice(2..-2).map(&:to_sym)
+          list.inject(self) do |obj, mod|
+            obj.public_send(mod)
+          end.public_send(method, *args)
+        end
+        true
+      end
+
+      def glob(name)
+        Dir.glob(File.join(ROOT_DIR, @name, context.arch, '**', "#{name}.rb")).first
+      end
+
+      include ::Pwnlib::Context
+    end
+
+    # Records every methods that invoked, lazy binding.
+    module AsmMethods
+      @methods = {}
+
+      # @param [String] path
+      #   The relative path that contains `method`.rb.
+      # @param [Symbol] method
+      #   Assembly method to be called.
+      # @param [Array] args
+      #   Arguments to be pass.
+      #
+      # @return [String]
+      #   The assembly codes.
+      #
+      # @example
+      #   AsmMethods.call('templates/amd64/linux', :syscall, ['SYS_read', 0, 'rsp', 10])
+      #   => <assembly codes>
+      def self.call(path, method, *args)
+        raise ArgumentError, "Method `#{method}` not found in path \'#{path}\'!" unless File.file?(File.join(Submodule::ROOT_DIR, path, "#{method}.rb"))
+        require File.join(Submodule::ROOT_DIR, path, method.to_s) # require 'templates/amd64/linux/syscall'
+        list = [*path.split('/'), method].reject { |s| s == '.' }.map(&:to_sym)
+        list.inject(@methods) do |cur, key|
+          raise ArgumentError, "Method `#{method}` not been defined by #{path}/#{method}.rb!" unless cur.key?(key)
+          cur[key]
+        end.call(*args)
+      end
+
+      # @param [String] name
+      def self.define(name, &block)
+        list = name.split('.').map(&:to_sym)
+        obj = list[0...-1].inject(@methods) do |cur, key|
+          cur[key] = {} unless cur.key?(key)
+          cur[key]
+        end
+        obj[list.last] = Runner.new
+        meta = class << obj[list.last]
+          self
+        end
+        meta.instance_eval do
+          define_method(:inner, &block)
+        end
+      end
+
+      # A `sandbox' class to run assembly generators (i.e. shellcraft/templates/*.rb).
+      class Runner
+        def call(*args)
           @_output = ''
-          instance_eval(File.read(@filename))
-          # method {@method} must be defined after instance_eval.
-          send(@method, *@args)
-          @_output
+          inner(*args)
+          typesetting
         end
 
         private
+
+        # Indent each line 2 space.
+        # TODO(david942j): consider labels
+        def typesetting
+          @_output.lines.map do |line|
+            ' ' * 2 + line.lstrip
+          end.join
+        end
 
         # For templates/*.rb use.
 
@@ -144,6 +195,8 @@ module Pwnlib
           return n if n.abs < 10
           Util::Fiddling.hex(n)
         end
+
+        include Pwnlib
       end
     end
   end

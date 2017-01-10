@@ -1,4 +1,5 @@
-def popad
+require 'pwnlib/shellcraft/shellcraft'
+Pwnlib::Shellcraft.define('amd64.popad') do
   cat <<EOS
     pop rdi
     pop rsi

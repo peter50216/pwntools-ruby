@@ -1,12 +1,14 @@
 require 'pwnlib/util/packing'
-extend Util::Packing::ClassMethod
 require 'pwnlib/util/fiddling'
-extend Util::Fiddling::ClassMethod
 require 'pwnlib/shellcraft/registers'
-extend Shellcraft::Registers::ClassMethod
+require 'pwnlib/shellcraft/shellcraft'
 
 # Move src into dest without newlines and null bytes.
-def mov(dest, src, stack_allowed: true)
+Pwnlib::Shellcraft.define('amd64.mov') do |dest, src, stack_allowed: true|
+  extend Pwnlib::Util::Packing::ClassMethod
+  extend Pwnlib::Util::Fiddling::ClassMethod
+  extend Pwnlib::Shellcraft::Registers::ClassMethod
+
   raise ArgumentError, "#{dest} is not a register" unless register?(dest)
   dest = get_register(dest)
   if register?(src)

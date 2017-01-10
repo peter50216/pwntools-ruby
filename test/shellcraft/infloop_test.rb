@@ -5,17 +5,20 @@ require 'pwnlib/context'
 
 class InfloopTest < MiniTest::Test
   include ::Pwnlib::Context
-  Shellcraft = ::Pwnlib::Shellcraft
+
+  def setup
+    @shellcraft = ::Pwnlib::Shellcraft::Root.instance
+  end
 
   def test_amd64
     context.local(arch: 'amd64') do
-      assert_equal("  jmp $\n", Shellcraft.infloop)
+      assert_equal("  jmp $\n", @shellcraft.infloop)
     end
   end
 
   def test_i386
     context.local(arch: 'i386') do
-      assert_equal("  jmp $\n", Shellcraft.infloop)
+      assert_equal("  jmp $\n", @shellcraft.infloop)
     end
   end
 end
