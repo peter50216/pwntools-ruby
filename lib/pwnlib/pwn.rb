@@ -12,6 +12,8 @@ require 'pwnlib/util/packing'
 require 'pwnlib/util/cyclic'
 require 'pwnlib/util/fiddling'
 
+require 'pwnlib/reg_sort'
+
 # include this module in a class to use all pwnlib functions in that class
 # instance.
 module Pwn

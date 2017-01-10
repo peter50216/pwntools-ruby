@@ -11,8 +11,6 @@ require 'pwnlib/ext/array'
 
 extend Pwn
 
-require 'pwnlib/reg_sort'
-
 include Pwnlib
 
 # Small "fix" for irb context problem.
