@@ -22,6 +22,7 @@ class ConstantsTest < MiniTest::Test
       assert_equal('Constant("SYS_read", 0x3)', Constants.SYS_read.inspect)
       assert_equal('__NR_prctl', Constants.__NR_prctl.to_s)
       assert_equal('Constant("(O_CREAT)", 0x40)', Constants.eval('O_CREAT').inspect)
+      assert_equal(0x40, Constants.method(:O_CREAT).call.to_i)
       # 2 < 3
       assert_operator(2, :<, Constants.SYS_read)
     end
