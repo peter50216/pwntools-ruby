@@ -2,7 +2,7 @@ PATH
   remote: .
   specs:
     pwntools (0.1.0)
-      pastel (~> 0.7)
+      rainbow (~> 2.2)
 
 GEM
   remote: https://www.rubygems.org/
@@ -12,15 +12,11 @@ GEM
       simplecov
     coderay (1.1.1)
     docile (1.1.5)
-    equatable (0.5.0)
     json (2.0.2)
     method_source (0.8.2)
     minitest (5.10.1)
     parser (2.3.3.1)
       ast (~> 2.2)
-    pastel (0.7.1)
-      equatable (~> 0.5.0)
-      tty-color (~> 0.4.0)
     powerpack (0.1.1)
     pry (0.10.4)
       coderay (~> 1.1.0)
@@ -41,7 +37,6 @@ GEM
       simplecov-html (~> 0.10.0)
     simplecov-html (0.10.0)
     slop (3.6.0)
-    tty-color (0.4.0)
     tty-platform (0.1.0)
     unicode-display_width (1.1.2)
     yard (0.9.6)

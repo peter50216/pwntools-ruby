@@ -21,7 +21,7 @@ Gem::Specification.new do |s|
 
   s.required_ruby_version = '>= 2.1.0'
 
-  s.add_runtime_dependency 'pastel', '~> 0.7'
+  s.add_runtime_dependency 'rainbow', '~> 2.2'
 
   s.add_development_dependency 'codeclimate-test-reporter', '~> 1.0'
   s.add_development_dependency 'minitest', '~> 5.8'
