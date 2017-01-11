@@ -196,13 +196,16 @@ module Pwnlib
         alias evaluate eval
 
         def pretty(n, comment: true)
-          return n.inspect if n.is_a?(String)
-          return n unless n.is_a?(Numeric)
-          if n.instance_of?(Constants::Constant)
-            return format(comment ? '%s /* %s */' : '%s (%s)', n, pretty(n.to_i))
+          case n
+          when String
+            n.inspect
+          when Constants::Constant
+            format(comment ? '%s /* %s */' : '%s (%s)', n, pretty(n.to_i))
+          when Integer
+            n.abs < 10 ? n.to_s : Util::Fiddling.hex(n)
+          else
+            n.to_s
           end
-          return n if n.abs < 10
-          Util::Fiddling.hex(n)
         end
 
         include ::Pwnlib
