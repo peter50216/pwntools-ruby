@@ -1,8 +1,10 @@
 # encoding: ASCII-8BIT
+require 'open3'
+
+require 'tty-platform'
+
 require 'test_helper'
 require 'pwnlib/memleak'
-require 'open3'
-require 'os'
 
 class MemLeakTest < MiniTest::Test
   def setup
@@ -15,7 +17,7 @@ class MemLeakTest < MiniTest::Test
   end
 
   def test_find_elf_base_running
-    skip 'Only tested on linux' unless OS.linux?
+    skip 'Only tested on linux' unless TTY::Platform.new.linux?
     [32, 64].each do |b|
       # TODO(hh): Use process instead of popen2
       Open3.popen2(File.expand_path("../data/victim#{b}", __FILE__)) do |i, o, t|

@@ -1,6 +1,7 @@
 # encoding: ASCII-8BIT
-require 'pwnlib/util/packing'
+
 require 'pwnlib/ext/helper'
+require 'pwnlib/util/packing'
 
 module Pwnlib
   module Ext

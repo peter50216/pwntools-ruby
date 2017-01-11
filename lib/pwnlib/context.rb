@@ -1,4 +1,5 @@
 # encoding: ASCII-8BIT
+
 require 'logger'
 
 # TODO(Darkpi): Check if there should be special care for threading.

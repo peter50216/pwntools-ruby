@@ -2,8 +2,8 @@ require 'fileutils'
 require 'pathname'
 
 require 'bundler/gem_tasks'
+require 'pastel'
 require 'rake/testtask'
-require 'rainbow'
 require 'rubocop/rake_task'
 
 RuboCop::RakeTask.new(:rubocop) do |task|
@@ -34,7 +34,8 @@ task :install_git_hooks do
   end
   git_version = `git version`[/\Agit version (.*)\Z/, 1]
   if Gem::Version.new(git_version) < Gem::Version.new('1.8.2')
-    puts Rainbow("Your git is older than 1.8.2, and doesn't support pre-push hook...").red.bright
-    puts Rainbow('Please make sure test passed before pushing!!!!!!').red.bright
+    warning = Pastel.new.bright_red.detach
+    puts warning.call("Your git is older than 1.8.2, and doesn't support pre-push hook...")
+    puts warning.call('Please make sure test passed before pushing!!!!!!')
   end
 end
