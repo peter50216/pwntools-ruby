@@ -1,4 +1,5 @@
 # encoding: ASCII-8BIT
+
 require 'pwnlib/context'
 
 module Pwnlib
@@ -142,7 +143,7 @@ module Pwnlib
               # TODO(Darkpi): What should we do to negative number?
               raise ArgumentError, 's must be non-negative' unless s >= 0
               r = s.to_s(2).chars.map { |ch| ch == '1' ? one : zero }
-              r.unshift(zero) until r.size % 8 == 0
+              r.unshift(zero) until (r.size % 8).zero?
               is_little ? r.reverse : r
             else
               raise ArgumentError, 's must be either String or Integer'
@@ -187,8 +188,8 @@ module Pwnlib
               when '0', 0, false then '0'
               else raise ArgumentError, "cannot decode value #{c.inspect} into a bit"
               end
-            end.join
-            [bytes].pack(is_little ? 'b*' : 'B*')
+            end
+            [bytes.join].pack(is_little ? 'b*' : 'B*')
           end
         end
 
@@ -252,7 +253,7 @@ module Pwnlib
           s.unpack('m0')[0]
         end
 
-        include Pwnlib::Context
+        include ::Pwnlib::Context
       end
 
       extend ClassMethod

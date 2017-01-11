@@ -17,7 +17,7 @@ module Pwnlib
     module HexDump
       # @note Do not create and call instance method here. Instead, call module method on {HexDump}.
       module ClassMethod
-        MARKER = "\u2502"
+        MARKER = "\u2502".freeze
         HIGHLIGHT_STYLE = ->(s) { Rainbow(s).bg(:red) }
         DEFAULT_STYLE = {
           0x00 => ->(s) { Rainbow(s).red },
@@ -26,7 +26,7 @@ module Pwnlib
           marker: ->(s) { Rainbow(s).dimgray },
           printable: ->(s) { s },
           unprintable: ->(s) { Rainbow(s).dimgray }
-        }
+        }.freeze
         # @!macro [new] hexdump_options
         #   @param [Integer] width
         #     The max number of characters per line.
@@ -64,9 +64,11 @@ module Pwnlib
         #   @return [Enumerator]
         #     The resulting hexdump, line by line.
         def hexdump_iter(io, width: 16, skip: true, offset: 0, style: {}, highlight: '')
-          return to_enum(__method__, io,
-                         width: width, skip: skip, offset: offset, style:
-                         style, highlight: highlight) unless block_given?
+          unless block_given?
+            return to_enum(__method__, io,
+                           width: width, skip: skip, offset: offset, style:
+                           style, highlight: highlight)
+          end
 
           style = DEFAULT_STYLE.merge(style)
           highlight.bytes.each { |b| style[b] = HIGHLIGHT_STYLE }

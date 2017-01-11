@@ -17,10 +17,17 @@ check_no_push_master() {
 }
 
 check_rake_passed() {
-  git stash -q --keep-index
+  local git_status="$(git status --porcelain)"
+  if [[ ! -z "${git_status}" ]]; then
+    echo "Stashing all local changes. If the script is interrupted, you have to" \
+      "do git stash pop by yourself."
+    git stash save -q --include-untracked || die "stash error QQ"
+  fi
   rake
   local rake_status=$?
-  git stash pop -q
+  if [[ ! -z "${git_status}" ]]; then
+    git stash pop -q || die "stash pop error QQ"
+  fi
 
   if [[ "${rake_status}" != "0" ]]; then
     die "Rake failed! Fix those errors before pushing and make sure you've " \
