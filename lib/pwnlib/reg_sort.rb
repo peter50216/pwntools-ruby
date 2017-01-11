@@ -211,12 +211,9 @@ module Pwnlib
       end
 
       def break_cycle(cycle, tmp: nil) # :nodoc:
-        if tmp
-          list = [tmp, *cycle, tmp]
-          Array.new(list.size - 1) { |i| ['mov', list[i], list[i + 1]] }
-        else
-          Array.new(cycle.size - 1) { |i| ['xchg', cycle[i], cycle[i + 1]] }
-        end
+        inst = tmp ? 'mov' : 'xchg'
+        arr = tmp ? [tmp, *cycle, tmp] : cycle
+        Array.new(arr.size - 1) { |i| [inst, arr[i], arr[i + 1]] }
       end
     end
   end
