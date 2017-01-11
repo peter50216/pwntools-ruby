@@ -21,9 +21,11 @@ Gem::Specification.new do |s|
 
   s.required_ruby_version = '>= 2.1.0'
 
-  s.add_development_dependency 'pry', '~> 0.10'
-  s.add_development_dependency 'rake', '~> 11.1'
+  s.add_development_dependency 'codeclimate-test-reporter', '~> 1.0'
   s.add_development_dependency 'minitest', '~> 5.8'
-  s.add_development_dependency 'codeclimate-test-reporter', '~> 0.5'
-  s.add_development_dependency 'rubocop', '~> 0.39'
+  s.add_development_dependency 'os', '~> 0.9'
+  s.add_development_dependency 'pry', '~> 0.10'
+  s.add_development_dependency 'rainbow', '~> 2.2'
+  s.add_development_dependency 'rake', '~> 12.0'
+  s.add_development_dependency 'rubocop', '~> 0.46'
 end

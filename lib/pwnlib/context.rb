@@ -203,13 +203,15 @@ module Pwnlib
     end
 
     # For include.
+    # @!visibility private
     def context
-      Pwnlib::Context.context
+      ::Pwnlib::Context.context
     end
 
+    # @!visibility private
     def self.included(base)
       # XXX(Darkpi): Should we do this?
-      base.send(:private, :context)
+      base.__send__(:private, :context)
     end
   end
 end

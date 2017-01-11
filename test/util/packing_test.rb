@@ -3,7 +3,7 @@ require 'test_helper'
 require 'pwnlib/util/packing'
 
 class PackingTest < MiniTest::Test
-  include Pwnlib::Util::Packing::ClassMethod
+  include ::Pwnlib::Util::Packing::ClassMethod
 
   def test_pack
     assert_equal('ABC',
@@ -31,9 +31,6 @@ class PackingTest < MiniTest::Test
                  pack(0x0102030405, bits: 'all', endian: 'little', signed: true))
     assert_equal("\x00\x00\x00\x80\x00",
                  pack(0x80000000, bits: 'all', endian: 'little', signed: true))
-
-    err = assert_raises(ArgumentError) { pack('shik') }
-    assert_match(/must be an integer/, err.message)
 
     assert_equal('ABC', pack(0x414243, bits: 24, endian: 'big'))
 
@@ -115,9 +112,10 @@ class PackingTest < MiniTest::Test
   end
 
   def test_up_rand
+    srand(217)
     [8, 16, 32, 64].each do |sz|
-      u = ->(*x) { send("u#{sz}", *x) }
-      p = ->(*x) { send("p#{sz}", *x) }
+      u = ->(*x) { public_send("u#{sz}", *x) }
+      p = ->(*x) { public_send("p#{sz}", *x) }
       100.times do
         limit = (1 << sz)
         val = rand(0...limit)
@@ -127,7 +125,7 @@ class PackingTest < MiniTest::Test
         val = rand(-limit...limit)
         assert_equal(val, u[p[val, signed: true], signed: true])
 
-        rs = (sz / 8).times.map { rand(256).chr }.join
+        rs = Array.new(sz / 8) { rand(256).chr }.join
         assert_equal(rs, p[u[rs, signed: false], signed: false])
         assert_equal(rs, p[u[rs, signed: true], signed: true])
       end
@@ -161,7 +159,7 @@ class PackingTest < MiniTest::Test
   def test_flat
     assert_equal("\x01\x00testABABABABABAB",
                  flat(1, 'test', [[['AB'] * 2] * 3], endian: 'le', bits: 16))
-    assert_equal('234', flat([1, [2, 3]]) { |x| "#{x + 1}" })
+    assert_equal('234', flat([1, [2, 3]]) { |x| (x + 1).to_s })
 
     err = assert_raises(ArgumentError) { flat(1.23) }
     assert_match(/flat does not support values of type/, err.message)

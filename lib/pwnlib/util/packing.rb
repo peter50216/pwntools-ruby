@@ -3,14 +3,50 @@ require 'pwnlib/context'
 
 module Pwnlib
   module Util
-    # Methods for integer pack/unpack
+    # Methods for integer pack/unpack.
+    # See {ClassMethod} for method details.
+    # @example Call by specifying full module path.
+    #   require 'pwnlib/util/packing'
+    #   Pwnlib::Util::Packing.p8(217) #=> "\xD9"
+    # @example require 'pwn' and have all methods.
+    #   require 'pwn'
+    #   p8(217) #=> "\xD9"
     module Packing
-      module ClassMethod # rubocop:disable Style/Documentation
+      # @note Do not create and call instance method here. Instead, call module method on {Packing}.
+      module ClassMethod
+        # Pack arbitrary-sized integer.
+        #
+        # +bits+ indicates number of bits that packed output should use.
+        # The output would be padded to be byte-aligned.
+        #
+        # +bits+ can also be the string 'all',
+        # indicating that the result should be long enough to hold all bits of the number.
+        #
+        # @param [Integer] number
+        #   Number to be packed.
+        # @param [Integer, 'all'] bits
+        #   Number of bits the output should have,
+        #   or +'all'+ for all bits.
+        #   Default to +context.bits+.
+        # @param [String] endian
+        #   Endian to use when packing.
+        #   Can be any value accepted by context (See {Context::ContextType}).
+        #   Default to +context.endian+.
+        # @param [Boolean, String] signed
+        #   Whether the input number should be considered signed when +bits+ is +'all'+.
+        #   Can be any value accepted by context (See {Context::ContextType}).
+        #   Default to +context.signed+.
+        # @return [String]
+        #   The packed string.
+        # @raise [ArgumentError]
+        #   When input integer can't be packed into the size specified by +bits+ and +signed+.
+        #
+        # @example
+        #   pack(0x34, bits: 8) #=> '4'
+        #   pack(0x1234, bits: 16, endian: 'little') #=> "4\x12"
+        #   pack(0xFF, bits: 'all', signed: false) #=> "\xFF"
+        #   pack(0xFF, bits: 'all', endian: 'big', signed: true) #=> "\x00\xFF"
         def pack(number, bits: nil, endian: nil, signed: nil)
-          unless number.is_a?(Integer)
-            raise ArgumentError, 'number must be an integer'
-          end
-
           if bits == 'all'
             bits = nil
             is_all = true
@@ -36,7 +72,7 @@ module Pwnlib
                 if number < 0
                   raise ArgumentError, "Can't pack negative number with bits='all' and signed=false"
                 end
-                bits = number == 0 ? 8 : ((number.bit_length - 1) | 7) + 1
+                bits = number.zero? ? 8 : ((number.bit_length - 1) | 7) + 1
               end
 
               limit = 1 << bits
@@ -59,6 +95,36 @@ module Pwnlib
           end
         end
 
+        # Unpack packed string back to integer.
+        #
+        # +bits+ indicates number of bits that should be used from input data.
+        #
+        # +bits+ can also be the string +'all'+,
+        # indicating that all bytes from input should be used.
+        #
+        # @param [String] data
+        #   String to be unpacked.
+        # @param [Integer, 'all'] bits
+        #   Number of bits to be used from +data+,
+        #   or +'all'+ for all bits.
+        #   Default to +context.bits+
+        # @param [String] endian
+        #   Endian to use when unpacking.
+        #   Can be any value accepted by context (See {Context::ContextType}).
+        #   Default to +context.endian+.
+        # @param [Boolean, String] signed
+        #   Whether the output number should be signed.
+        #   Can be any value accepted by context (See {Context::ContextType}).
+        #   Default to +context.signed+.
+        # @return [Integer]
+        #   The unpacked number.
+        # @raise [ArgumentError]
+        #   When +data.size+ doesn't match +bits+.
+        #
+        # @example
+        #   unpack('4', bits: 8) #=> 52
+        #   unpack("\x3F", bits: 6, signed: false) #=> 63
+        #   unpack("\x3F", bits: 6, signed: true) #=> -1
         def unpack(data, bits: nil, endian: nil, signed: nil)
           bits = data.size * 8 if bits == 'all'
 
@@ -85,6 +151,42 @@ module Pwnlib
           end
         end
 
+        # Split the data into chunks, and unpack each element.
+        #
+        # +bits+ indicates how many bits each chunk should be.
+        # This should be a multiple of 8,
+        # and size of +data+ should be divisible by +bits / 8+.
+        #
+        # +bits+ can also be the string +'all'+,
+        # indicating that all bytes from input would be used,
+        # and result would be an array with one element.
+        #
+        # @param [String] data
+        #   String to be unpacked.
+        # @param [Integer, 'all'] bits
+        #   Number of bits to be used for each chunk of +data+,
+        #   or +'all'+ for all bits.
+        #   Default to +context.bits+
+        # @param [String] endian
+        #   Endian to use when unpacking.
+        #   Can be any value accepted by context (See {Context::ContextType}).
+        #   Default to +context.endian+.
+        # @param [Boolean, String] signed
+        #   Whether the output number should be signed.
+        #   Can be any value accepted by context (See {Context::ContextType}).
+        #   Default to +context.signed+.
+        # @return [Array<Integer>]
+        #   The unpacked numbers.
+        # @raise [ArgumentError]
+        #   When +bits+ isn't divisible by 8 or +data.size+ isn't divisible by +bits / 8+.
+        #
+        # @todo
+        #   Support +bits+ not divisible by 8, if ever found this useful.
+        #
+        # @example
+        #   unpack_many('haha', bits: 8) #=> [104, 97, 104, 97]
+        #   unpack_many("\xFF\x01\x02\xFE", bits: 16, endian: 'little', signed: true) #=> [511, -510]
+        #   unpack_many("\xFF\x01\x02\xFE", bits: 16, endian: 'big', signed: false) #=> [65281, 766]
         def unpack_many(data, bits: nil, endian: nil, signed: nil)
           return [unpack(data, bits: bits, endian: endian, signed: signed)] if bits == 'all'
 
@@ -142,9 +244,9 @@ module Pwnlib
               signed = context.signed
 
               if [8, 16, 32, 64].include?(bits)
-                ->(num) { send("#{v2}#{bits}", num, endian: endian, signed: signed) }
+                ->(num) { public_send("#{v2}#{bits}", num, endian: endian, signed: signed) }
               else
-                ->(num) { send(v1, num, bits: bits, endian: endian, signed: signed) }
+                ->(num) { public_send(v1, num, bits: bits, endian: endian, signed: signed) }
               end
             end
           end
@@ -172,9 +274,7 @@ module Pwnlib
 
         # TODO(Darkpi): fit! Which seems super useful.
 
-        private
-
-        include Pwnlib::Context
+        include ::Pwnlib::Context
       end
 
       extend ClassMethod

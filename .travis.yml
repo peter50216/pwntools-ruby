@@ -1,9 +1,14 @@
 language: ruby
-sudo: false
+sudo: required
 cache: bundler
+os:
+- linux
+- osx
 rvm:
-  - 2.1.5
-  - 2.2.0
+  - 2.1
+  - 2.2
+  - 2.3
+  - 2.4.0
   - ruby-head
 matrix:
   allow_failures:
@@ -12,3 +17,4 @@ before_install:
   - gem update --system
   - gem install bundler
   - gem --version
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install -qq --force-yes libgd2-xpm ia32-libs ia32-libs-multiarch binutils > /dev/null; fi

@@ -4,7 +4,7 @@ module Pwnlib
   module Ext
     # Helper methods for defining extension
     module Helper
-      def define_proxy_method(mod, *ms, **m2)
+      def def_proxy_method(mod, *ms, **m2)
         ms.flatten
           .map { |x| [x, x] }
           .concat(m2.to_a)

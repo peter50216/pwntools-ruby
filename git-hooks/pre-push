@@ -1,0 +1,48 @@
+#!/bin/bash
+
+die() {
+  IFS=''
+  echo -e "\e[1;31m$*\e[m"
+  exit 1
+}
+
+check_no_push_master() {
+  # This actually only checks local branch, not remote branch to be pushed.
+  # Should be good enough for now.
+  if [[ "$(git symbolic-ref HEAD)" == "refs/heads/master" ]]; then
+    die "Trying to push to master branch... Please don't do this.\n" \
+      "Create a branch, pull request and squash merge for better commit " \
+      "message on master."
+  fi
+}
+
+check_rake_passed() {
+  local git_status="$(git status --porcelain)"
+  if [[ ! -z "${git_status}" ]]; then
+    echo "Stashing all local changes. If the script is interrupted, you have to" \
+      "do git stash pop by yourself."
+    git stash save -q --include-untracked || die "stash error QQ"
+  fi
+  rake
+  local rake_status=$?
+  if [[ ! -z "${git_status}" ]]; then
+    git stash pop -q || die "stash pop error QQ"
+  fi
+
+  if [[ "${rake_status}" != "0" ]]; then
+    die "Rake failed! Fix those errors before pushing and make sure you've " \
+      "committed all changes needed!"
+    exit 1
+  fi
+}
+
+main() {
+  echo "running pre-push hooks..."
+
+  check_no_push_master
+  check_rake_passed
+
+  echo "pre-push hooks done!"
+}
+
+main

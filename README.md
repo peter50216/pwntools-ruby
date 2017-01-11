@@ -13,6 +13,7 @@ While pwntools is awesome, I always love Ruby far more than Python...
 So this is an attempt to create such library.
 
 There's almost NOTHING here now.
+(Edit: there's something here now, but not much :wink:)
 Going to implement important things (socket, tubes, asm/disasm, pack/unpack utilities) first.
 Would try to have consistent naming with original pwntools, and do things in Ruby style.
 
@@ -32,3 +33,17 @@ context.local(bits: 16) do
   p pack(0x4142)  # 'AB'
 end
 ```
+
+# Development
+```sh
+git clone git@github.com:peter50216/pwntools-ruby.git
+cd pwntools-ruby
+rake
+```
+
+# Note to irb users
+irb defines `main.context`.
+
+For the ease of exploit development in irb, that method would be removed if you use `require 'pwn'`.
+
+You can still get the `IRB::Context` by `irb_context`.

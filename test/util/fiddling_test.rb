@@ -3,7 +3,7 @@ require 'test_helper'
 require 'pwnlib/util/fiddling'
 
 class FiddlingTest < MiniTest::Test
-  include Pwnlib::Util::Fiddling::ClassMethod
+  include ::Pwnlib::Util::Fiddling::ClassMethod
 
   def test_enhex
     assert_equal('4141313233', enhex('AA123'))
@@ -19,6 +19,13 @@ class FiddlingTest < MiniTest::Test
     assert_equal("\x12\x23\x55\xff\x44\x99", unhex('122355ff4499'))
     assert_equal('!@#$%^&*()_+_)(*&^%$#@@!?{}][//\``~',
                  unhex('21402324255e262a28295f2b5f29282a265e2524234040213f7b7d5d5b2f2f5c60607e'))
+  end
+
+  def test_hex
+    assert_equal('0x0', hex(0))
+    assert_equal('0x64', hex(100))
+    assert_equal('-0xa', hex(-10))
+    assert_equal('0xfaceb00cdeadbeef', hex(0xfaceb00cdeadbeef))
   end
 
   def test_urlencode
