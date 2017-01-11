@@ -33,43 +33,7 @@ module Pwnlib
         check_cycle_(target, assignments, path)
       end
 
-      # Return a list of all registers which directly
-      # depend on the specified register.
-      # @example
-      #  extract_dependencies('a', {a: 1})
-      #  => []
-      #  extract_dependencies('a', {a: 'b', b: 1})
-      #  => []
-      #  extract_dependencies('a', {a: 1, b: 'a'})
-      #  => ['b']
-      #  extract_dependencies('a', {a: 1, b: 'a', c: 'a'})
-      #  => ['b', 'c']
-      def extract_dependencies(reg, assignments)
-        # .sort is only for determinism
-        assignments.select { |_, v| v == reg }.keys.map(&:to_s).sort
-      end
-
-      # Resolve the order of all dependencies starting at a given register.
-      #
-      # @example
-      #   deps = {a: [], b: [], c: ['b'], d: ['c', 'x'], x: []}
-      #   resolve_order('a', deps)
-      #   => ['a']
-      #   resolve_order('b', deps)
-      #   => ['b']
-      #   resolve_order('c', deps)
-      #   => ['b', 'c']
-      #   resolve_order('d', deps)
-      #   => ['b', 'c', 'x', 'd']
-      def resolve_order(reg, deps)
-        resolve_order_(reg, deps.map { |k, v| [k.to_s, v] }.to_h)
-      end
-
-      def resolve_order_(reg, deps) # :nodoc:
-        deps[reg].map { |dep| resolve_order_(dep, deps) }.flatten + [reg]
-      end
-
-      # Check if any dependencies of `reg` appears in cycles.
+      # Check if any dependencies of +reg+ appears in cycles.
       def depends_on_cycle(reg, assignments, in_cycles)
         return false if reg.nil?
         loop do
@@ -78,6 +42,15 @@ module Pwnlib
           break unless reg
         end
         false
+      end
+
+      def break_cycle(cycle, tmp: nil)
+        if tmp
+          list = [tmp, *cycle, tmp]
+          Array.new(cycle.size + 1) { |i| ['mov', list[i], list[i + 1]] }
+        else
+          Array.new(cycle.size - 1) { |i| ['xchg', cycle[i], cycle[i + 1]] }
+        end
       end
 
       # Sorts register dependencies.
@@ -92,15 +65,15 @@ module Pwnlib
       # If a dependency cycle is encountered, one of the following will
       # occur:
       #
-      # - If ``xchg`` is ``True``, it is assumed that dependency cyles can
+      # - If +xchg+ is +true+, it is assumed that dependency cyles can
       #   be broken by swapping the contents of two register (a la the
-      #   ``xchg`` instruction on i386).
-      # - If ``xchg`` is not set, but not all destination registers in
-      #   ``in_out`` are involved in a cycle, one of the registers
+      #   +xchg+ instruction on i386).
+      # - If +xchg+ is not set, but not all destination registers in
+      #   +in_out+ are involved in a cycle, one of the registers
       #   outside the cycle will be used as a temporary register,
       #   and then overwritten with its final value.
-      # - If ``xchg`` is not set, and all registers are involved in
-      #   a dependency cycle, the named register ``temporary`` is used
+      # - If +xchg+ is not set, and all registers are involved in
+      #   a dependency cycle, the named register +temporary+ is used
       #   as a temporary register.
       # - If the dependency cycle cannot be resolved as described above,
       #   an exception is raised.
@@ -110,15 +83,15 @@ module Pwnlib
       #   Keys are registers, values are either registers or any other value.
       # @param [Hash] all_regs
       #   List of all possible registers.
-      #   Used to determine which values in ``in_out`` are registers, versus
+      #   Used to determine which values in +in_out+ are registers, versus
       #   regular values.
       # @option [String, Boolean] tmp
       #   Named register (or other sentinel value) to use as a temporary
-      #   register.  If ``tmp`` is a named register **and** appears
-      #   as a source value in ``in_out``, dependencies are handled
-      #   appropriately.  ``tmp`` cannot be a destination register
-      #   in ``in_out``.
-      #   If ``tmp === true``, this mode is enabled.
+      #   register.  If +tmp+ is a named register **and** appears
+      #   as a source value in +in_out+, dependencies are handled
+      #   appropriately.  +tmp+ cannot be a destination register
+      #   in +in_out+.
+      #   If +tmp === true+, this mode is enabled.
       # @option [Boolean] xchg
       #   Indicates the existence of an instruction which can swap the
       # @option [Boolean] randomize
@@ -153,177 +126,99 @@ module Pwnlib
       #       ['xchg', 'a', 'b'],
       #       ['xchg', 'b', 'c']]
       #   regsort({a: 'b', b: 'c', c: 'a', x: '1', y: 'z', z: 'c'}, regs, tmp: 'x')
-      #   => [['mov', 'y', 'z'],
+      #   => [['mov', 'x', '1'],
       #       ['mov', 'z', 'c'],
       #       ['mov', 'x', 'a'],
       #       ['mov', 'a', 'b'],
       #       ['mov', 'b', 'c'],
       #       ['mov', 'c', 'x'],
-      #       ['mov', 'x', '1']]
+      #       ['mov', 'y', 'z']]
       #   regsort({a: 'b', b: 'c', c: 'a', x: '1', y: 'z', z: 'c'}, regs, xchg: false)
-      #   => [['mov', 'y', 'z'],
+      #   => [['mov', 'x', '1'],
       #       ['mov', 'z', 'c'],
       #       ['mov', 'x', 'a'],
       #       ['mov', 'a', 'b'],
       #       ['mov', 'b', 'c'],
       #       ['mov', 'c', 'x'],
-      #       ['mov', 'x', '1']]
+      #       ['mov', 'y', 'z']]
       def regsort(in_out, all_regs, tmp: nil, xchg: true, randomize: nil)
         # randomize = context.randomize if randomize.nil?
 
+        # TODO(david942j): stringify_keys
         in_out = in_out.map { |k, v| [k.to_s, v] }.to_h
         # Drop all registers which will be set to themselves.
-        # For example, {eax: 'eax'}
+        # Ex. {eax: 'eax'}
         in_out.reject! { |k, v| k == v }
+
+        # Check input
+        if (in_out.keys - all_regs).any?
+          raise ArgumentError, format('Unknown register! Know: %p.  Got: %p', all_regs, in_out)
+        end
 
         # Collapse constant values
         #
-        # For eaxmple, {eax: 1, ebx: 1} => {eax: 1, ebx: 'eax'}
-        v_k = Hash.new { |k, v| k[v] = [] }
-        in_out.sort.each do |k, v|
-          v_k[v] << k if !all_regs.include?(v) && v != 0
-        end
-        post_mov = {}
-        v_k.sort.each do |_, ks|
-          1.upto(ks.size - 1) do |i|
-            post_mov[ks[i]] = ks[0]
-            in_out.delete ks[i]
+        # Ex. {eax: 1, ebx: 1} => {eax: 1, ebx: 'eax'}
+        # +post_mov+ are collapsed registers, set their values in the end.
+        post_mov = in_out.group_by { |_, v| v }.values.each_with_object({}) do |list, hash|
+          val = list.first[1]
+          next if list.size == 1 || all_regs.include?(val) || val.zero?
+          list.sort!
+          list[1..-1].each do |reg, _|
+            hash[reg] = list.first.first
+            in_out.delete(reg)
           end
         end
 
-        # Check input
-        if (in_out.keys.map(&:to_s) - all_regs).any?
-          raise ArgumentError, format('Unknown register! Know: %s.  Got: %s', all_regs.inspect, in_out.inspect)
-        end
-
-        # In the simplest case, no registers are 'inputs'
-        # which are also 'outputs'.
-        #
-        # For example, {eax: 1, ebx: 2, ecx: 'edx'}
-        unless in_out.values.any? { |v| in_out.key?(v) }
-          result = in_out.sort.map { |k, v| ['mov', k, v] }
-          result.shuffle! if randomize
-          post_mov.sort.each do |dreg, sreg|
-            result << ['mov', dreg, sreg]
-          end
-          return result
-        end
-
-        # Invert so we have a dependency graph.
-        #
-        # Input:   {'A': 'B', 'B': '1', 'C': 'B'}
-        # Output:  {'A': [], 'B': ['A', 'C'], 'C': []}
-        #
-        # In this case, both A and C must be set before B.
-        deps = in_out.each_with_object({}) { |(k, _), h| h[k] = extract_dependencies(k, in_out) }
-
-        # Final result which will be returned.
+        graph = in_out.dup
         result = []
 
-        # Find all cycles.
-        #
-        # Given that everything is single-assignment, the cycles
-        # are guarnteed to be disjoint.
-        cycle_candidates = in_out.keys.sort
-        cycles           = []
-        in_cycle         = []
-        not_in_cycle     = []
-        cycle_candidates.shuffle! if randomize
+        # Let's do the topological sort.
+        deg = graph.values.group_by(&:itself).map { |k, v| [k, v.size] }.to_h
+        graph.keys.each { |k| deg[k] = 0 unless deg.key?(k) }
 
-        while cycle_candidates.any?
-          reg   = cycle_candidates[0]
-          cycle = check_cycle(reg, in_out)
-          next not_in_cycle.push(cycle_candidates.shift) if cycle.empty?
-          cycle.rotate!(rand(cycle.size)) if randomize
-          cycles << cycle
-          in_cycle.concat cycle
-          cycle_candidates -= cycle
+        # TODO(david942j): randomize
+        until deg.empty?
+          # add k.to_s in comapre for stable order
+          min_deg = deg.min_by { |_, v| v }[1]
+          break unless min_deg.zero? # remain are all cycles
+          min_pivs = deg.select { |_, v| v == min_deg }
+          piv = randomize ? min_pivs.sample : min_pivs.first
+          dst = piv.first
+          deg.delete(dst)
+          next unless graph.key?(dst) # Reach an end node.
+          deg[graph[dst]] -= 1
+          result << ['mov', dst, graph[dst]]
+          graph.delete(dst)
         end
 
-        # If there are cycles, ensure that we can break them.
-        #
-        # If the temporary register itself is in, or ultimately
-        # depends on a register which is in a cycle, we cannot use
-        # it as a temporary register.
-        #
-        # In this example below, X, Y, or Z cannot be a temporary register,
-        # as the following must occur before resolving the cycle:
-        #
-        #  - X = Y
-        #  - Y = Z
-        #  - Z = C
-        #
-        #   X → Y → Z → ───╮
-        #                  ↓
-        #  ╭─ (A) → (B) → (C) ─╮
-        #  ╰──────── ← ────────╯
-        tmp = nil if depends_on_cycle(tmp, in_out, in_cycle)
-
-        # If XCHG is expressly disabled, and there is no temporary register,
-        # try to see if there is any register which can be used as a temp
-        # register instead.
-        unless xchg || tmp
-          tmp = in_out.keys.find { |r| !depends_on_cycle(r, in_out, in_cycle) }
-          raise ArgumentError, "Cannot break dependency cycles in #{in_out.sort.inspect}" if tmp.nil?
+        # Remain must be cycles.
+        cycles = graph.keys.each_with_object([]) do |reg, obj|
+          next unless graph.key?(reg)
+          cycle = check_cycle(reg, graph)
+          obj << cycle
+          cycle.each { |r| graph.delete(r) }
         end
 
-        # Don't set the temporary register now
-        not_in_cycle.delete tmp
-
-        # Resolve everything *not* in a cycle.
-        not_in_cycle.shuffle! if randomize
-        while not_in_cycle.any?
-          order = resolve_order(not_in_cycle[0], deps)
-          order.each do |regi|
-            # Did we already handle this reg?
-            next unless not_in_cycle.include?(regi)
-            src =  in_out[regi]
-            result << ['mov', regi, src]
-            not_in_cycle.delete regi
-            # Mark this as resolved
-            deps[src].delete(regi) if deps.key?(src)
+        cycles.each do |cycle|
+          # Try break a cycle
+          # 1. If +tmp+ is set, try to use it.
+          # 2. If +xchg == true+, use +xchg+.
+          # 3. Find proper +tmp+ and use it.
+          # 4. so sad :(.
+          if tmp && !depends_on_cycle(tmp, in_out, cycle) then result.concat(break_cycle(cycle, tmp: tmp))
+          elsif xchg then result.concat(break_cycle(cycle))
+          else
+            tmp = in_out.keys.find { |r| !depends_on_cycle(r, in_out, cycle) }
+            raise ArgumentError, "Cannot break dependency cycles in #{graph.sort.inspect}" if tmp.nil?
+            result.concat(break_cycle(cycle, tmp: tmp))
           end
         end
 
-        # If using a temporary register, break each cycle individually
-        #
-        #  ╭─ (A) → (B) → (C) ─╮
-        #  ╰──────── ← ────────╯
-        #
-        # Becomes separete actions:
-        #
-        #   tmp = A
-        #   A = B
-        #   B = C
-        #   C = tmp
-        #
-        #  ╭─ (A) → (B) → (C) ─╮
-        #  ╰──────── ← ────────╯
-        cycles.shuffle! if randomize
-        if tmp
-          cycles.each do |cyc|
-            first = cyc[0]
-            last = cyc[-1]
-            deps[first].delete last
-            in_out[last] = tmp
-            order = resolve_order(last, deps)
-            result << ['mov', tmp, first]
-            order.each { |r| result << ['mov', r, in_out[r]] }
-          end
-        else
-          cycles.each do |cyc|
-            (cyc.size - 1).times do |i|
-              result << ['xchg', cyc[i], cyc[i + 1]]
-            end
-          end
-        end
-
-        # Finally, set the temp register's final value
-        result << ['mov', tmp, in_out[tmp]] if in_out.key?(tmp)
-
+        # Now assign those collapsed registers.
         post_mov.sort.each do |dreg, sreg|
           result << ['mov', dreg, sreg]
         end
+
         result
       end
     end

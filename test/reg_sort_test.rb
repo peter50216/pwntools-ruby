@@ -12,21 +12,6 @@ class RegSortTest < MiniTest::Test
     assert_equal(%w(a b c d), check_cycle('a', a: 'b', b: 'c', c: 'd', d: 'a'))
   end
 
-  def test_extract_dependencies
-    assert_equal([], extract_dependencies('a', a: 1))
-    assert_equal([], extract_dependencies('a', a: 'b', b: 1))
-    assert_equal(['b'], extract_dependencies('a', a: 1, b: 'a'))
-    assert_equal(%w(b c), extract_dependencies('a', a: 1, b: 'a', c: 'a'))
-  end
-
-  def test_resolve_order
-    deps = { a: [], b: [], c: ['b'], d: %w(c x), x: [] }
-    assert_equal(['a'], resolve_order('a', deps))
-    assert_equal(['b'], resolve_order('b', deps))
-    assert_equal(%w(b c), resolve_order('c', deps))
-    assert_equal(%w(b c x d), resolve_order('d', deps))
-  end
-
   def test_regsort
     regs = %w(a b c d x y z)
     # normal
@@ -52,9 +37,9 @@ class RegSortTest < MiniTest::Test
     assert_match(/Cannot break dependency cycles/, err.message)
     assert_equal([%w(mov x 1), %w(mov y z), %w(mov z c), %w(xchg a b), %w(xchg b c)],
                  regsort({ a: 'b', b: 'c', c: 'a', x: '1', y: 'z', z: 'c' }, regs))
-    assert_equal([%w(mov y z), %w(mov z c), %w(mov x a), %w(mov a b), %w(mov b c), %w(mov c x), %w(mov x 1)],
+    assert_equal([%w(mov x 1), %w(mov y z), %w(mov z c), %w(mov x a), %w(mov a b), %w(mov b c), %w(mov c x)],
                  regsort({ a: 'b', b: 'c', c: 'a', x: '1', y: 'z', z: 'c' }, regs, tmp: 'x'))
-    assert_equal([%w(mov y z), %w(mov z c), %w(mov x a), %w(mov a b), %w(mov b c), %w(mov c x), %w(mov x 1)],
+    assert_equal([%w(mov x 1), %w(mov y z), %w(mov z c), %w(mov x a), %w(mov a b), %w(mov b c), %w(mov c x)],
                  regsort({ a: 'b', b: 'c', c: 'a', x: '1', y: 'z', z: 'c' }, regs, xchg: false))
   end
 end
