@@ -7,7 +7,7 @@ require 'os'
 class MemLeakTest < MiniTest::Test
   def setup
     @victim = IO.binread(File.expand_path('../data/victim32', __FILE__))
-    @leak = Pwnlib::MemLeak.new { |addr| @victim[addr] }
+    @leak = ::Pwnlib::MemLeak.new { |addr| @victim[addr] }
   end
 
   def test_find_elf_base_basic
@@ -29,7 +29,7 @@ class MemLeakTest < MiniTest::Test
         end
         refute_nil(realbase)
         mem = open("/proc/#{t.pid}/mem", 'rb')
-        l2 = Pwnlib::MemLeak.new do |addr|
+        l2 = ::Pwnlib::MemLeak.new do |addr|
           mem.seek(addr)
           mem.getc
         end
@@ -52,18 +52,18 @@ class MemLeakTest < MiniTest::Test
   end
 
   def test_w
-    assert_equal(Pwnlib::Util::Packing.u16(@victim[0x100, 2]), @leak.w(0x100))
-    assert_equal(Pwnlib::Util::Packing.u16(@victim[514, 2]), @leak.w(514))
+    assert_equal(::Pwnlib::Util::Packing.u16(@victim[0x100, 2]), @leak.w(0x100))
+    assert_equal(::Pwnlib::Util::Packing.u16(@victim[514, 2]), @leak.w(514))
   end
 
   def test_d
-    assert_equal(Pwnlib::Util::Packing.u32(@victim[0, 4]), @leak.d(0))
-    assert_equal(Pwnlib::Util::Packing.u32(@victim[0x100, 4]), @leak.d(0x100))
-    assert_equal(Pwnlib::Util::Packing.u32(@victim[514, 4]), @leak.d(514))
+    assert_equal(::Pwnlib::Util::Packing.u32(@victim[0, 4]), @leak.d(0))
+    assert_equal(::Pwnlib::Util::Packing.u32(@victim[0x100, 4]), @leak.d(0x100))
+    assert_equal(::Pwnlib::Util::Packing.u32(@victim[514, 4]), @leak.d(514))
   end
 
   def test_q
-    assert_equal(Pwnlib::Util::Packing.u64(@victim[0x100, 8]), @leak.q(0x100))
-    assert_equal(Pwnlib::Util::Packing.u64(@victim[514, 8]), @leak.q(514))
+    assert_equal(::Pwnlib::Util::Packing.u64(@victim[0x100, 8]), @leak.q(0x100))
+    assert_equal(::Pwnlib::Util::Packing.u64(@victim[514, 8]), @leak.q(514))
   end
 end

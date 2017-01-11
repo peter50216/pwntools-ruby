@@ -28,7 +28,7 @@ class DynELFTest < MiniTest::Test
         symbols.map { |a| h[a[-1]] << a[0].to_i(16) }
 
         mem = open("/proc/#{t.pid}/mem", 'rb')
-        d = Pwnlib::DynELF.new(main_ra) do |addr|
+        d = ::Pwnlib::DynELF.new(main_ra) do |addr|
           mem.seek(addr)
           mem.getc
         end
