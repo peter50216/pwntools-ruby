@@ -1,4 +1,5 @@
 # encoding: ASCII-8BIT
+
 require 'open3'
 
 require 'tty-platform'
