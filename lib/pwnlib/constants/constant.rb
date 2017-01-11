@@ -12,8 +12,13 @@ module Pwnlib
         @val = val
       end
 
-      def method_missing(method, *args, &block)
-        @val.send(method, *args, &block)
+      # We don't need to fall back to super for this, so just disable the lint.
+      def method_missing(method, *args, &block) # rubocop:disable Style/MethodMissing
+        @val.__send__(method, *args, &block)
+      end
+
+      def respond_to_missing?(method, include_all)
+        @val.respond_to?(method, include_all)
       end
 
       def coerce(other)
