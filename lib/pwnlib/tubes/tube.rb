@@ -27,7 +27,7 @@ module Pwnlib
         @timer.countdown(timeout) do
           data = ''
           begin
-            until pred.call(data)
+            until yield(data)
               return '' unless @timer.active?
 
               begin

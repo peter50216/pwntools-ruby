@@ -13,7 +13,7 @@ module Pwnlib
       alias length size
 
       def empty?
-        size == 0
+        size.zero?
       end
 
       # Python __contains__ and index is only correct with single-char input, which doesn't seems to
@@ -23,13 +23,12 @@ module Pwnlib
         case data
         when Buffer
           @data.concat(data.data)
-          @size += data.size
         else
           data = data.to_s.dup
           return if data.empty?
           @data << data
-          @size += data.size
         end
+        @size += data.size
         self
       end
       alias << add
@@ -38,13 +37,12 @@ module Pwnlib
         case data
         when Buffer
           @data.unshift(*data.data)
-          @size += data.size
         else
           data = data.to_s.dup
           return if data.empty?
           @data.unshift(data)
-          @size += data.size
         end
+        @size += data.size
         self
       end
 
