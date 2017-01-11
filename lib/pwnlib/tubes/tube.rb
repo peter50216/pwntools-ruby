@@ -22,8 +22,8 @@ module Pwnlib
         @buffer.unget(data)
       end
 
-      def recvpred(timeout: nil, &pred)
-        raise ArgumentError, 'recvpred with no pred' unless pred
+      def recvpred(timeout: nil)
+        raise ArgumentError, 'recvpred with no pred' unless block_given?
         @timer.countdown(timeout) do
           data = ''
           begin
@@ -80,7 +80,7 @@ module Pwnlib
               delims.each do |d|
                 idx = matching.index(d)
                 next unless idx
-                if idx + d.size < si + match_len
+                if idx + d.size < sidx + match_len
                   sidx = idx
                   match_len = d.size
                 end
