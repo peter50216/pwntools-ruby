@@ -35,35 +35,32 @@ module Pwnlib
       # If a dependency cycle is encountered, one of the following will
       # occur:
       #
-      # - If +xchg+ is +true+, it is assumed that dependency cyles can
-      #   be broken by swapping the contents of two register (a la the
-      #   +xchg+ instruction on i386).
-      # - If +xchg+ is not set, but not all destination registers in
-      #   +in_out+ are involved in a cycle, one of the registers
-      #   outside the cycle will be used as a temporary register,
-      #   and then overwritten with its final value.
-      # - If +xchg+ is not set, and all registers are involved in
-      #   a dependency cycle, the named register +temporary+ is used
+      # - If the named register +tmp+ is set and is valid, it will be used
       #   as a temporary register.
+      # - If +xchg+ is +true+, it is assumed that dependency cyles can
+      #   be broken by swapping the contents of two register (aka the
+      #   +xchg+ instruction on i386).
+      # - If neither +xchg+ nor +tmp+ is set, try to find a register in
+      #   +all_regs+ that is not involved in the cycle, use it as a
+      #   temporary register.
       # - If the dependency cycle cannot be resolved as described above,
       #   an exception is raised.
       #
       # @param [Hash] in_out
       #   Dictionary of desired register states.
       #   Keys are registers, values are either registers or any other value.
-      # @param [Hash] all_regs
+      # @param [Array] all_regs
       #   List of all possible registers.
       #   Used to determine which values in +in_out+ are registers, versus
       #   regular values.
-      # @option [String, Boolean] tmp
+      # @option [String, Object] tmp
       #   Named register (or other sentinel value) to use as a temporary
       #   register.  If +tmp+ is a named register **and** appears
       #   as a source value in +in_out+, dependencies are handled
-      #   appropriately.  +tmp+ cannot be a destination register
-      #   in +in_out+.
-      #   If +tmp === true+, this mode is enabled.
+      #   appropriately.
       # @option [Boolean] xchg
       #   Indicates the existence of an instruction which can swap the
+      #   registers.
       # @option [Boolean] randomize
       #   Randomize as much as possible about the order or registers.
       #
@@ -146,9 +143,7 @@ module Pwnlib
         deg = graph.values.group_by(&:itself).map { |k, v| [k, v.size] }.to_h
         graph.keys.each { |k| deg[k] = 0 unless deg.key?(k) }
 
-        # TODO(david942j): randomize
         until deg.empty?
-          # add k.to_s in comapre for stable order
           min_deg = deg.min_by { |_, v| v }[1]
           break unless min_deg.zero? # remain are all cycles
           min_pivs = deg.select { |_, v| v == min_deg }
@@ -178,9 +173,9 @@ module Pwnlib
           if tmp && !depends_on_cycle(tmp, in_out, cycle) then result.concat(break_cycle(cycle, tmp: tmp))
           elsif xchg then result.concat(break_cycle(cycle))
           else
-            tmp = in_out.keys.find { |r| !depends_on_cycle(r, in_out, cycle) }
-            raise ArgumentError, "Cannot break dependency cycles in #{graph.sort.inspect}" if tmp.nil?
-            result.concat(break_cycle(cycle, tmp: tmp))
+            found_tmp = in_out.keys.find { |r| !depends_on_cycle(r, in_out, cycle) }
+            raise ArgumentError, "Cannot break dependency cycles in #{in_out.inspect}" if found_tmp.nil?
+            result.concat(break_cycle(cycle, tmp: found_tmp))
           end
         end
 
@@ -218,7 +213,7 @@ module Pwnlib
       def break_cycle(cycle, tmp: nil) # :nodoc:
         if tmp
           list = [tmp, *cycle, tmp]
-          Array.new(cycle.size + 1) { |i| ['mov', list[i], list[i + 1]] }
+          Array.new(list.size - 1) { |i| ['mov', list[i], list[i + 1]] }
         else
           Array.new(cycle.size - 1) { |i| ['xchg', cycle[i], cycle[i + 1]] }
         end
