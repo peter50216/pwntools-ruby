@@ -50,7 +50,7 @@ DEPENDENCIES
   pwntools!
   rainbow (~> 2.2)
   rake (~> 11.1)
-  rubocop (~> 0.39)
+  rubocop (~> 0.46)
 
 BUNDLED WITH
    1.13.7

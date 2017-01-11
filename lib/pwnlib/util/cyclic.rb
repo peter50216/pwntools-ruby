@@ -43,7 +43,7 @@ module Pwnlib
 
           db = lambda do |t, p|
             if t > n
-              (1..p).each { |j| yield alphabet[a[j]] } if n % p == 0
+              (1..p).each { |j| yield alphabet[a[j]] } if (n % p).zero?
             else
               a[t] = a[t - p]
               db.call(t + 1, p)
