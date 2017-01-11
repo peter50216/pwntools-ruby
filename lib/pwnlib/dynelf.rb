@@ -1,7 +1,8 @@
 # encoding: ASCII-8BIT
+
 require 'pwnlib/context'
-require 'pwnlib/util/packing'
 require 'pwnlib/memleak'
+require 'pwnlib/util/packing'
 
 # TODO(hh): Use ELF datatype instead of magic offset
 

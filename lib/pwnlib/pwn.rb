@@ -7,7 +7,6 @@ require 'pwnlib/constants/constant'
 require 'pwnlib/constants/constants'
 require 'pwnlib/context'
 require 'pwnlib/dynelf'
-
 require 'pwnlib/util/cyclic'
 require 'pwnlib/util/fiddling'
 require 'pwnlib/util/packing'
