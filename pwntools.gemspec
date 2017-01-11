@@ -14,14 +14,14 @@ Gem::Specification.new do |s|
   Would still try to have similar name whenever possible.
   EOS
   s.license       = 'MIT'
-  s.authors       = ['peter50216@gmail.com']
+  s.authors       = ['peter50216@gmail.com', 'david942j@gmail.com']
   s.files         = Dir['lib/**/*.rb'] + %w(README.md Rakefile)
   s.test_files    = Dir['test/**/*']
   s.require_paths = ['lib']
 
   s.required_ruby_version = '>= 2.1.0'
 
-  s.add_development_dependency 'codeclimate-test-reporter', '~> 1.0'
+  s.add_development_dependency 'codeclimate-test-reporter', '~> 0.6'
   s.add_development_dependency 'minitest', '~> 5.8'
   s.add_development_dependency 'rainbow', '~> 2.2'
   s.add_development_dependency 'pry', '~> 0.10'

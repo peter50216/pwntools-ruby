@@ -140,7 +140,8 @@ module Pwnlib
         result = []
 
         # Let's do the topological sort.
-        deg = graph.values.group_by(&:itself).map { |k, v| [k, v.size] }.to_h
+        # so sad ruby 2.1 doesn't have +itself+...
+        deg = graph.values.group_by { |i| i }.map { |k, v| [k, v.size] }.to_h
         graph.keys.each { |k| deg[k] = 0 unless deg.key?(k) }
 
         until deg.empty?
