@@ -23,36 +23,6 @@ module Pwnlib
         check_cycle_(reg, assignments.map { |k, v| [k.to_s, v] }.to_h, [])
       end
 
-      def check_cycle_(reg, assignments, path) # :nodoc:
-        target = assignments[reg]
-        path << reg
-        # No cycle, some other value (e.g. 1)
-        return [] unless assignments.key?(target)
-        # Found a cycle
-        return target == path[0] ? path : [] if path.include?(target)
-        check_cycle_(target, assignments, path)
-      end
-
-      # Check if any dependencies of +reg+ appears in cycles.
-      def depends_on_cycle(reg, assignments, in_cycles)
-        return false if reg.nil?
-        loop do
-          return true if in_cycles.include?(reg)
-          reg = assignments[reg]
-          break unless reg
-        end
-        false
-      end
-
-      def break_cycle(cycle, tmp: nil)
-        if tmp
-          list = [tmp, *cycle, tmp]
-          Array.new(cycle.size + 1) { |i| ['mov', list[i], list[i + 1]] }
-        else
-          Array.new(cycle.size - 1) { |i| ['xchg', cycle[i], cycle[i + 1]] }
-        end
-      end
-
       # Sorts register dependencies.
       #
       # Given a dictionary of registers to desired register contents,
@@ -220,6 +190,38 @@ module Pwnlib
         end
 
         result
+      end
+
+      private
+
+      def check_cycle_(reg, assignments, path) # :nodoc:
+        target = assignments[reg]
+        path << reg
+        # No cycle, some other value (e.g. 1)
+        return [] unless assignments.key?(target)
+        # Found a cycle
+        return target == path[0] ? path : [] if path.include?(target)
+        check_cycle_(target, assignments, path)
+      end
+
+      # Check if any dependencies of +reg+ appears in cycles.
+      def depends_on_cycle(reg, assignments, in_cycles)
+        return false if reg.nil?
+        loop do
+          return true if in_cycles.include?(reg)
+          reg = assignments[reg]
+          break unless reg
+        end
+        false
+      end
+
+      def break_cycle(cycle, tmp: nil) # :nodoc:
+        if tmp
+          list = [tmp, *cycle, tmp]
+          Array.new(cycle.size + 1) { |i| ['mov', list[i], list[i + 1]] }
+        else
+          Array.new(cycle.size - 1) { |i| ['xchg', cycle[i], cycle[i + 1]] }
+        end
       end
     end
   end
