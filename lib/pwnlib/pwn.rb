@@ -7,11 +7,10 @@ require 'pwnlib/constants/constant'
 require 'pwnlib/constants/constants'
 require 'pwnlib/context'
 require 'pwnlib/dynelf'
+require 'pwnlib/reg_sort'
 require 'pwnlib/util/cyclic'
 require 'pwnlib/util/fiddling'
 require 'pwnlib/util/packing'
-
-require 'pwnlib/reg_sort'
 
 # include this module in a class to use all pwnlib functions in that class
 # instance.
