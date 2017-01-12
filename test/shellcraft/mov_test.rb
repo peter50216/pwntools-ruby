@@ -7,7 +7,7 @@ class MovTest < MiniTest::Test
   include ::Pwnlib::Context
 
   def setup
-    @shellcraft = ::Pwnlib::Shellcraft::Root.instance
+    @shellcraft = ::Pwnlib::Shellcraft.instance
   end
 
   def test_amd64

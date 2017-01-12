@@ -8,7 +8,7 @@ class SyscallTest < MiniTest::Test
   Shellcraft = ::Pwnlib::Shellcraft
 
   def setup
-    @shellcraft = Pwnlib::Shellcraft::Root.instance
+    @shellcraft = Pwnlib::Shellcraft.instance
   end
 
   def test_amd64

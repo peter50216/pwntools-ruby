@@ -8,19 +8,25 @@ require 'singleton'
 module Pwnlib
   # Implement shellcraft!
   module Shellcraft
+    # Return the shellcraft instance for furthur usage.
+    def self.instance
+      Root.instance
+    end
+
+    # For templates/*.rb to define shellcode generators.
     def self.define(name, *args, &block)
       AsmMethods.define(name, *args, &block)
     end
 
     # To support like +Shellcraft.amd64.linux.syscall+.
     #
-    # return a {Pwnlib::Shellcraft::Submodule} object when call +Shellcraft.amd64+, and do the
-    # `directories traversal' for furthur calling.
+    # return a {Shellcraft::Submodule} object when call +Shellcraft.amd64+, and do the
+    # 'directories traversal' for furthur calling.
     class Submodule
       ROOT_DIR = File.join(__dir__, 'templates')
 
       # @param [String] name
-      #   The `path' to this module.
+      #   The relative path of this module.
       # @example
       #   Submodule.new('amd64/linux')
       def initialize(name)
@@ -157,8 +163,8 @@ module Pwnlib
         end
       end
 
-      # A `sandbox' class to run assembly generators (i.e. shellcraft/templates/*.rb).
-      # @note This class should never be used externally, only {Pwnlib::Shellcraft::AsmMethods} can use it.
+      # A 'sandbox' class to run assembly generators (i.e. shellcraft/templates/*.rb).
+      # @note This class should never be used externally, only {AsmMethods} can use it.
       class Runner
         def call(*args)
           @_output = ''
@@ -191,16 +197,15 @@ module Pwnlib
         end
         alias evaluate eval
 
+        # @param [Constants::Constant, String, Integer] n
         def pretty(n, comment: true)
           case n
-          when String
-            n.inspect
           when Constants::Constant
             format(comment ? '%s /* %s */' : '%s (%s)', n, pretty(n.to_i))
           when Integer
             n.abs < 10 ? n.to_s : Util::Fiddling.hex(n)
           else
-            n.to_s
+            n.inspect
           end
         end
 

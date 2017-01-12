@@ -25,6 +25,6 @@ module Pwn
   include ::Pwnlib::Util::HexDump::ClassMethods
   include ::Pwnlib::Util::Packing::ClassMethods
   def shellcraft
-    ::Pwnlib::Shellcraft::Root.instance
+    ::Pwnlib::Shellcraft.instance
   end
 end

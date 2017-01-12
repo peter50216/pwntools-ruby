@@ -4,10 +4,10 @@ require 'pwnlib/shellcraft/registers'
 require 'pwnlib/shellcraft/shellcraft'
 
 # Move src into dest without newlines and null bytes.
-Pwnlib::Shellcraft.define('amd64.mov') do |dest, src, stack_allowed: true|
-  extend Pwnlib::Util::Packing::ClassMethods
-  extend Pwnlib::Util::Fiddling::ClassMethods
-  extend Pwnlib::Shellcraft::Registers::ClassMethods
+::Pwnlib::Shellcraft.define('amd64.mov') do |dest, src, stack_allowed: true|
+  extend ::Pwnlib::Util::Packing::ClassMethods
+  extend ::Pwnlib::Util::Fiddling::ClassMethods
+  extend ::Pwnlib::Shellcraft::Registers::ClassMethods
 
   raise ArgumentError, "#{dest} is not a register" unless register?(dest)
   dest = get_register(dest)
