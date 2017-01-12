@@ -4,7 +4,7 @@ require 'test_helper'
 require 'pwnlib/util/fiddling'
 
 class FiddlingTest < MiniTest::Test
-  include ::Pwnlib::Util::Fiddling::ClassMethod
+  include ::Pwnlib::Util::Fiddling::ClassMethods
 
   def test_enhex
     assert_equal('4141313233', enhex('AA123'))
