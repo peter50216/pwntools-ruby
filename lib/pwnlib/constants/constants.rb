@@ -11,7 +11,7 @@ module Pwnlib
   #   # => Constant('SYS_read', 0x0)
   module Constants
     # @note Do not create and call instance method here. Instead, call module method on {Constants}.
-    module ClassMethod
+    module ClassMethods
       include ::Pwnlib::Context
       ENV_STORE = {} # rubocop:disable Style/MutableConstant
       # Try getting constants when method missing
@@ -77,6 +77,6 @@ module Pwnlib
       end
     end
 
-    extend ClassMethod
+    extend ClassMethods
   end
 end
