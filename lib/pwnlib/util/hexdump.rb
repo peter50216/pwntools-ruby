@@ -5,19 +5,19 @@ module Pwnlib
   module Util
     # Method for output a pretty hexdump.
     # Since this may be used in log module, to avoid cyclic dependency, it is put in a separate module as {Fiddling}
-    # See {ClassMethod} for method details.
-    # TODO(Darkpi): Fix example
-    # TODO(Darkpi): Add test
+    # See {ClassMethods} for method details.
     # @todo Control coloring by context?
     # @example Call by specifying full module path.
-    #   require 'pwnlib/util/fiddling'
-    #   Pwnlib::Util::Fiddling.enhex('217') #=> '323137'
+    #   require 'pwnlib/util/hexdump'
+    #   Pwnlib::Util::HexDump.hexdump('217')
+    #   #=> "00000000  32 31 37                  │217│\n00000003"
     # @example require 'pwn' and have all methods.
     #   require 'pwn'
-    #   enhex('217') #=> '323137'
+    #   hexdump('217')
+    #   #=> "00000000  32 31 37                  │217│\n00000003"
     module HexDump
       # @note Do not create and call instance method here. Instead, call module method on {HexDump}.
-      module ClassMethod
+      module ClassMethods
         MARKER = "\u2502".freeze
         HIGHLIGHT_STYLE = ->(s) { Rainbow(s).bg(:red) }
         DEFAULT_STYLE = {
@@ -139,7 +139,7 @@ module Pwnlib
         end
       end
 
-      extend ClassMethod
+      extend ClassMethods
     end
   end
 end

@@ -20,6 +20,6 @@ module Pwn
 
   include ::Pwnlib::Util::Cyclic::ClassMethod
   include ::Pwnlib::Util::Fiddling::ClassMethod
-  include ::Pwnlib::Util::HexDump::ClassMethod
+  include ::Pwnlib::Util::HexDump::ClassMethods
   include ::Pwnlib::Util::Packing::ClassMethod
 end

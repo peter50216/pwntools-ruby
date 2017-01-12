@@ -4,7 +4,7 @@ require 'test_helper'
 require 'pwnlib/util/hexdump'
 
 class HexDumpTest < MiniTest::Test
-  include ::Pwnlib::Util::HexDump::ClassMethod
+  include ::Pwnlib::Util::HexDump::ClassMethods
 
   def setup
     # Default to disable coloring for easier testing.
@@ -151,13 +151,13 @@ class HexDumpTest < MiniTest::Test
     orig_style = HIGHLIGHT_STYLE
     begin
       $VERBOSE = nil
-      ::Pwnlib::Util::HexDump::ClassMethod.const_set(:HIGHLIGHT_STYLE, ->(s) { "#{s}!" })
+      ::Pwnlib::Util::HexDump::ClassMethods.const_set(:HIGHLIGHT_STYLE, ->(s) { "#{s}!" })
       assert_lines_equal(<<-'EOS', hexdump('abcdefghi', highlight: 'aeiou'))
 00000000  61! 62 63 64  65! 66 67 68  69!                        │a!bcd│e!fgh│i!│
 00000009
         EOS
     ensure
-      ::Pwnlib::Util::HexDump::ClassMethod.const_set(:HIGHLIGHT_STYLE, orig_style)
+      ::Pwnlib::Util::HexDump::ClassMethods.const_set(:HIGHLIGHT_STYLE, orig_style)
       $VERBOSE = orig_verbose
     end
   end
