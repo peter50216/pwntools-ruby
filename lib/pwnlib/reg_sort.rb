@@ -71,7 +71,7 @@ module Pwnlib
         #
         # Ex. {eax: 1, ebx: 1} can be collapsed to {eax: 1, ebx: 'eax'}.
         # +post_mov+ are collapsed registers, set their values in the end.
-        post_mov = in_out.group_by { |_, v| v }.values.each_with_object({}) do |list, hash|
+        post_mov = in_out.group_by { |_, v| v }.each_value.with_object({}) do |list, hash|
           list.sort!
           first_reg, val = list.shift
           # Special case for val.zero? because zeroify registers cost cheaper than mov.
@@ -88,7 +88,7 @@ module Pwnlib
         # Let's do the topological sort.
         # so sad ruby 2.1 doesn't have +itself+...
         deg = graph.values.group_by { |i| i }.map { |k, v| [k, v.size] }.to_h
-        graph.keys.each { |k| deg[k] ||= 0 }
+        graph.each_key { |k| deg[k] ||= 0 }
 
         until deg.empty?
           min_deg = deg.min_by { |_, v| v }[1]
