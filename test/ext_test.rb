@@ -1,8 +1,9 @@
 # encoding: ASCII-8BIT
+
 require 'test_helper'
-require 'pwnlib/ext/string'
-require 'pwnlib/ext/integer'
 require 'pwnlib/ext/array'
+require 'pwnlib/ext/integer'
+require 'pwnlib/ext/string'
 
 class ExtTest < MiniTest::Test
   # Thought that test one method in each module for each type is enough, since it's quite
