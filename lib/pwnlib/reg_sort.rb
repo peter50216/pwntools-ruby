@@ -3,7 +3,7 @@
 require 'pwnlib/context'
 
 module Pwnlib
-  # Topographical sort
+  # Do topological sort on register assignments.
   module RegSort
     # @note Do not create and call instance method here. Instead, call module method on {RegSort}.
     module ClassMethods
