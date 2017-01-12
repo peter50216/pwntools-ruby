@@ -33,8 +33,8 @@ module Pwnlib
       #   regs = %w(a b c d x y z)
       #   regsort({a: 1, b: 2}, regs)
       #   => [['mov', 'a', 1], ['mov', 'b', 2]]
-      #   regsort({a: 'b', b: 'a'}, regs, tmp: 'X')
-      #   => [['mov', 'X', 'a'], ['mov', 'a', 'b'], ['mov', 'b', 'X']]
+      #   regsort({a: 'b', b: 'a'}, regs)
+      #   => [['xchg', 'a', 'b']]
       #   regsort({a: 1, b: 'a'}, regs)
       #   => [['mov', 'b', 'a'], ['mov', 'a', 1]]
       #   regsort({a: 'b', b: 'a', c: 3}, regs)
@@ -43,12 +43,10 @@ module Pwnlib
       #   => [['mov', 'c', 'b'], ['xchg', 'a', 'b']]
       #   regsort({a: 'b', b: 'c', c: 'a', x: '1', y: 'z', z: 'c'}, regs)
       #   => [['mov', 'x', '1'],
+      #       ['mov', 'y', 'z'],
       #       ['mov', 'z', 'c'],
-      #       ['mov', 'x', 'a'],
-      #       ['mov', 'a', 'b'],
-      #       ['mov', 'b', 'c'],
-      #       ['mov', 'c', 'x'],
-      #       ['mov', 'y', 'z']]
+      #       ['xchg', 'a', 'b'],
+      #       ['xchg', 'b', 'c']]
       #
       # @note
       #   Different from python-pwntools, we don't support +tmp+/+xchg+ options
