@@ -128,9 +128,6 @@ module Pwnlib
       #   AsmMethods.call('amd64/linux', :syscall, ['SYS_read', 0, 'rsp', 10])
       #   => <assembly codes>
       def self.call(path, method, *args)
-        unless File.file?(File.join(Submodule::ROOT_DIR, path, "#{method}.rb"))
-          raise ArgumentError, "Method `#{method}` not found in path \'#{path}\'!"
-        end
         require File.join(Submodule::ROOT_DIR, path, method.to_s) # require 'templates/amd64/linux/syscall'
         list = [*path.split('/').reject { |s| s.include?('.') }.map(&:to_sym), method]
         runner = list.reduce(@methods) do |cur, key|
