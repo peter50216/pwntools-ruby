@@ -2,13 +2,14 @@ PATH
   remote: .
   specs:
     pwntools (0.1.0)
+      rainbow (~> 2.2)
 
 GEM
   remote: https://www.rubygems.org/
   specs:
     ast (2.3.0)
-    codeclimate-test-reporter (1.0.4)
-      simplecov
+    codeclimate-test-reporter (0.6.0)
+      simplecov (>= 0.7.1, < 1.0.0)
     coderay (1.1.1)
     docile (1.1.5)
     json (2.0.2)
@@ -38,19 +39,21 @@ GEM
     slop (3.6.0)
     tty-platform (0.1.0)
     unicode-display_width (1.1.2)
+    yard (0.9.7)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
-  codeclimate-test-reporter (~> 1.0)
+  codeclimate-test-reporter (~> 0.6)
   minitest (~> 5.8)
   pry (~> 0.10)
   pwntools!
-  rainbow (~> 2.2)
   rake (~> 12.0)
   rubocop (~> 0.46)
+  simplecov (~> 0.12)
   tty-platform (~> 0.1)
+  yard (~> 0.9)
 
 BUNDLED WITH
    1.13.7
