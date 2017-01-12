@@ -23,7 +23,7 @@ check_rake_passed() {
       "do git stash pop by yourself."
     git stash save -q --include-untracked || die "stash error QQ"
   fi
-  rake
+  bundle exec rake
   local rake_status=$?
   if [[ ! -z "${git_status}" ]]; then
     git stash pop -q || die "stash pop error QQ"
