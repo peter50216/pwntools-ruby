@@ -17,7 +17,7 @@ require 'pwnlib/util/packing'
 module Pwn
   include ::Pwnlib::Context
 
-  include ::Pwnlib::Util::Packing::ClassMethod
-  include ::Pwnlib::Util::Cyclic::ClassMethod
-  include ::Pwnlib::Util::Fiddling::ClassMethod
+  include ::Pwnlib::Util::Packing::ClassMethods
+  include ::Pwnlib::Util::Cyclic::ClassMethods
+  include ::Pwnlib::Util::Fiddling::ClassMethods
 end

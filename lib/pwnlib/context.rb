@@ -121,7 +121,7 @@ module Pwnlib
       end
 
       # Getters here.
-      DEFAULT.keys.each do |k|
+      DEFAULT.each_key do |k|
         define_method(k) { @attrs[k] }
       end
 
