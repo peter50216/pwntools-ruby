@@ -11,12 +11,16 @@ module Pwnlib
   #   # => Constant('SYS_read', 0x0)
   module Constants
     # @note Do not create and call instance method here. Instead, call module method on {Constants}.
-    module ClassMethod
+    module ClassMethods
       include ::Pwnlib::Context
-      ENV_STORE = {}
+      ENV_STORE = {} # rubocop:disable Style/MutableConstant
       # Try getting constants when method missing
-      def method_missing(method, *args)
-        args.empty? && get_constant(method) || super
+      def method_missing(method, *args, &block)
+        args.empty? && block.nil? && get_constant(method) || super
+      end
+
+      def respond_to_missing?(method, _include_all)
+        !get_constant(method).nil?
       end
 
       # Eval for Constants
@@ -68,12 +72,12 @@ module Pwnlib
       def load_constants((os, arch))
         filename = File.join(__dir__, os, "#{arch}.rb")
         return {} unless File.exist?(filename)
-        ConstantBuilder.new.tap do |c|
-          c.instance_eval(IO.read(filename))
-        end.tbl
+        builder = ConstantBuilder.new
+        builder.instance_eval(IO.read(filename))
+        builder.tbl
       end
     end
 
-    extend ClassMethod
+    extend ClassMethods
   end
 end

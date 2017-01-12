@@ -4,8 +4,8 @@ Pwnlib::Shellcraft.define('amd64.popad') do
     pop rdi
     pop rsi
     pop rbp
-    pop rsp
-    pop rbp
+    add rsp, 8
+    pop rbx
     pop rdx
     pop rcx
     pop rax

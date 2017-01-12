@@ -1,0 +1,13 @@
+version: 2
+groups:
+  code-review:
+    approve_by_comment:
+      approve_regex: '^(Approved|:\+1:|LGTM)'
+      enabled: true
+    required: 1
+    reset_on_push:
+      enabled: true
+    users:
+    - peter50216
+    - david942j
+    - ShikChen

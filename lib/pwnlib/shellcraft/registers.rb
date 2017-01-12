@@ -2,7 +2,7 @@ module Pwnlib
   module Shellcraft
     # For easy use checking register types when generating assembly.
     module Registers
-      I386_BASEREGS = %w(ax cx dx bx sp bp si di ip)
+      I386_BASEREGS = %w(ax cx dx bx sp bp si di ip).freeze
 
       I386 = I386_BASEREGS.map { |r| "e#{r}" } +
              I386_BASEREGS +
@@ -31,7 +31,7 @@ module Pwnlib
         %w(r13 r13d r13w r13b),
         %w(r14 r14d r14w r14b),
         %w(r15 r15d r15w r15b)
-      ]
+      ].freeze
       # class Register, supports all architectures.
       class Register
         # @return [String] register's name
@@ -77,11 +77,10 @@ module Pwnlib
         end
       end
       # @note Do not create and call instance method here. Instead, call module method on {Shellcraft::Registers}.
-      module ClassMethod
-        INTEL = {}
-        I386_ORDERED.each do |row|
+      module ClassMethods
+        INTEL = I386_ORDERED.each_with_object({}) do |row, obj|
           row.each_with_index do |reg, i|
-            INTEL[reg] = Register.new(reg, 64 >> i)
+            obj[reg] = Register.new(reg, 64 >> i)
           end
         end
 
@@ -108,7 +107,7 @@ module Pwnlib
         end
       end
 
-      extend ClassMethod
+      extend ClassMethods
     end
   end
 end

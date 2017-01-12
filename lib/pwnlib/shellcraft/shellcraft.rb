@@ -98,9 +98,7 @@ module Pwnlib
           return method_missing(method, *args) unless filepath
           # here sucks...
           list = filepath[filepath.rindex("/#{@name}/")..-1].split('/').slice(2..-2).map(&:to_sym)
-          list.inject(self) do |obj, mod|
-            obj.public_send(mod)
-          end.public_send(method, *args)
+          list.reduce(self) { |acc, elem| acc.public_send(elem) }.public_send(method, *args)
         end
         true
       end
@@ -130,13 +128,16 @@ module Pwnlib
       #   AsmMethods.call('amd64/linux', :syscall, ['SYS_read', 0, 'rsp', 10])
       #   => <assembly codes>
       def self.call(path, method, *args)
-        raise ArgumentError, "Method `#{method}` not found in path \'#{path}\'!" unless File.file?(File.join(Submodule::ROOT_DIR, path, "#{method}.rb"))
+        unless File.file?(File.join(Submodule::ROOT_DIR, path, "#{method}.rb"))
+          raise ArgumentError, "Method `#{method}` not found in path \'#{path}\'!"
+        end
         require File.join(Submodule::ROOT_DIR, path, method.to_s) # require 'templates/amd64/linux/syscall'
         list = [*path.split('/').reject { |s| s.include?('.') }.map(&:to_sym), method]
-        list.inject(@methods) do |cur, key|
+        runner = list.reduce(@methods) do |cur, key|
           raise ArgumentError, "Method `#{method}` not been defined by #{path}/#{method}.rb!" unless cur.key?(key)
           cur[key]
-        end.call(*args)
+        end
+        runner.call(*args)
       end
 
       # @param [String] name
@@ -146,7 +147,7 @@ module Pwnlib
       #   # Now can invoke AsmMethods.call('amd64', :nop).
       def self.define(name, &block)
         list = name.split('.').map(&:to_sym)
-        obj = list[0...-1].inject(@methods) do |cur, key|
+        obj = list[0...-1].reduce(@methods) do |cur, key|
           cur[key] = {} unless cur.key?(key)
           cur[key]
         end
@@ -173,9 +174,7 @@ module Pwnlib
         # Indent each line 2 space.
         # TODO(david942j): consider labels
         def typesetting
-          @_output.lines.map do |line|
-            ' ' * 2 + line.lstrip
-          end.join
+          @_output.lines.map { |line| ' ' * 2 + line.lstrip }.join
         end
 
         # For templates/*.rb use.

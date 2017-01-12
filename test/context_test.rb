@@ -1,9 +1,10 @@
 # encoding: ASCII-8BIT
+
 require 'test_helper'
 require 'pwnlib/context'
 
 class ContextTest < MiniTest::Test
-  include Pwnlib::Context
+  include ::Pwnlib::Context
 
   def test_update
     context.update(arch: 'arm', os: 'windows')

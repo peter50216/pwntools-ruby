@@ -3,10 +3,10 @@ require 'test_helper'
 require 'pwnlib/shellcraft/registers'
 
 class RegistersTest < MiniTest::Test
-  include Pwnlib::Shellcraft::Registers::ClassMethod
+  include ::Pwnlib::Shellcraft::Registers::ClassMethods
 
   def test_get_register
-    assert_instance_of(Pwnlib::Shellcraft::Registers::Register, get_register('rdi'))
+    assert_instance_of(::Pwnlib::Shellcraft::Registers::Register, get_register('rdi'))
     assert_nil(get_register('meow'))
   end
 

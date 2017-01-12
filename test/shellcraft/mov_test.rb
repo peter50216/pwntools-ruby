@@ -29,8 +29,13 @@ class MovTest < MiniTest::Test
       assert_equal("  push (SYS_write) /* 1 */\n  pop rax\n", @shellcraft.mov('eax', 'SYS_write'))
       assert_equal("  xor ax, ax\n  mov al, (SYS_write) /* 1 */\n", @shellcraft.mov('ax', 'SYS_write'))
       assert_equal("  /* moving ax into al, but this is a no-op */\n", @shellcraft.mov('al', 'ax'))
-      assert_equal("  mov rax, 0x101010101010101 /* 76750323967 == 0x11dead00ff */\n  push rax\n  mov rax, 0x1010110dfac01fe\n  xor [rsp], rax\n  pop rax\n", @shellcraft.mov('rax', 0x11dead00ff))
-
+      assert_equal(<<-'EOS', @shellcraft.mov('rax', 0x11dead00ff))
+  mov rax, 0x101010101010101 /* 76750323967 == 0x11dead00ff */
+  push rax
+  mov rax, 0x1010110dfac01fe
+  xor [rsp], rax
+  pop rax
+      EOS
       # raises
       err = assert_raises(ArgumentError) { @shellcraft.mov('eax', 'rdx') }
       assert_equal('cannot mov eax, rdx: dest is smaller than src', err.message)

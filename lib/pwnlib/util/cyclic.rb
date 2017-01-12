@@ -3,7 +3,7 @@
 module Pwnlib
   module Util
     # Generate string with easy-to-find pattern.
-    # See {ClassMethod} for method details.
+    # See {ClassMethods} for method details.
     # @example Call by specifying full module path.
     #   require 'pwnlib/util/cyclic'
     #   Pwnlib::Util::Cyclic.cyclic_find(Pwnlib::Util::Cyclic.cyclic(200)[123, 4]) #=> 123
@@ -12,7 +12,7 @@ module Pwnlib
     #   cyclic_find(cyclic(200)[123, 4]) #=> 123
     module Cyclic
       # @note Do not create and call instance method here. Instead, call module method on {Cyclic}.
-      module ClassMethod
+      module ClassMethods
         # TODO(Darkpi): Should we put this constant in some 'String' module?
         ASCII_LOWERCASE = ('a'..'z').to_a.join
         private_constant :ASCII_LOWERCASE
@@ -43,7 +43,7 @@ module Pwnlib
 
           db = lambda do |t, p|
             if t > n
-              (1..p).each { |j| yield alphabet[a[j]] } if n % p == 0
+              (1..p).each { |j| yield alphabet[a[j]] } if (n % p).zero?
             else
               a[t] = a[t - p]
               db.call(t + 1, p)
@@ -114,7 +114,7 @@ module Pwnlib
         end
       end
 
-      extend ClassMethod
+      extend ClassMethods
     end
   end
 end

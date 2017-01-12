@@ -1,6 +1,8 @@
 # encoding: ASCII-8BIT
-require 'test_helper'
+
 require 'open3'
+
+require 'test_helper'
 
 class FullFileTest < MiniTest::Test
   parallelize_me!
@@ -8,7 +10,7 @@ class FullFileTest < MiniTest::Test
     fn = File.basename(f, '.rb')
     define_method("test_#{fn}") do
       _, stderr, status = Open3.capture3('ruby', f, binmode: true)
-      assert(status == 0, stderr)
+      assert(status.success?, stderr)
     end
   end
 end

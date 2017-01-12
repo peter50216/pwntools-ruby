@@ -1,10 +1,11 @@
 # encoding: ASCII-8BIT
+
 require 'pwnlib/context'
 
 module Pwnlib
   module Util
     # Some fiddling methods.
-    # See {ClassMethod} for method details.
+    # See {ClassMethods} for method details.
     # @example Call by specifying full module path.
     #   require 'pwnlib/util/fiddling'
     #   Pwnlib::Util::Fiddling.enhex('217') #=> '323137'
@@ -13,7 +14,7 @@ module Pwnlib
     #   enhex('217') #=> '323137'
     module Fiddling
       # @note Do not create and call instance method here. Instead, call module method on {Fiddling}.
-      module ClassMethod
+      module ClassMethods
         # Hex-encodes a string.
         #
         # @param [String] s
@@ -142,7 +143,7 @@ module Pwnlib
               # TODO(Darkpi): What should we do to negative number?
               raise ArgumentError, 's must be non-negative' unless s >= 0
               r = s.to_s(2).chars.map { |ch| ch == '1' ? one : zero }
-              r.unshift(zero) until r.size % 8 == 0
+              r.unshift(zero) until (r.size % 8).zero?
               is_little ? r.reverse : r
             else
               raise ArgumentError, 's must be either String or Integer'
@@ -187,8 +188,8 @@ module Pwnlib
               when '0', 0, false then '0'
               else raise ArgumentError, "cannot decode value #{c.inspect} into a bit"
               end
-            end.join
-            [bytes].pack(is_little ? 'b*' : 'B*')
+            end
+            [bytes.join].pack(is_little ? 'b*' : 'B*')
           end
         end
 
@@ -279,10 +280,10 @@ module Pwnlib
           [res1, res2]
         end
 
-        include Pwnlib::Context
+        include ::Pwnlib::Context
       end
 
-      extend ClassMethod
+      extend ClassMethods
     end
   end
 end

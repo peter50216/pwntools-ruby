@@ -1,4 +1,5 @@
 # encoding: ASCII-8BIT
+
 require 'test_helper'
 require 'pwnlib/constants/constant'
 
@@ -17,5 +18,7 @@ class ConstantTest < MiniTest::Test
     assert_equal(3, a1 | Constant.new('a', 2))
     assert_equal(3, 2 | a1)
     assert_equal(1, 2 - a1)
+
+    assert_equal(a1.method(:chr).call, "\x01")
   end
 end

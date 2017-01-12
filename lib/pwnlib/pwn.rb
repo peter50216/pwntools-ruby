@@ -7,22 +7,23 @@ require 'pwnlib/constants/constant'
 require 'pwnlib/constants/constants'
 require 'pwnlib/context'
 require 'pwnlib/dynelf'
-
-require 'pwnlib/util/packing'
-require 'pwnlib/util/cyclic'
-require 'pwnlib/util/fiddling'
-
 require 'pwnlib/reg_sort'
 require 'pwnlib/shellcraft/shellcraft'
+
+require 'pwnlib/util/cyclic'
+require 'pwnlib/util/fiddling'
+require 'pwnlib/util/hexdump'
+require 'pwnlib/util/packing'
 
 # include this module in a class to use all pwnlib functions in that class
 # instance.
 module Pwn
-  include Pwnlib::Context
+  include ::Pwnlib::Context
 
-  include Pwnlib::Util::Packing::ClassMethod
-  include Pwnlib::Util::Cyclic::ClassMethod
-  include Pwnlib::Util::Fiddling::ClassMethod
+  include ::Pwnlib::Util::Cyclic::ClassMethods
+  include ::Pwnlib::Util::Fiddling::ClassMethods
+  include ::Pwnlib::Util::HexDump::ClassMethods
+  include ::Pwnlib::Util::Packing::ClassMethods
   def shellcraft
     ::Pwnlib::Shellcraft::Root.instance
   end

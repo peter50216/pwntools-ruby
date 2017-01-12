@@ -12,7 +12,16 @@ class PopadTest < MiniTest::Test
 
   def test_amd64
     context.local(arch: 'amd64') do
-      assert_equal("  pop rdi\n  pop rsi\n  pop rbp\n  pop rsp\n  pop rbp\n  pop rdx\n  pop rcx\n  pop rax\n", @shellcraft.popad)
+      assert_equal(<<-'EOS', @shellcraft.popad)
+  pop rdi
+  pop rsi
+  pop rbp
+  add rsp, 8
+  pop rbx
+  pop rdx
+  pop rcx
+  pop rax
+      EOS
     end
   end
 end

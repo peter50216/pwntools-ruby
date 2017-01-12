@@ -1,12 +1,15 @@
 # encoding: ASCII-8BIT
+
+require 'open3'
+
+require 'tty-platform'
+
 require 'test_helper'
 require 'pwnlib/dynelf'
-require 'open3'
-require 'os'
 
 class DynELFTest < MiniTest::Test
   def test_lookup
-    skip 'Only tested on linux' unless OS.linux?
+    skip 'Only tested on linux' unless TTY::Platform.new.linux?
     [32, 64].each do |b|
       # TODO(hh): Use process instead of popen2
       Open3.popen2(File.expand_path("../data/victim#{b}", __FILE__)) do |i, o, t|
@@ -28,7 +31,7 @@ class DynELFTest < MiniTest::Test
         symbols.map { |a| h[a[-1]] << a[0].to_i(16) }
 
         mem = open("/proc/#{t.pid}/mem", 'rb')
-        d = Pwnlib::DynELF.new(main_ra) do |addr|
+        d = ::Pwnlib::DynELF.new(main_ra) do |addr|
           mem.seek(addr)
           mem.getc
         end

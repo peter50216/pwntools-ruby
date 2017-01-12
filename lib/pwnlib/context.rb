@@ -1,4 +1,5 @@
 # encoding: ASCII-8BIT
+
 require 'logger'
 
 # TODO(Darkpi): Check if there should be special care for threading.
@@ -120,7 +121,7 @@ module Pwnlib
       end
 
       # Getters here.
-      DEFAULT.keys.each do |k|
+      DEFAULT.each_key do |k|
         define_method(k) { @attrs[k] }
       end
 
@@ -207,13 +208,13 @@ module Pwnlib
     # For include.
     # @!visibility private
     def context
-      Pwnlib::Context.context
+      ::Pwnlib::Context.context
     end
 
     # @!visibility private
     def self.included(base)
       # XXX(Darkpi): Should we do this?
-      base.send(:private, :context)
+      base.__send__(:private, :context)
     end
   end
 end

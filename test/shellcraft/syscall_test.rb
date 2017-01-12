@@ -13,10 +13,34 @@ class SyscallTest < MiniTest::Test
 
   def test_amd64
     context.local(arch: 'amd64') do
-      assert_equal("  /* call execve(1, \"rsp\", 2, 0) */\n  xor r10d, r10d /* 0 */\n  push (SYS_execve) /* 0x3b */\n  pop rax\n  push 1\n  pop rdi\n  push 2\n  pop rdx\n  mov rsi, rsp\n  syscall\n", @shellcraft.syscall('SYS_execve', 1, 'rsp', 2, 0))
-      assert_equal("  /* call syscall() */\n  syscall\n", @shellcraft.syscall)
-      assert_equal("  /* call syscall(\"rax\", \"rdi\", \"rsi\") */\n  /* setregs noop */\n  syscall\n", @shellcraft.syscall('rax', 'rdi', 'rsi'))
-      assert_equal("  /* call syscall(\"rbp\", ?, ?, 1) */\n  mov rax, rbp\n  push 1\n  pop rdx\n  syscall\n", @shellcraft.syscall('rbp', nil, nil, 1))
+      assert_equal(<<-'EOS', @shellcraft.syscall('SYS_execve', 1, 'rsp', 2, 0))
+  /* call execve(1, "rsp", 2, 0) */
+  push (SYS_execve) /* 0x3b */
+  pop rax
+  push 1
+  pop rdi
+  mov rsi, rsp
+  push 2
+  pop rdx
+  xor r10d, r10d /* 0 */
+  syscall
+      EOS
+      assert_equal(<<-'EOS', @shellcraft.syscall)
+  /* call syscall() */
+  syscall
+      EOS
+      assert_equal(<<-'EOS', @shellcraft.syscall('rax', 'rdi', 'rsi'))
+  /* call syscall("rax", "rdi", "rsi") */
+  /* setregs noop */
+  syscall
+      EOS
+      assert_equal(<<-'EOS', @shellcraft.syscall('rbp', nil, nil, 1))
+  /* call syscall("rbp", ?, ?, 1) */
+  mov rax, rbp
+  push 1
+  pop rdx
+  syscall
+      EOS
       # TODO(david942j): Constants.eval
       # mmap(0, 4096, 'PROT_READ | PROT_WRITE | PROT_EXEC', 'MAP_PRIVATE | MAP_ANONYMOUS', -1, 0)
     end

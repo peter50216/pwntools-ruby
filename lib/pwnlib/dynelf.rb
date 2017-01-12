@@ -1,7 +1,8 @@
 # encoding: ASCII-8BIT
+
 require 'pwnlib/context'
-require 'pwnlib/util/packing'
 require 'pwnlib/memleak'
+require 'pwnlib/util/packing'
 
 # TODO(hh): Use ELF datatype instead of magic offset
 
@@ -19,11 +20,11 @@ module Pwnlib
     attr_reader :libbase
 
     def initialize(addr, &block)
-      @leak = Pwnlib::MemLeak.new(&block)
+      @leak = ::Pwnlib::MemLeak.new(&block)
       @libbase = @leak.find_elf_base(addr)
       @elfclass = { "\x01" => 32, "\x02" => 64 }[@leak.b(@libbase + 4)]
       @elfword = @elfclass / 8
-      @unp = ->(x) { Util::Packing.send({ 32 => :u32, 64 => :u64 }[@elfclass], x) }
+      @unp = ->(x) { Util::Packing.public_send({ 32 => :u32, 64 => :u64 }[@elfclass], x) }
       @dynamic = find_dynamic
       @hshtab = @strtab = @symtab = nil
     end
@@ -39,7 +40,7 @@ module Pwnlib
 
     # Function used to generated GNU-style hashes for strings.
     def gnu_hash(s)
-      s.bytes.inject(5381) { |acc, elem| (acc * 33 + elem) & 0xffffffff }
+      s.bytes.reduce(5381) { |acc, elem| (acc * 33 + elem) & 0xffffffff }
     end
 
     def find_dynamic
@@ -54,7 +55,7 @@ module Pwnlib
       offset = { 32 => 8, 64 => 16 }[@elfclass]
       dyn = @unp.call(@leak.n(e_phoff + offset, @elfword))
       # Sometimes this is an offset instead of an address
-      dyn += @libbase if (0...0x400000).include?(dyn)
+      dyn += @libbase if (0...0x400000).cover?(dyn)
       dyn
     end
 
@@ -65,7 +66,7 @@ module Pwnlib
         tmp = @leak.n(ptr, @elfword * 2)
         d_tag = @unp.call(tmp[0, @elfword])
         d_addr = @unp.call(tmp[@elfword, @elfword])
-        break if d_tag == 0
+        break if d_tag.zero?
         return d_addr if tag == d_tag
         ptr += dyn_size
       end
@@ -86,12 +87,12 @@ module Pwnlib
       bucket = hsh % nbuckets
 
       i = @leak.d(l_gnu_buckets + bucket * 4)
-      return nil if i == 0
+      return nil if i.zero?
 
       hsh2 = 0
-      while (hsh2 & 1) == 0
+      while (hsh2 & 1).zero?
         hsh2 = @leak.d(l_gnu_chain_zero + i * 4)
-        if ((hsh ^ hsh2) >> 1) == 0
+        if ((hsh ^ hsh2) >> 1).zero?
           sym = @symtab + sym_size * i
           st_name = @leak.d(sym)
           name = @leak.n(@strtab + st_name, symb.length + 1)

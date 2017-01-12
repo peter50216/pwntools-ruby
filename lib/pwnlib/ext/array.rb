@@ -1,20 +1,21 @@
 # encoding: ASCII-8BIT
-require 'pwnlib/util/packing'
-require 'pwnlib/util/fiddling'
+
 require 'pwnlib/ext/helper'
+require 'pwnlib/util/fiddling'
+require 'pwnlib/util/packing'
 
 module Pwnlib
   module Ext
     module Array
       # Methods to be mixed into Array.
       module InstanceMethods
-        extend Pwnlib::Ext::Helper
+        extend ::Pwnlib::Ext::Helper
 
-        def_proxy_method Pwnlib::Util::Packing, %w(flat)
-        def_proxy_method Pwnlib::Util::Fiddling, %w(unbits)
+        def_proxy_method ::Pwnlib::Util::Packing, %w(flat)
+        def_proxy_method ::Pwnlib::Util::Fiddling, %w(unbits)
       end
     end
   end
 end
 
-::Array.send(:include, Pwnlib::Ext::Array::InstanceMethods)
+::Array.public_send(:include, ::Pwnlib::Ext::Array::InstanceMethods)

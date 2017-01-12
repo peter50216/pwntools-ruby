@@ -2,9 +2,9 @@ require 'pwnlib/shellcraft/registers'
 require 'pwnlib/reg_sort'
 require 'pwnlib/shellcraft/shellcraft'
 
-Pwnlib::Shellcraft.define('amd64.setregs') do |reg_context, stack_allowed: true|
-  extend Pwnlib::RegSort::ClassMethod
-  amd64 = Pwnlib::Shellcraft::Root.instance.amd64
+::Pwnlib::Shellcraft.define('amd64.setregs') do |reg_context, stack_allowed: true|
+  extend ::Pwnlib::RegSort::ClassMethods
+  amd64 = ::Pwnlib::Shellcraft::Root.instance.amd64
   reg_context = reg_context.reject { |_, v| v.nil? }.map { |k, v| [k.to_s, v] }.to_h
   eax = reg_context['rax']
   edx = reg_context['rdx']
@@ -24,7 +24,7 @@ Pwnlib::Shellcraft.define('amd64.setregs') do |reg_context, stack_allowed: true|
     cdq = true
     reg_context.delete 'rdx'
   end
-  sorted_regs = regsort(reg_context, Pwnlib::Shellcraft::Registers::AMD64)
+  sorted_regs = regsort(reg_context, ::Pwnlib::Shellcraft::Registers::AMD64)
   if sorted_regs.empty?
     cat '/* setregs noop */'
   else
