@@ -13,6 +13,7 @@ require 'pwnlib/shellcraft/shellcraft'
 require 'pwnlib/util/cyclic'
 require 'pwnlib/util/fiddling'
 require 'pwnlib/util/hexdump'
+require 'pwnlib/util/lists'
 require 'pwnlib/util/packing'
 
 # include this module in a class to use all pwnlib functions in that class
