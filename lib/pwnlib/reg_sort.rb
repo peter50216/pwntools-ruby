@@ -6,7 +6,7 @@ module Pwnlib
   # Topographical sort
   module RegSort
     # @note Do not create and call instance method here. Instead, call module method on {RegSort}.
-    module ClassMethod
+    module ClassMethods
       # Sorts register dependencies.
       #
       # Given a dictionary of registers to desired register contents,
@@ -16,20 +16,6 @@ module Pwnlib
       # The implementation assumes that it is possible to move from
       # any register to any other register.
       #
-      # If a dependency cycle is encountered, one of the following will
-      # occur:
-      #
-      # - If the named register +tmp+ is set and is valid, it will be used
-      #   as a temporary register.
-      # - If +xchg+ is +true+, it is assumed that dependency cyles can
-      #   be broken by swapping the contents of two register (aka the
-      #   +xchg+ instruction on i386).
-      # - If neither +xchg+ nor +tmp+ is set, try to find a register in
-      #   +all_regs+ that is not involved in the cycle, use it as a
-      #   temporary register.
-      # - If the dependency cycle cannot be resolved as described above,
-      #   an exception is raised.
-      #
       # @param [Hash<Symbol, String => Object>] in_out
       #   Dictionary of desired register states.
       #   Keys are registers, values are either registers or any other value.
@@ -37,14 +23,6 @@ module Pwnlib
       #   List of all possible registers.
       #   Used to determine which values in +in_out+ are registers, versus
       #   regular values.
-      # @option [String?] tmp
-      #   Named register (or other sentinel value) to use as a temporary
-      #   register.  If +tmp+ is a named register **and** appears
-      #   as a source value in +in_out+, dependencies are handled
-      #   appropriately.
-      # @option [Boolean] xchg
-      #   Indicates the existence of an instruction which can swap the
-      #   registers.
       # @option [Boolean] randomize
       #   Randomize as much as possible about the order or registers.
       #
@@ -63,36 +41,19 @@ module Pwnlib
       #   => [['mov', 'c', 3], ['xchg', 'a', 'b']]
       #   regsort({a: 'b', b: 'a', c: 'b'}, regs)
       #   => [['mov', 'c', 'b'], ['xchg', 'a', 'b']]
-      #   regsort({a: 'b', b: 'a', x: 'b'}, regs, tmp: 'y', xchg: false)
-      #   => [['mov', 'x', 'b'],
-      #       ['mov', 'y', 'a'],
-      #       ['mov', 'a', 'b'],
-      #       ['mov', 'b', 'y']]
-      #   regsort({a: 'b', b: 'a', x: 'b'}, regs, tmp: 'x', xchg: false)
-      #   => ArgumentError: Cannot break dependency cycles ...
       #   regsort({a: 'b', b: 'c', c: 'a', x: '1', y: 'z', z: 'c'}, regs)
       #   => [['mov', 'x', '1'],
-      #       ['mov', 'y', 'z'],
-      #       ['mov', 'z', 'c'],
-      #       ['xchg', 'a', 'b'],
-      #       ['xchg', 'b', 'c']]
-      #   regsort({a: 'b', b: 'c', c: 'a', x: '1', y: 'z', z: 'c'}, regs, tmp: 'x')
-      #   => [['mov', 'x', '1'],
       #       ['mov', 'z', 'c'],
       #       ['mov', 'x', 'a'],
       #       ['mov', 'a', 'b'],
       #       ['mov', 'b', 'c'],
       #       ['mov', 'c', 'x'],
       #       ['mov', 'y', 'z']]
-      #   regsort({a: 'b', b: 'c', c: 'a', x: '1', y: 'z', z: 'c'}, regs, xchg: false)
-      #   => [['mov', 'x', '1'],
-      #       ['mov', 'z', 'c'],
-      #       ['mov', 'x', 'a'],
-      #       ['mov', 'a', 'b'],
-      #       ['mov', 'b', 'c'],
-      #       ['mov', 'c', 'x'],
-      #       ['mov', 'y', 'z']]
-      def regsort(in_out, all_regs, tmp: nil, xchg: true, randomize: nil)
+      #
+      # @note
+      #   Different from python-pwntools, we don't support +tmp+/+xchg+ options
+      #   because there's no such usage at all.
+      def regsort(in_out, all_regs, randomize: nil)
         # randomize = context.randomize if randomize.nil?
 
         # TODO(david942j): stringify_keys
@@ -111,11 +72,10 @@ module Pwnlib
         # Ex. {eax: 1, ebx: 1} can be collapsed to {eax: 1, ebx: 'eax'}.
         # +post_mov+ are collapsed registers, set their values in the end.
         post_mov = in_out.group_by { |_, v| v }.values.each_with_object({}) do |list, hash|
-          val = list.first[1]
-          # Special case for val.zero? because zeroify registers cost cheaper than mov.
-          next if list.size == 1 || all_regs.include?(val) || val.zero?
           list.sort!
-          first_reg, = list.shift
+          first_reg, val = list.shift
+          # Special case for val.zero? because zeroify registers cost cheaper than mov.
+          next if list.empty? || all_regs.include?(val) || val.zero?
           list.each do |reg, _|
             hash[reg] = first_reg
             in_out.delete(reg)
@@ -144,26 +104,12 @@ module Pwnlib
         end
 
         # Remain must be cycles.
-        cycles = graph.keys.each_with_object([]) do |reg, obj|
-          next unless graph.key?(reg)
+        graph.each_key do |reg|
           cycle = check_cycle(reg, graph)
-          obj << cycle
-          cycle.each { |r| graph.delete(r) }
-        end
-
-        cycles.each do |cycle|
-          # Try break a cycle
-          # 1. If +tmp+ is set, try to use it.
-          # 2. If +xchg == true+, use +xchg+.
-          # 3. Find proper +tmp+ and use it.
-          # 4. so sad :(.
-          if tmp && !depends_on_cycle(tmp, in_out, cycle) then result.concat(break_cycle(cycle, tmp: tmp))
-          elsif xchg then result.concat(break_cycle(cycle))
-          else
-            found_tmp = in_out.keys.find { |r| !depends_on_cycle(r, in_out, cycle) }
-            raise ArgumentError, "Cannot break dependency cycles in #{in_out.inspect}" if found_tmp.nil?
-            result.concat(break_cycle(cycle, tmp: found_tmp))
+          cycle.each_cons(2) do |d, s|
+            result << ['xchg', d, s]
           end
+          cycle.each { |r| graph.delete(r) }
         end
 
         # Now assign those collapsed registers.
@@ -178,10 +124,6 @@ module Pwnlib
 
       # Walk down the assignment list of a register,
       # return the path walked if it is encountered again.
-      #
-      # @return [Array<String>]
-      #   The registers that involved in the cycle start from `reg`.
-      #   Empty array will be returned if no cycle start and end at `reg`.
       # @example
       #   check_cycle('a', {'a' => 1}) #=> []
       #   check_cycle('a', {'a' => 'a'}) #=> ['a']
@@ -201,23 +143,7 @@ module Pwnlib
         return target == path.first ? path : [] if path.include?(target)
         check_cycle_(target, assignments, path)
       end
-
-      # Check if any dependencies of +reg+ appears in cycles.
-      def depends_on_cycle(reg, assignments, in_cycles)
-        return false if reg.nil?
-        loop do
-          return true if in_cycles.include?(reg)
-          reg = assignments[reg]
-          break unless reg
-        end
-        false
-      end
-
-      def break_cycle(cycle, tmp: nil) # :nodoc:
-        inst = tmp ? 'mov' : 'xchg'
-        arr = tmp ? [tmp, *cycle, tmp] : cycle
-        arr.each_cons(2).map { |dst, src| [inst, dst, src] }
-      end
     end
+    extend ClassMethods
   end
 end

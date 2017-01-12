@@ -3,7 +3,7 @@ require 'test_helper'
 require 'pwnlib/reg_sort'
 
 class RegSortTest < MiniTest::Test
-  include ::Pwnlib::RegSort::ClassMethod
+  include ::Pwnlib::RegSort::ClassMethods
 
   def setup
     @regs = %w(a b c d x y z)
@@ -11,10 +11,6 @@ class RegSortTest < MiniTest::Test
 
   def test_normal
     assert_equal([['mov', 'a', 1], ['mov', 'b', 2]], regsort({ a: 1, b: 2 }, @regs))
-  end
-
-  def test_tmp
-    assert_equal([%w(mov X a), %w(mov a b), %w(mov b X)], regsort({ a: 'b', b: 'a' }, @regs, tmp: 'X'))
   end
 
   def test_post_mov
@@ -25,22 +21,15 @@ class RegSortTest < MiniTest::Test
   def test_pseudoforest
     # only one connected component
     assert_equal([%w(mov b a), ['mov', 'a', 1]], regsort({ a: 1, b: 'a' }, @regs))
-    # python-pwntools fails case.
-    assert_equal([%w(mov b a), ['mov', 'a', 1]], regsort({ a: 1, b: 'a' }, @regs, xchg: false))
     assert_equal([['mov', 'c', 3], %w(xchg a b)], regsort({ a: 'b', b: 'a', c: 3 }, @regs))
     assert_equal([%w(mov c b), %w(xchg a b)], regsort({ a: 'b', b: 'a', c: 'b' }, @regs))
     assert_equal([%w(mov x 1), %w(mov y z), %w(mov z c), %w(xchg a b), %w(xchg b c)],
                  regsort({ a: 'b', b: 'c', c: 'a', x: '1', y: 'z', z: 'c' }, @regs))
-    assert_equal([%w(mov x 1), %w(mov y z), %w(mov z c), %w(mov x a), %w(mov a b), %w(mov b c), %w(mov c x)],
-                 regsort({ a: 'b', b: 'c', c: 'a', x: '1', y: 'z', z: 'c' }, @regs, tmp: 'x'))
 
     # more than one connected components
-    # assert_equal([], regsort({ a: 'b', b: 'a', c: 'd', d: 'c' }, %w(a b c d), tmp: 'c'))
-  end
-
-  def test_no_xchg
-    assert_equal([%w(mov x b), %w(mov y a), %w(mov a b), %w(mov b y)],
-                 regsort({ a: 'b', b: 'a', x: 'b' }, @regs, tmp: 'y', xchg: false))
+    assert_equal([%w(xchg a b), %w(xchg c d)], regsort({ a: 'b', b: 'a', c: 'd', d: 'c' }, @regs))
+    assert_equal([%w(mov c b), %w(mov d b), %w(mov z x), %w(xchg a b), %w(xchg x y)],
+                 regsort({ a: 'b', b: 'a', c: 'b', d: 'b', x: 'y', y: 'x', z: 'x' }, @regs))
   end
 
   def test_raise
@@ -48,9 +37,5 @@ class RegSortTest < MiniTest::Test
       regsort({ a: 1 }, ['b'])
     end
     assert_match(/Unknown register!/, err.message)
-    err = assert_raises(ArgumentError) do
-      regsort({ a: 'b', b: 'a', x: 'b' }, @regs, tmp: 'x', xchg: false)
-    end
-    assert_match(/Cannot break dependency cycles/, err.message)
   end
 end
