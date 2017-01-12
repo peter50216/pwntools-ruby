@@ -13,7 +13,7 @@ class FiddlingTest < MiniTest::Test
     assert_equal(%w(AB CD EX), slice(2, 'ABCDE', underfull_action: :fill, fill_value: 'X'))
     assert_equal(%w(AB CD EF), slice(2, 'ABCDEF', underfull_action: :fill, fill_value: 'X'))
     err = assert_raises(ArgumentError) { slice(2, 'ABCDE', underfull_action: :pusheen) }
-    assert_equal('underfull_action expect to be one of either :ignore, :drop or :fill', err.message)
+    assert_equal('underfull_action expect to be one of :ignore, :drop, and :fill', err.message)
     err = assert_raises(ArgumentError) { slice(2, 'ABCDE', underfull_action: :fill, fill_value: nil) }
     assert_equal('fill_value must be a character', err.message)
   end

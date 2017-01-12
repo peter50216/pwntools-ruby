@@ -36,7 +36,7 @@ module Pwnlib
         #   I think this actually more like the +Array#each_slice+ in ruby.
         def slice(n, str, underfull_action: :ignore, fill_value: nil)
           unless %i(ignore drop fill).include?(underfull_action)
-            raise ArgumentError, 'underfull_action expect to be one of either :ignore, :drop or :fill'
+            raise ArgumentError, 'underfull_action expect to be one of :ignore, :drop, and :fill'
           end
           sliced = str.chars.each_slice(n).map(&:join)
           case underfull_action
