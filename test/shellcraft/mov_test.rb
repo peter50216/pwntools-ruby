@@ -19,8 +19,7 @@ class MovTest < MiniTest::Test
       assert_equal("  xor eax, eax\n  mov ax, 0xc0c0\n", @shellcraft.mov('rax', 0xc0c0))
       assert_equal("  xor ebx, ebx\n  mov bh, 0x100 >> 8\n", @shellcraft.mov('ebx', 0x100))
       assert_equal("  mov edi, 0x1010201 /* 256 == 0x100 */\n  xor edi, 0x1010301\n", @shellcraft.mov('rdi', 0x100))
-      # FIXME(david942j): bug of python-pwntools!
-      assert_equal("  push 0xffffffff\n  pop r15\n", @shellcraft.mov('r15', 0xffffffff))
+      assert_equal("  mov r15d, 0xffffffff\n", @shellcraft.mov('r15', 0xffffffff))
       assert_equal("  push -1\n  pop rsi\n", @shellcraft.mov('rsi', -1))
       assert_equal("  mov esi, -1\n", @shellcraft.mov('rsi', -1, stack_allowed: false))
       assert_equal("  movzx edi, ax\n", @shellcraft.mov('rdi', 'ax'))

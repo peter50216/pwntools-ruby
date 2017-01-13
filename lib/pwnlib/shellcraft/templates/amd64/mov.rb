@@ -27,6 +27,7 @@ require 'pwnlib/shellcraft/shellcraft'
   else
     context.local(arch: 'amd64') { src = evaluate(src) }
     raise ArgumentError, format('cannot mov %s, %d: dest is smaller than src', dest, src) unless dest.fits(src)
+    orig_dest = dest
     dest = get_register(dest.native32) if dest.size == 64 && bits_required(src) <= 32
 
     # Calculate the packed version
@@ -34,12 +35,13 @@ require 'pwnlib/shellcraft/shellcraft'
 
     # Calculate the unsigned and signed versions
     srcu = unpack(srcp, bits: dest.size, signed: false)
-    srcs = unpack(srcp, bits: dest.size, signed: true)
+    # N.B.: We may have downsized the register for e.g. mov('rax', 0xffffffff)
+    #       In this case, srcp is now a 4-byte packed value, which will expand
+    #       to "-1", which isn't correct.
+    srcs = orig_dest.size == dest.size ? unpack(srcp, bits: dest.size, signed: true) : src
   end
   if register?(src)
-    if src == dest
-      cat "/* moving #{src} into #{dest}, but this is a no-op */"
-    elsif dest.bigger.include?(src.name)
+    if src == dest || dest.bigger.include?(src.name)
       cat "/* moving #{src} into #{dest}, but this is a no-op */"
     elsif dest.size > src.size
       cat "movzx #{dest}, #{src}"
@@ -47,6 +49,7 @@ require 'pwnlib/shellcraft/shellcraft'
       cat "mov #{dest}, #{src}"
     end
   elsif src.is_a?(Numeric) # Constant or immi
+    xor = ->(dst) { "xor #{dst.xor}, #{dst.xor}" }
     # Special case for zeroes
     # XORing the 32-bit register clears the high 32 bits as well
     if src.zero?
@@ -63,22 +66,22 @@ require 'pwnlib/shellcraft/shellcraft'
     elsif stack_allowed && [32, 64].include?(dest.size) && (-2**7 <= srcs && srcs < 2**7) && okay(srcp[0, 1])
       cat "push #{pretty(src)}"
       cat "pop #{dest.native64}"
-    # Easy case, everybody is trivially happy
+    # Easy case
     # This implies that the register size and value are the same.
     elsif okay(srcp)
       cat "mov #{dest}, #{pretty(src)}"
     # We can push 32-bit values onto the stack and they are sign-extended.
     elsif srcu < 2**8 && okay(srcp[0, 1]) && dest.sizes.include?(8)
-      cat "xor #{dest.xor}, #{dest.xor}"
+      cat xor[dest]
       cat "mov #{dest.sizes[8]}, #{pretty(src)}"
     # Target value is a 16-bit value with no data in the low 8 bits
     # means we can use the 'AH' style register.
     elsif srcu == srcu & 0xff00 && okay(srcp[1]) && dest.ff00
-      cat "xor #{dest}, #{dest}"
+      cat xor[dest]
       cat "mov #{dest.ff00}, #{pretty(src)} >> 8"
     # Target value is a 16-bit value, use a 16-bit mov
     elsif srcu < 2**16 && okay(srcp[0, 2])
-      cat "xor #{dest.xor}, #{dest.xor}"
+      cat xor[dest]
       cat "mov #{dest.sizes[16]}, #{pretty(src)}"
     # All else has failed.  Use some XOR magic to move things around.
     else
