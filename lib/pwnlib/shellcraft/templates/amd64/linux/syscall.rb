@@ -3,7 +3,7 @@ require 'pwnlib/constants/constant'
 require 'pwnlib/shellcraft/shellcraft'
 
 # Assembly of `syscall`.
-Pwnlib::Shellcraft.define('amd64.linux.syscall') do |*arguments|
+::Pwnlib::Shellcraft.define('amd64.linux.syscall') do |*arguments|
   abi = ::Pwnlib::ABI::LINUX_AMD64_SYSCALL
   amd64 = ::Pwnlib::Shellcraft.instance.amd64
   syscall, arg0, arg1, arg2, arg3, arg4, arg5 = arguments
