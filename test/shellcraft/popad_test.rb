@@ -16,7 +16,7 @@ class PopadTest < MiniTest::Test
   pop rdi
   pop rsi
   pop rbp
-  add rsp, 8
+  pop rbx /* add rsp, 8 */
   pop rbx
   pop rdx
   pop rcx

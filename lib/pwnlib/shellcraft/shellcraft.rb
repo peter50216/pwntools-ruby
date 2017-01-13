@@ -93,12 +93,12 @@ module Pwnlib
 
       def add_method(method)
         # If method not presents in current arch, ignore it.
-        filepath = glob(method.to_s)
+        filepath = glob(method)
         return false unless filepath
 
         # find file path in +context.arch+, and call it.
         define_singleton_method(method) do |*args|
-          filepath = glob(method.to_s) # find again because context.arch might be changed.
+          filepath = glob(method) # find again because context.arch might be changed.
           # If method already been defined but architecture changed,
           # needs to raise method_missing.
           return method_missing(method, *args) unless filepath
@@ -109,8 +109,8 @@ module Pwnlib
         true
       end
 
-      def glob(name)
-        Dir.glob(File.join(ROOT_DIR, @name, context.arch, '**', "#{name}.rb")).first
+      def glob(method)
+        Dir.glob(File.join(ROOT_DIR, @name, context.arch, '**', "#{method}.rb")).first
       end
 
       include ::Pwnlib::Context
