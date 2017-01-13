@@ -5,10 +5,9 @@ require 'pwnlib/context'
 
 class SyscallTest < MiniTest::Test
   include ::Pwnlib::Context
-  Shellcraft = ::Pwnlib::Shellcraft
 
   def setup
-    @shellcraft = Pwnlib::Shellcraft.instance
+    @shellcraft = ::Pwnlib::Shellcraft.instance
   end
 
   def test_amd64

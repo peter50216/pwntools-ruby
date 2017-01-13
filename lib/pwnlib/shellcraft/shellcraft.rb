@@ -177,7 +177,7 @@ module Pwnlib
         # Indent each line 2 space.
         # TODO(david942j): consider labels
         def typesetting
-          @_output.lines.map { |line| ' ' * 2 + line.lstrip }.join
+          @_output.lines.map { |line| line == "\n" ? line : ' ' * 2 + line.lstrip }.join
         end
 
         # For templates/*.rb use.
