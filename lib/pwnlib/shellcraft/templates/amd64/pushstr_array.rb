@@ -12,7 +12,7 @@ require 'pwnlib/shellcraft/shellcraft'
   array = array.map { |a| a.gsub(/\x00+\Z/, '') + "\x00" }
   array_str = array.join
   word_size = 8
-  offset = array_str.length + word_size
+  offset = array_str.size + word_size
   cat "/* push argument array #{array.inspect} */"
   cat amd64.pushstr(array_str)
   cat amd64.mov(reg, 0)

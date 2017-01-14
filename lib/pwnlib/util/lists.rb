@@ -44,7 +44,7 @@ module Pwnlib
             sliced.pop unless sliced.last.size == n
           when :fill
             remain = n - sliced.last.size
-            raise ArgumentError, 'fill_value must be a character' unless fill_value.to_s.length == 1
+            raise ArgumentError, 'fill_value must be a character' unless fill_value.to_s.size == 1
             sliced.last.concat(fill_value * remain)
           end
           sliced
