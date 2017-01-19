@@ -23,7 +23,7 @@ require 'pwnlib/shellcraft/shellcraft'
   syscall_repr = format(syscall_repr, args.join(', '))
   registers = abi.register_arguments
   arguments = [syscall, arg0, arg1, arg2, arg3, arg4, arg5]
-  reg_ctx   = registers.zip(arguments).to_h
+  reg_ctx = registers.zip(arguments).to_h
   cat "/* call #{syscall_repr} */"
   cat amd64.setregs(reg_ctx) if arguments.any? { |v| !v.nil? }
   cat 'syscall'

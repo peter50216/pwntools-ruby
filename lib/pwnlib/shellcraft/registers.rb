@@ -44,12 +44,12 @@ module Pwnlib
           @size = size
           I386_ORDERED.each do |row|
             next unless row.include?(name)
-            @bigger   = row[0, row.index(name)]
-            @smaller  = row[(row.index(name) + 1)..-1]
+            @bigger = row[0, row.index(name)]
+            @smaller = row[(row.index(name) + 1)..-1]
             @native64 = row[0]
             @native32 = row[1]
-            @sizes    = row.each_with_object({}).with_index { |(r, h), i| h[64 >> i] = r }
-            @xor      = @sizes[[size, 32].min]
+            @sizes = row.each_with_object({}).with_index { |(r, h), i| h[64 >> i] = r }
+            @xor = @sizes[[size, 32].min]
           end
           @ff00 = name[1] + 'h' if @size >= 32 && @name.end_with?('x')
           # XXX(david942j): str.numeric?

@@ -10,8 +10,8 @@ module Pwnlib
       attr_reader :register_arguments
       def initialize(regs, align, minimum)
         @register_arguments = regs
-        @arg_alignment      = align
-        @stack_minimum      = minimum
+        @arg_alignment = align
+        @stack_minimum = minimum
       end
 
       def returns
@@ -68,11 +68,11 @@ module Pwnlib
         false
       end
     end
-    LINUX_I386    = ABI.new([], 4, 0)
-    LINUX_AMD64   = ABI.new(%w(rdi rsi rdx rcx r8 r9), 8, 0)
-    LINUX_ARM     = ABI.new(%w(r0 r1 r2 r3), 8, 0)
+    LINUX_I386 = ABI.new([], 4, 0)
+    LINUX_AMD64 = ABI.new(%w(rdi rsi rdx rcx r8 r9), 8, 0)
+    LINUX_ARM = ABI.new(%w(r0 r1 r2 r3), 8, 0)
     LINUX_AARCH64 = ABI.new(%w(x0 x1 x2 x3), 16, 0)
-    LINUX_MIPS    = ABI.new(%w($a0 $a1 $a2 $a3), 4, 0)
+    LINUX_MIPS = ABI.new(%w($a0 $a1 $a2 $a3), 4, 0)
 
     LINUX_I386_SYSCALL = SyscallABI.new(%w(eax ebx ecx edx esi edi ebp), 4, 0)
     LINUX_AMD64_SYSCALL = SyscallABI.new(%w(rax rdi rsi rdx r10 r8 r9), 8, 0)
@@ -86,7 +86,7 @@ module Pwnlib
     LINUX_AMD64_SIGRETURN = SigreturnABI.new(['rax'], 4, 0)
     LINUX_ARM_SIGRETURN = SigreturnABI.new(['r7'], 4, 0)
 
-    WINDOWS_I386  = ABI.new([], 4, 0)
+    WINDOWS_I386 = ABI.new([], 4, 0)
     WINDOWS_AMD64 = ABI.new(%w(rcx rdx r8 r9), 32, 32)
 
     # Fake ABIs used by SROP
