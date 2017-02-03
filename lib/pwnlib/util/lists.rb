@@ -33,7 +33,7 @@ module Pwnlib
         #  slice(2, 'ABCDE', underfull_action: :drop)
         #  => ['AB', 'CD']
         # @diff This method named +group+ in python-pwntools, but
-        #   I think this actually more like the +Array#each_slice+ in ruby.
+        #   I think this is actually more similar to +Array#each_slice+ in ruby.
         def slice(n, str, underfull_action: :ignore, fill_value: nil)
           unless %i(ignore drop fill).include?(underfull_action)
             raise ArgumentError, 'underfull_action expect to be one of :ignore, :drop, and :fill'

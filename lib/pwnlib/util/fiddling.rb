@@ -266,8 +266,8 @@ module Pwnlib
         # @example
         #   xor_pair("test") #=> ["\x01\x01\x01\x01", 'udru']
         def xor_pair(data, avoid: "\x00\n")
-          data = pack(data) if data.is_a? Integer
-          alphabet = 256.times.reject { |c| avoid.include? c.chr }
+          data = pack(data) if data.is_a?(Integer)
+          alphabet = 256.times.reject { |c| avoid.include?(c.chr) }
           res1 = ''
           res2 = ''
           data.bytes.each do |c1|

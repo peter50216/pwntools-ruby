@@ -20,7 +20,10 @@ require 'pwnlib/shellcraft/shellcraft'
   eax = ev[eax]
   edx = ev[edx]
 
-  if eax.is_a?(Numeric) && edx.is_a?(Numeric) && eax >> 63 == edx
+  # @diff
+  #   The condition is wrong in python-pwntools,
+  #   and here we don't care the case of edx==0xffffffff
+  if eax.is_a?(Numeric) && edx.is_a?(Numeric) && edx.zero? && (eax & (1 << 31)).zero?
     cdq = true
     reg_context.delete 'rdx'
   end
@@ -32,7 +35,7 @@ require 'pwnlib/shellcraft/shellcraft'
       if how == 'xchg'
         cat "xchg #{src}, #{dst}"
       else
-        # bug in python-pwntools, which missing `stack_allowed`
+        # bug in python-pwntools, which is missing `stack_allowed`
         # pwnlib.shellcraft.amd64.setregs({'rax': 1}, stack_allowed=False)
         cat amd64.mov(src, dst, stack_allowed: stack_allowed)
       end
