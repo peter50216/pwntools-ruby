@@ -1,10 +1,28 @@
 # encoding: ASCII-8BIT
 require 'test_helper'
 require 'pwnlib/asm'
+require 'pwnlib/shellcraft/shellcraft'
 
 class AsmTest < MiniTest::Test
   include ::Pwnlib::Context
   Asm = ::Pwnlib::Asm
+  def setup
+    @shellcraft = ::Pwnlib::Shellcraft.instance
+  end
+
+  def test_i386_asm
+    context.local(arch: 'i386') do
+      assert_equal "\x90", Asm.asm('nop')
+    end
+  end
+
+  def test_amd64_asm
+    context.local(arch: 'amd64') do
+      assert_equal "\x90", Asm.asm('nop')
+      assert_equal "jhH\xb8/bin///sPj;XH\x89\xe71\xf6\x99\x0f\x05", Asm.asm(@shellcraft.sh)
+    end
+  end
+
   def test_i386_disasm
     context.local(arch: 'i386') do
       str = Asm.disasm("h\x01\x01\x01\x01\x814$ri\x01\x011\xd2"\
