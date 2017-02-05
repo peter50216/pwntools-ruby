@@ -198,10 +198,10 @@ module Pwnlib
         alias evaluate eval
 
         # @param [Constants::Constant, String, Integer] n
-        def pretty(n, comment: true)
+        def pretty(n)
           case n
           when Constants::Constant
-            format(comment ? '%s /* %s */' : '%s', pretty(n.to_i), n)
+            format('%s /* %s */', pretty(n.to_i), n)
           when Integer
             n.abs < 10 ? n.to_s : Util::Fiddling.hex(n)
           else
