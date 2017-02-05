@@ -40,8 +40,25 @@ class SyscallTest < MiniTest::Test
   pop rdx
   syscall
       EOS
-      # TODO(david942j): Constants.eval
-      # mmap(0, 4096, 'PROT_READ | PROT_WRITE | PROT_EXEC', 'MAP_PRIVATE | MAP_ANONYMOUS', -1, 0)
+      mmap = @shellcraft.syscall('SYS_mmap', 0, 4096,
+                                 'PROT_READ | PROT_WRITE | PROT_EXEC',
+                                 'MAP_PRIVATE | MAP_ANONYMOUS', -1, 0)
+      assert_equal(<<-'EOS', mmap)
+  /* call mmap(0, 4096, "PROT_READ | PROT_WRITE | PROT_EXEC", "MAP_PRIVATE | MAP_ANONYMOUS", -1, 0) */
+  push 9 /* (SYS_mmap) */
+  pop rax
+  xor edi, edi /* 0 */
+  mov esi, 0x1010101 /* 4096 == 0x1000 */
+  xor esi, 0x1011101
+  push 7 /* (PROT_READ | PROT_WRITE | PROT_EXEC) */
+  pop rdx
+  push 0x22 /* (MAP_PRIVATE | MAP_ANONYMOUS) */
+  pop r10
+  push -1
+  pop r8
+  xor r9d, r9d /* 0 */
+  syscall
+      EOS
     end
   end
 end
