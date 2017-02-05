@@ -2,6 +2,7 @@
 
 require 'pwnlib/context'
 require 'pwnlib/constants/constant'
+require 'dentaku'
 
 module Pwnlib
   # Module containing constants
@@ -34,12 +35,16 @@ module Pwnlib
       # @example
       #   eval('O_CREAT')
       #   => Constant('(O_CREAT)', 0x40)
-      #
-      # @todo(david942j): Support eval('O_CREAT | O_APPEND') (i.e. safeeval)
+      #   eval('O_CREAT | O_APPEND')
+      #   => Constant('(O_CREAT | O_APPEND)', 0x440)
       def eval(str)
         return str unless str.instance_of?(String)
-        const = get_constant(str.strip.to_sym)
-        ::Pwnlib::Constants::Constant.new("(#{str})", const.val)
+        begin
+          val = calculator.evaluate!(str.strip).to_i
+        rescue Dentaku::UnboundVariableError => e
+          raise NameError, e.message
+        end
+        ::Pwnlib::Constants::Constant.new("(#{str})", val)
       end
 
       private
@@ -54,6 +59,15 @@ module Pwnlib
 
       def get_constant(symbol)
         current_store[symbol]
+      end
+
+      CALCULATORS = {} # rubocop:disable Style/MutableConstant
+      def calculator
+        key = current_arch_key
+        return CALCULATORS[key] if CALCULATORS[key]
+        calc = Dentaku::Calculator.new
+        calc.store(current_store)
+        CALCULATORS[key] = calc
       end
 
       # Small class for instance_eval loaded file
