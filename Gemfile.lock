@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/david942j/dentaku
-  revision: a625c85fd8bd978f8c239760e3543ddeebe86521
+  revision: 47bee012ea049d05767993cb8366986125e46ed1
   specs:
     dentaku (2.0.10)
 
