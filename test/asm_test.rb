@@ -13,12 +13,14 @@ class AsmTest < MiniTest::Test
   def test_i386_asm
     context.local(arch: 'i386') do
       assert_equal "\x90", Asm.asm('nop')
+      assert_equal "\xeb\xfe", Asm.asm(@shellcraft.infloop)
     end
   end
 
   def test_amd64_asm
     context.local(arch: 'amd64') do
       assert_equal "\x90", Asm.asm('nop')
+      assert_equal "\xeb\xfe", Asm.asm(@shellcraft.infloop)
       assert_equal "jhH\xb8/bin///sPj;XH\x89\xe71\xf6\x99\x0f\x05", Asm.asm(@shellcraft.sh)
     end
   end
