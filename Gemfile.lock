@@ -1,3 +1,9 @@
+GIT
+  remote: https://github.com/david942j/dentaku
+  revision: 47bee012ea049d05767993cb8366986125e46ed1
+  specs:
+    dentaku (2.0.10)
+
 PATH
   remote: .
   specs:
@@ -46,6 +52,7 @@ PLATFORMS
 
 DEPENDENCIES
   codeclimate-test-reporter (~> 0.6)
+  dentaku!
   minitest (~> 5.8)
   pry (~> 0.10)
   pwntools!
