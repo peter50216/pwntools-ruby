@@ -1,3 +1,5 @@
 ::Pwnlib::Shellcraft.define(__FILE__) do
-  cat 'jmp $'
+  label = get_label('infloop')
+  cat "#{label}:"
+  cat "jmp #{label}"
 end
