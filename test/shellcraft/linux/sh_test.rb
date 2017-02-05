@@ -19,7 +19,7 @@ class ShTest < MiniTest::Test
   push rax
 
   /* call execve("rsp", 0, 0) */
-  push (SYS_execve) /* 0x3b */
+  push 0x3b /* (SYS_execve) */
   pop rax
   mov rdi, rsp
   xor esi, esi /* 0 */
@@ -45,7 +45,7 @@ class ShTest < MiniTest::Test
   push rax
 
   /* call execve("rsp", "rsi", 0) */
-  push (SYS_execve) /* 0x3b */
+  push 0x3b /* (SYS_execve) */
   pop rax
   mov rdi, rsp
   cdq /* rdx=0 */
@@ -84,7 +84,7 @@ class ShTest < MiniTest::Test
   push rax
 
   /* call execve("rsp", "rsi", 0) */
-  push (SYS_execve) /* 0x3b */
+  push 0x3b /* (SYS_execve) */
   pop rax
   mov rdi, rsp
   cdq /* rdx=0 */

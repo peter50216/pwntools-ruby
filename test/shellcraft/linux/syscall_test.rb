@@ -14,7 +14,7 @@ class SyscallTest < MiniTest::Test
     context.local(arch: 'amd64') do
       assert_equal(<<-'EOS', @shellcraft.syscall('SYS_execve', 1, 'rsp', 2, 0))
   /* call execve(1, "rsp", 2, 0) */
-  push (SYS_execve) /* 0x3b */
+  push 0x3b /* (SYS_execve) */
   pop rax
   push 1
   pop rdi

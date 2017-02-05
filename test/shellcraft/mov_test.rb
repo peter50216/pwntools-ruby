@@ -25,8 +25,8 @@ class MovTest < MiniTest::Test
       assert_equal("  movzx edi, ax\n", @shellcraft.mov('rdi', 'ax'))
       assert_equal("  mov rdx, rbx\n", @shellcraft.mov('rdx', 'rbx'))
       assert_equal("  xor eax, eax /* (SYS_read) */\n", @shellcraft.mov('rax', 'SYS_read'))
-      assert_equal("  push (SYS_write) /* 1 */\n  pop rax\n", @shellcraft.mov('eax', 'SYS_write'))
-      assert_equal("  xor ax, ax\n  mov al, (SYS_write) /* 1 */\n", @shellcraft.mov('ax', 'SYS_write'))
+      assert_equal("  push 1 /* (SYS_write) */\n  pop rax\n", @shellcraft.mov('eax', 'SYS_write'))
+      assert_equal("  xor ax, ax\n  mov al, 1 /* (SYS_write) */\n", @shellcraft.mov('ax', 'SYS_write'))
       assert_equal("  /* moving ax into al, but this is a no-op */\n", @shellcraft.mov('al', 'ax'))
       assert_equal(<<-'EOS', @shellcraft.mov('rax', 0x11dead00ff))
   mov rax, 0x101010101010101 /* 76750323967 == 0x11dead00ff */

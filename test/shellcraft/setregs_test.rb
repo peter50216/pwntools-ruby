@@ -19,7 +19,7 @@ class SetregsTest < MiniTest::Test
       EOS
       assert_equal(<<-'EOS', @shellcraft.setregs(rax: 'SYS_write', rbx: 'rax'))
   mov rbx, rax
-  push (SYS_write) /* 1 */
+  push 1 /* (SYS_write) */
   pop rax
       EOS
       assert_equal(<<-'EOS', @shellcraft.setregs(rax: 'rbx', rbx: 'rax', rcx: 'rbx'))

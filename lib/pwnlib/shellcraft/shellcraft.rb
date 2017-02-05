@@ -201,7 +201,7 @@ module Pwnlib
         def pretty(n, comment: true)
           case n
           when Constants::Constant
-            format(comment ? '%s /* %s */' : '%s (%s)', n, pretty(n.to_i))
+            format(comment ? '%s /* %s */' : '%s', pretty(n.to_i), n)
           when Integer
             n.abs < 10 ? n.to_s : Util::Fiddling.hex(n)
           else

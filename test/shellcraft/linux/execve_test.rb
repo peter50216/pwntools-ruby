@@ -19,7 +19,7 @@ class ExecveTest < MiniTest::Test
   push rax
 
   /* call execve("rsp", 0, 0) */
-  push (SYS_execve) /* 0x3b */
+  push 0x3b /* (SYS_execve) */
   pop rax
   mov rdi, rsp
   xor esi, esi /* 0 */
@@ -55,13 +55,13 @@ class ExecveTest < MiniTest::Test
 
   /* call execve("rax", "rsi", "rdx") */
   mov rdi, rax
-  push (SYS_execve) /* 0x3b */
+  push 0x3b /* (SYS_execve) */
   pop rax
   syscall
       EOS
       assert_equal(<<-'EOS', @shellcraft.execve('rdi', 'rsi', 'rdx'))
   /* call execve("rdi", "rsi", "rdx") */
-  push (SYS_execve) /* 0x3b */
+  push 0x3b /* (SYS_execve) */
   pop rax
   syscall
       EOS
