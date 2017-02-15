@@ -61,4 +61,21 @@ class SyscallTest < MiniTest::Test
       EOS
     end
   end
+
+  def test_i386
+    context.local(arch: 'i386') do
+      assert_equal(<<-'EOS', @shellcraft.syscall('ebp', nil, nil, 1))
+  /* call syscall("ebp", ?, ?, 1) */
+  mov eax, ebp
+  push 1
+  pop edx
+  int 0x80
+      EOS
+      assert_equal(<<-'EOS', @shellcraft.syscall('eax', 'ebx', 'ecx'))
+  /* call syscall("eax", "ebx", "ecx") */
+  /* setregs noop */
+  int 0x80
+      EOS
+    end
+  end
 end
