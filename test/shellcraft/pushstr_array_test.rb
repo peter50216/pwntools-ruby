@@ -53,4 +53,37 @@ class PushstrArrayTest < MiniTest::Test
       EOS
     end
   end
+
+  def test_i386
+    context.local(arch: 'i386') do
+      assert_equal(<<-'EOS', @shellcraft.pushstr_array('esp', ['sh', '-c', 'echo pusheen']))
+  /* push argument array ["sh\x00", "-c\x00", "echo pusheen\x00"] */
+  /* push "sh\x00-c\x00echo pusheen\x00" */
+  push 0x1010101
+  xor dword ptr [esp], 0x1010101 ^ 0x6e65
+  push 0x65687375
+  push 0x70206f68
+  push 0x1010101
+  xor dword ptr [esp], 0x1010101 ^ 0x63650063
+  push 0x1010101
+  xor dword ptr [esp], 0x1010101 ^ 0x2d006873
+  xor esp, esp /* 0 */
+  push esp /* null terminate */
+  push 9 /* mov esp, '\n' */
+  pop esp
+  inc esp
+  add esp, esp
+  push esp /* "echo pusheen\x00" */
+  push 0xb
+  pop esp
+  add esp, esp
+  push esp /* "-c\x00" */
+  push 0xc
+  pop esp
+  add esp, esp
+  push esp /* "sh\x00" */
+  /* moving esp into esp, but this is a no-op */
+      EOS
+    end
+  end
 end

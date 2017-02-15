@@ -33,4 +33,23 @@ class SetregsTest < MiniTest::Test
       EOS
     end
   end
+
+  def test_i386
+    context.local(arch: 'i386') do
+      assert_equal(<<-EOS, @shellcraft.setregs(eax: 1, ebx: 'eax'))
+  mov ebx, eax
+  push 1
+  pop eax
+      EOS
+      assert_equal(<<-EOS, @shellcraft.setregs(eax: 'ebx', ebx: 'eax', ecx: 'ebx'))
+  mov ecx, ebx
+  xchg eax, ebx
+      EOS
+      assert_equal(<<-'EOS', @shellcraft.setregs(eax: 1, edx: 0))
+  push 1
+  pop eax
+  cdq /* edx=0 */
+      EOS
+    end
+  end
 end
