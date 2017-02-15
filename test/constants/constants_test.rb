@@ -13,8 +13,9 @@ class ConstantsTest < MiniTest::Test
       assert_equal('Constant("SYS_read", 0x0)', Constants.SYS_read.inspect)
       assert_equal('__NR_arch_prctl', Constants.__NR_arch_prctl.to_s)
       assert_equal('Constant("(O_CREAT)", 0x40)', Constants.eval('O_CREAT').inspect)
-      # TODO(david942j): implement 'real' Constants.eval
-      # assert_equal('Constant("(O_CREAT | O_WRONLY)", 0x41)', Constants.eval('O_CREAT | O_WRONLY').inspect)
+      assert_equal('Constant("(O_CREAT | O_WRONLY)", 0x41)', Constants.eval('O_CREAT | O_WRONLY').inspect)
+      err = assert_raises(NameError) { Constants.eval('rax') }
+      assert_equal('no value provided for variables: rax', err.message)
     end
   end
 
