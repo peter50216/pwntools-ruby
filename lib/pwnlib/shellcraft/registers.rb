@@ -1,3 +1,5 @@
+require 'pwnlib/context'
+
 module Pwnlib
   module Shellcraft
     # For easy use checking register types when generating assembly.
@@ -84,6 +86,13 @@ module Pwnlib
           end
         end
 
+        def registers
+          {
+            [32, 'i386', 'linux'] => ::Pwnlib::Shellcraft::Registers::I386,
+            [64, 'amd64', 'linux'] => ::Pwnlib::Shellcraft::Registers::AMD64
+          }[[context.bits, context.arch, context.os]]
+        end
+
         # @return [Register] get register by name
         def get_register(name)
           return name if name.instance_of?(Register)
@@ -105,6 +114,8 @@ module Pwnlib
           end
           bits
         end
+
+        include ::Pwnlib::Context
       end
 
       extend ClassMethods
