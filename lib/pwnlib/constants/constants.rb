@@ -14,7 +14,6 @@ module Pwnlib
     # @note Do not create and call instance method here. Instead, call module method on {Constants}.
     module ClassMethods
       include ::Pwnlib::Context
-      ENV_STORE = {} # rubocop:disable Style/MutableConstant
       # Try getting constants when method missing
       def method_missing(method, *args, &block)
         args.empty? && block.nil? && get_constant(method) || super
@@ -53,6 +52,7 @@ module Pwnlib
         [context.os, context.arch]
       end
 
+      ENV_STORE = {} # rubocop:disable Style/MutableConstant
       def current_store
         ENV_STORE[current_arch_key] ||= load_constants(current_arch_key)
       end
@@ -63,11 +63,7 @@ module Pwnlib
 
       CALCULATORS = {} # rubocop:disable Style/MutableConstant
       def calculator
-        key = current_arch_key
-        return CALCULATORS[key] if CALCULATORS[key]
-        calc = Dentaku::Calculator.new
-        calc.store(current_store)
-        CALCULATORS[key] = calc
+        CALCULATORS[current_arch_key] ||= Dentaku::Calculator.new.store(current_store)
       end
 
       # Small class for instance_eval loaded file
