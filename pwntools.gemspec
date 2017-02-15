@@ -27,7 +27,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'minitest', '~> 5.8'
   s.add_development_dependency 'pry', '~> 0.10'
   s.add_development_dependency 'rake', '~> 12.0'
-  s.add_development_dependency 'rubocop', '~> 0.46'
+  s.add_development_dependency 'rubocop', '~> 0.47'
   s.add_development_dependency 'simplecov', '~> 0.12'
   s.add_development_dependency 'tty-platform', '~> 0.1'
   s.add_development_dependency 'yard', '~> 0.9'

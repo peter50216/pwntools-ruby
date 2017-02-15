@@ -43,7 +43,7 @@ Style/CollectionMethods:
   Enabled: true
 
 Style/Encoding:
-  Enabled: true
+  Enabled: false
 
 # TODO(Darkpi): enable this when rubocop updated on rubygem.
 # Style/MethodCallWithArgsParentheses:
