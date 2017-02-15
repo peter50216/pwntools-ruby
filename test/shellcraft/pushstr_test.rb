@@ -51,4 +51,49 @@ class PushstrTest < MiniTest::Test
       EOS
     end
   end
+
+  def test_i386
+    context.local(arch: 'i386') do
+      assert_equal(<<-'EOS', @shellcraft.pushstr('A'))
+  /* push "A\x00" */
+  push 0x41
+      EOS
+      assert_equal(<<-'EOS', @shellcraft.pushstr("\n"))
+  /* push "\n\x00" */
+  push 0xb
+  dec byte ptr [esp]
+      EOS
+      assert_equal(<<-'EOS', @shellcraft.pushstr('A' * 4))
+  /* push "AAAA\x00" */
+  push 1
+  dec byte ptr [esp]
+  push 0x41414141
+      EOS
+      assert_equal(<<-'EOS', @shellcraft.pushstr('A' * 8))
+  /* push "AAAAAAAA\x00" */
+  push 1
+  dec byte ptr [esp]
+  push 0x41414141
+  push 0x41414141
+      EOS
+      assert_equal(<<-'EOS', @shellcraft.pushstr('A' * 8, append_null: false))
+  /* push "AAAAAAAA" */
+  push 0x41414141
+  push 0x41414141
+      EOS
+      assert_equal(<<-'EOS', @shellcraft.pushstr("\n" * 4))
+  /* push "\n\n\n\n\x00" */
+  push 1
+  dec byte ptr [esp]
+  push 0x1010101
+  xor dword ptr [esp], 0x1010101 ^ 0xa0a0a0a
+      EOS
+      assert_equal(<<-'EOS', @shellcraft.pushstr('/bin/sh'))
+  /* push "/bin/sh\x00" */
+  push 0x1010101
+  xor dword ptr [esp], 0x1010101 ^ 0x68732f
+  push 0x6e69622f
+      EOS
+    end
+  end
 end
