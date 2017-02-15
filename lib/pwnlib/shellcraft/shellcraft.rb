@@ -1,8 +1,9 @@
 # encoding: ASCII-8BIT
+require 'pwnlib/constants/constant'
 require 'pwnlib/context'
+require 'pwnlib/shellcraft/registers'
 require 'pwnlib/util/packing'
 require 'pwnlib/util/fiddling'
-require 'pwnlib/constants/constant'
 require 'singleton'
 
 module Pwnlib
@@ -196,6 +197,7 @@ module Pwnlib
 
         def eval(item)
           return item if item.is_a?(Integer)
+          return item if ::Pwnlib::Shellcraft::Registers.register?(item)
           Constants.eval(item)
         end
         alias evaluate eval

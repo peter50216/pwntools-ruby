@@ -11,11 +11,7 @@ require 'pwnlib/shellcraft/shellcraft'
   cdq = false
   ev = lambda do |reg|
     next reg unless reg.is_a?(String)
-    begin
-      evaluate(reg)
-    rescue NameError
-      reg
-    end
+    evaluate(reg)
   end
   eax = ev[eax]
   edx = ev[edx]

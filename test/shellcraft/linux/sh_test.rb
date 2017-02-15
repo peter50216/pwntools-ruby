@@ -92,4 +92,26 @@ class ShTest < MiniTest::Test
       EOS
     end
   end
+
+  def test_i386
+    context.local(arch: 'i386') do
+      assert_equal(<<-'EOS', @shellcraft.sh)
+  /* push "/bin///sh\x00" */
+  push 0x68
+  push 0x732f2f2f
+  push 0x6e69622f
+
+  /* call execve("esp", 0, 0) */
+  push 0xb /* (SYS_execve) */
+  pop eax
+  mov ebx, esp
+  xor ecx, ecx /* 0 */
+  cdq /* edx=0 */
+  int 0x80
+      EOS
+      assert_equal(@shellcraft.execve('/bin///sh', ['sh'], 0), @shellcraft.sh(argv: true))
+      assert_equal(@shellcraft.execve('/bin///sh', ['sh', '-c', 'echo pusheen'], 0),
+                   @shellcraft.sh(argv: ['sh', '-c', 'echo pusheen']))
+    end
+  end
 end
