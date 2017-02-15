@@ -16,11 +16,6 @@ require 'pwnlib/shellcraft/shellcraft'
     if dest.size < src.size && !dest.bigger.include?(src.name)
       raise ArgumentError, "cannot mov #{dest}, #{src}: dest is smaller than src"
     end
-    # Can't move between RAX and DIL for example.
-    # TODO(david942j): rex mode
-    # if dest.rex_mode & src.rex_mode == 0:
-    #    log.error('The amd64 instruction set does not support moving from %s to %s' % (src, dest))
-
     # Downgrade our register choice if possible.
     # Opcodes for operating on 32-bit registers are always (?) shorter.
     dest = get_register(dest.native32) if dest.size == 64 && src.size <= 32
@@ -91,15 +86,15 @@ require 'pwnlib/shellcraft/shellcraft'
       # There's no XOR REG, IMM64 but we can take the easy route
       # for smaller registers.
       if dest.size != 64
-        cat "mov #{dest}, #{a} /* #{src} == #{hex(src)} */"
-        cat "xor #{dest}, #{b}"
+        cat "mov #{dest}, #{a}"
+        cat "xor #{dest}, #{b} /* #{hex(src)} == #{a} ^ #{b} */"
       # However, we can PUSH IMM64 and then perform the XOR that
       # way at the top of the stack.
       elsif stack_allowed
-        cat "mov #{dest}, #{a} /* #{src} == #{hex(src)} */"
+        cat "mov #{dest}, #{a}"
         cat "push #{dest}"
         cat "mov #{dest}, #{b}"
-        cat "xor [rsp], #{dest}"
+        cat "xor [rsp], #{dest} /* #{hex(src)} == #{a} ^ #{b} */"
         cat "pop #{dest}"
       else
         raise ArgumentError, "Cannot put #{pretty(src)} into '#{dest}' without using stack."

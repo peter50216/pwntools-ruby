@@ -48,8 +48,8 @@ class SyscallTest < MiniTest::Test
   push 9 /* (SYS_mmap) */
   pop rax
   xor edi, edi /* 0 */
-  mov esi, 0x1010101 /* 4096 == 0x1000 */
-  xor esi, 0x1011101
+  mov esi, 0x1010101
+  xor esi, 0x1011101 /* 0x1000 == 0x1010101 ^ 0x1011101 */
   push 7 /* (PROT_READ | PROT_WRITE | PROT_EXEC) */
   pop rdx
   push 0x22 /* (MAP_PRIVATE | MAP_ANONYMOUS) */
