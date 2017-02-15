@@ -19,5 +19,5 @@ require 'pwnlib/shellcraft/shellcraft'
          when false then 0
          else argv
          end
-  cat amd64.linux.execve('/bin///sh', argv, 0)
+  cat amd64.linux.syscalls.execve('/bin///sh', argv, 0)
 end
