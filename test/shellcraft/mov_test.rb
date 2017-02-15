@@ -18,7 +18,10 @@ class MovTest < MiniTest::Test
       assert_equal("  xor eax, eax\n  mov al, 0xc0\n", @shellcraft.mov('rax', 0xc0))
       assert_equal("  xor eax, eax\n  mov ax, 0xc0c0\n", @shellcraft.mov('rax', 0xc0c0))
       assert_equal("  xor ebx, ebx\n  mov bh, 0x100 >> 8\n", @shellcraft.mov('ebx', 0x100))
-      assert_equal("  mov edi, 0x1010201 /* 256 == 0x100 */\n  xor edi, 0x1010301\n", @shellcraft.mov('rdi', 0x100))
+      assert_equal(<<-'EOS', @shellcraft.mov('rdi', 0x100))
+  mov edi, 0x1010201
+  xor edi, 0x1010301 /* 0x100 == 0x1010201 ^ 0x1010301 */
+      EOS
       assert_equal("  mov r15d, 0xffffffff\n", @shellcraft.mov('r15', 0xffffffff))
       assert_equal("  push -1\n  pop rsi\n", @shellcraft.mov('rsi', -1))
       assert_equal("  mov esi, -1\n", @shellcraft.mov('rsi', -1, stack_allowed: false))
@@ -29,10 +32,10 @@ class MovTest < MiniTest::Test
       assert_equal("  xor ax, ax\n  mov al, 1 /* (SYS_write) */\n", @shellcraft.mov('ax', 'SYS_write'))
       assert_equal("  /* moving ax into al, but this is a no-op */\n", @shellcraft.mov('al', 'ax'))
       assert_equal(<<-'EOS', @shellcraft.mov('rax', 0x11dead00ff))
-  mov rax, 0x101010101010101 /* 76750323967 == 0x11dead00ff */
+  mov rax, 0x101010101010101
   push rax
   mov rax, 0x1010110dfac01fe
-  xor [rsp], rax
+  xor [rsp], rax /* 0x11dead00ff == 0x101010101010101 ^ 0x1010110dfac01fe */
   pop rax
       EOS
       # raises
