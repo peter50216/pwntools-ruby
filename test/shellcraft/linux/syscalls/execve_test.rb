@@ -71,4 +71,64 @@ class ExecveTest < MiniTest::Test
       assert_match(/not a valid register/, err.message)
     end
   end
+
+  def test_i386
+    context.local(arch: 'i386') do
+      assert_equal(<<-'EOS', @shellcraft.execve('/bin///sh', 0, nil))
+  /* push "/bin///sh\x00" */
+  push 0x68
+  push 0x732f2f2f
+  push 0x6e69622f
+
+  /* call execve("esp", 0, 0) */
+  push 0xb /* (SYS_execve) */
+  pop eax
+  mov ebx, esp
+  xor ecx, ecx /* 0 */
+  cdq /* edx=0 */
+  int 0x80
+      EOS
+      assert_equal(<<-'EOS', @shellcraft.execve('eax', ['sh'], PWD: '.'))
+  /* push argument array ["sh\x00"] */
+  /* push "sh\x00" */
+  push 0x1010101
+  xor dword ptr [esp], 0x1010101 ^ 0x6873
+  xor ecx, ecx /* 0 */
+  push ecx /* null terminate */
+  push 4
+  pop ecx
+  add ecx, esp
+  push ecx /* "sh\x00" */
+  mov ecx, esp
+
+  /* push argument array ["PWD=.\x00"] */
+  /* push "PWD=.\x00" */
+  push 0x2e
+  push 0x3d445750
+  xor edx, edx /* 0 */
+  push edx /* null terminate */
+  push 4
+  pop edx
+  add edx, esp
+  push edx /* "PWD=.\x00" */
+  mov edx, esp
+
+  /* call execve("eax", "ecx", "edx") */
+  mov ebx, eax
+  push 0xb /* (SYS_execve) */
+  pop eax
+  int 0x80
+      EOS
+      assert_equal(<<-'EOS', @shellcraft.execve('ebx', 'ecx', 'edx'))
+  /* call execve("ebx", "ecx", "edx") */
+  push 0xb /* (SYS_execve) */
+  pop eax
+  int 0x80
+      EOS
+      err = assert_raises(ArgumentError) { @shellcraft.execve('edi', 'esi', 'xdd') }
+      assert_match(/not a valid register/, err.message)
+      err = assert_raises(ArgumentError) { @shellcraft.execve('edi', 'qqpie', 'edi') }
+      assert_match(/not a valid register/, err.message)
+    end
+  end
 end
