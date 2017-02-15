@@ -2,9 +2,9 @@
 
 require 'pwnlib/shellcraft/shellcraft'
 
-# Got shell!
+# Get shell!
 #
-# @option [Boolean, Array<String>] argv
+# @param [Boolean, Array<String>] argv
 #   Arguments of +argv+ when calling +execve+.
 #   If +true+ is given, use +['sh']+.
 #   If +Array<String>+ is given, use this as arguments array.
