@@ -12,7 +12,7 @@ require 'pwnlib/shellcraft/shellcraft'
 # @diff
 #   By default, this method calls +execve('/bin///sh', 0, 0)+,
 #   which is different from python-pwntools: +execve('/bin///sh', ['sh'], 0)+.
-::Pwnlib::Shellcraft.define('amd64.linux.sh') do |argv: false|
+::Pwnlib::Shellcraft.define(__FILE__) do |argv: false|
   amd64 = ::Pwnlib::Shellcraft.instance.amd64
   argv = case argv
          when true then ['sh']

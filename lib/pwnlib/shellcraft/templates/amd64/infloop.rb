@@ -1,4 +1,4 @@
 require 'pwnlib/shellcraft/shellcraft'
-::Pwnlib::Shellcraft.define('amd64.infloop') do
+::Pwnlib::Shellcraft.define(__FILE__) do
   cat 'jmp $'
 end

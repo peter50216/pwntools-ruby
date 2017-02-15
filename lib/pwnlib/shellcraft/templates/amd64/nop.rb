@@ -1,4 +1,4 @@
 require 'pwnlib/shellcraft/shellcraft'
-::Pwnlib::Shellcraft.define('amd64.nop') do
+::Pwnlib::Shellcraft.define(__FILE__) do
   cat 'nop'
 end

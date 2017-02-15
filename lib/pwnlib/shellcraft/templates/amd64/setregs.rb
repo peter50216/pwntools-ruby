@@ -2,7 +2,7 @@ require 'pwnlib/shellcraft/registers'
 require 'pwnlib/reg_sort'
 require 'pwnlib/shellcraft/shellcraft'
 
-::Pwnlib::Shellcraft.define('amd64.setregs') do |reg_context, stack_allowed: true|
+::Pwnlib::Shellcraft.define(__FILE__) do |reg_context, stack_allowed: true|
   extend ::Pwnlib::RegSort::ClassMethods
   amd64 = ::Pwnlib::Shellcraft.instance.amd64
   reg_context = reg_context.reject { |_, v| v.nil? }.map { |k, v| [k.to_s, v] }.to_h

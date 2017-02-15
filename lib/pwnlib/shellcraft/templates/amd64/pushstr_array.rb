@@ -7,7 +7,7 @@ require 'pwnlib/shellcraft/shellcraft'
 # @param [Array<String>] array
 #   Single list of arguments to push. NULL termination is
 #   normalized so that each argument ends with exactly one NULL byte.
-::Pwnlib::Shellcraft.define('amd64.pushstr_array') do |reg, array|
+::Pwnlib::Shellcraft.define(__FILE__) do |reg, array|
   amd64 = ::Pwnlib::Shellcraft.instance.amd64
   array = array.map { |a| a.gsub(/\x00+\Z/, '') + "\x00" }
   array_str = array.join

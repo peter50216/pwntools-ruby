@@ -4,7 +4,7 @@ require 'pwnlib/util/packing'
 require 'pwnlib/shellcraft/shellcraft'
 
 # Push a string to stack
-::Pwnlib::Shellcraft.define('amd64.pushstr') do |str, append_null: true|
+::Pwnlib::Shellcraft.define(__FILE__) do |str, append_null: true|
   extend ::Pwnlib::Util::Fiddling::ClassMethods
   extend ::Pwnlib::Util::Lists::ClassMethods
   extend ::Pwnlib::Util::Packing::ClassMethods

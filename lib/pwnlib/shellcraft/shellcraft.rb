@@ -14,8 +14,11 @@ module Pwnlib
     end
 
     # For templates/*.rb to define shellcode generators.
-    def self.define(name, *args, &block)
-      AsmMethods.define(name, *args, &block)
+    def self.define(filename, *args, &block)
+      last = File.basename(filename, '.rb')
+      path = filename.split('/')
+      path = path[path.rindex('templates') + 1..-2] + [last]
+      AsmMethods.define(path.join('.'), *args, &block)
     end
 
     # To support like +Shellcraft.amd64.linux.syscall+.
