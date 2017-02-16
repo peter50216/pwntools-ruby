@@ -17,9 +17,9 @@
   cat "push #{reg} /* null terminate */"
   array.reverse.each_with_index do |arg, i|
     cat shellcraft.mov(reg, offset + word_size * i - arg.size)
-    cat "add #{reg}, #{abi.stack_register}"
+    cat "add #{reg}, #{abi.stack_pointer}"
     cat "push #{reg} /* #{arg.inspect} */"
     offset -= arg.size
   end
-  cat shellcraft.mov(reg, abi.stack_register)
+  cat shellcraft.mov(reg, abi.stack_pointer)
 end

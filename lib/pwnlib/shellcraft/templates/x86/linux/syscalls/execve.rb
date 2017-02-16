@@ -55,7 +55,7 @@ require 'pwnlib/shellcraft/registers'
   unless register?(path)
     cat shellcraft.pushstr(path)
     cat ''
-    path = abi.stack_register
+    path = abi.stack_pointer
   end
   cat shellcraft.x86.linux.syscalls.syscall('SYS_execve', path, argv, envp)
 end
