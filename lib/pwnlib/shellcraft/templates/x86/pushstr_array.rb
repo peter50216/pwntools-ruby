@@ -1,5 +1,3 @@
-require 'pwnlib/shellcraft/shellcraft'
-
 # Pushes an array of pointers onto the stack.
 #
 # @param [String] reg
@@ -9,7 +7,6 @@ require 'pwnlib/shellcraft/shellcraft'
 #   normalized so that each argument ends with exactly one NULL byte.
 ::Pwnlib::Shellcraft.define(__FILE__) do |reg, array|
   abi = ::Pwnlib::ABI::ABI.default
-  shellcraft = ::Pwnlib::Shellcraft.instance
   array = array.map { |a| a.gsub(/\x00+\Z/, '') + "\x00" }
   array_str = array.join
   word_size = abi.arg_alignment

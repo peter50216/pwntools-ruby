@@ -1,6 +1,5 @@
 require 'pwnlib/abi'
 require 'pwnlib/constants/constant'
-require 'pwnlib/shellcraft/shellcraft'
 
 # Assembly of `syscall`.
 ::Pwnlib::Shellcraft.define(__FILE__) do |*arguments|

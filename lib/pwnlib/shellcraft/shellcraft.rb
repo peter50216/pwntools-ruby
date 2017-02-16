@@ -214,7 +214,11 @@ module Pwnlib
           end
         end
 
-        include ::Pwnlib
+        def shellcraft
+          ::Pwnlib::Shellcraft.instance
+        end
+
+        include ::Pwnlib::Context
       end
     end
   end

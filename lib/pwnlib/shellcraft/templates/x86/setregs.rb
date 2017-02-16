@@ -1,6 +1,5 @@
 require 'pwnlib/shellcraft/registers'
 require 'pwnlib/reg_sort'
-require 'pwnlib/shellcraft/shellcraft'
 
 ::Pwnlib::Shellcraft.define(__FILE__) do |reg_context, stack_allowed: true|
   extend ::Pwnlib::RegSort::ClassMethods

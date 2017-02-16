@@ -1,7 +1,6 @@
 require 'pwnlib/util/packing'
 require 'pwnlib/util/fiddling'
 require 'pwnlib/shellcraft/registers'
-require 'pwnlib/shellcraft/shellcraft'
 
 # Move src into dest without newlines and null bytes.
 ::Pwnlib::Shellcraft.define(__FILE__) do |dest, src, stack_allowed: true|

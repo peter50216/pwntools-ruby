@@ -1,7 +1,6 @@
 # encoding: ASCII-8BIT
 
 require 'pwnlib/abi'
-require 'pwnlib/shellcraft/shellcraft'
 require 'pwnlib/shellcraft/registers'
 
 # Execute a different process.
@@ -29,8 +28,6 @@ require 'pwnlib/shellcraft/registers'
 ::Pwnlib::Shellcraft.define(__FILE__) do |path, argv, envp|
   extend ::Pwnlib::Shellcraft::Registers::ClassMethods
   abi = ::Pwnlib::ABI::ABI.syscall
-  shellcraft = ::Pwnlib::Shellcraft.instance
-
   argv = case argv
          when String
            raise ArgumentError, "#{argv.inspect} is not a valid register name" unless register?(argv)

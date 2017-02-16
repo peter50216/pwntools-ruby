@@ -1,7 +1,6 @@
 require 'pwnlib/util/fiddling'
 require 'pwnlib/util/lists'
 require 'pwnlib/util/packing'
-require 'pwnlib/shellcraft/shellcraft'
 
 # Push a string to stack
 ::Pwnlib::Shellcraft.define(__FILE__) do |str, append_null: true|

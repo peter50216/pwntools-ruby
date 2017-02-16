@@ -1,7 +1,5 @@
 # encoding: ASCII-8BIT
 
-require 'pwnlib/shellcraft/shellcraft'
-
 # Get shell!
 #
 # @param [Boolean, Array<String>] argv
@@ -18,5 +16,5 @@ require 'pwnlib/shellcraft/shellcraft'
          when false then 0
          else argv
          end
-  cat ::Pwnlib::Shellcraft.instance.x86.linux.syscalls.execve('/bin///sh', argv, 0)
+  cat shellcraft.x86.linux.syscalls.execve('/bin///sh', argv, 0)
 end
