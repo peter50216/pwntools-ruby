@@ -8,7 +8,6 @@ require 'rubocop/rake_task'
 
 RuboCop::RakeTask.new(:rubocop) do |task|
   task.patterns = ['lib/**/*.rb', 'test/**/*.rb']
-  task.formatters = ['files']
 end
 
 task default: %i(install_git_hooks rubocop test)
