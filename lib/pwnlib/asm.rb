@@ -12,6 +12,15 @@ module Pwnlib
       #
       # @param [String] data The bytestring.
       # @param [Integer] vma Virtual memory address.
+      # @return [String] Disassemble result with nice typesetting.
+      # @example
+      #   context.arch = 'i386'
+      #   print disasm("\xb8\x5d\x00\x00")
+      #   #   0:   b8 5d 00 00 00 mov     eax, 0x5d
+      #
+      #   context.arch = 'amd64'
+      #   print disasm("\xb8\x17\x00\x00\x00")
+      #   #   0:   b8 17 00 00 00 mov     eax, 0x17
       def disasm(data, vma: 0)
         cs = Crabstone::Disassembler.new(cap_arch, cap_mode)
         insts = cs.disasm(data, vma).map do |ins|
@@ -24,7 +33,7 @@ module Pwnlib
           inst = if ins[3].empty?
                    ins[2]
                  else
-                   format('%-6s %s', ins[2], ins[3])
+                   format('%-7s %s', ins[2], ins[3])
                  end
           s + format("%#{max_dlen}x:   %-#{max_hlen}s%s\n", ins[0], hex_code, inst)
         end
