@@ -59,15 +59,15 @@ module Pwnlib
         end
       end
 
-      # convert assembly code to machined code.
-      # @param [String] shellcode
+      # Convert assembly code to machine code.
+      # @param [String] code
       #   The assembly code to be converted.
       # @return [String]
       # @example
       #   asm(shellcraft.amd64.linux.sh)
       #   #=> "jhH\xB8/bin///sPj;XH\x89\xE71\xF6\x99\x0F\x05"
-      def asm(shellcode)
-        Keysyone::Ks.new(ks_arch, ks_mode).asm(shellcode)[0]
+      def asm(code)
+        Keystone::Ks.new(ks_arch, ks_mode).asm(code)[0]
       end
 
       private
@@ -88,15 +88,15 @@ module Pwnlib
 
       def ks_arch
         {
-          'i386' => KS_ARCH_X86,
-          'amd64' => KS_ARCH_X86
+          'i386' => Keystone::KS_ARCH_X86,
+          'amd64' => Keystone::KS_ARCH_X86
         }[context.arch]
       end
 
       def ks_mode
         {
-          32 => KS_MODE_32,
-          64 => KS_MODE_64
+          32 => Keystone::KS_MODE_32,
+          64 => Keystone::KS_MODE_64
         }[context.bits]
       end
 
