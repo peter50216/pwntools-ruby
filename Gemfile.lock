@@ -1,4 +1,11 @@
 GIT
+  remote: https://github.com/bnagy/crabstone
+  revision: e3e0a552fcc8d45b7d2e5840456a0d6826271353
+  specs:
+    crabstone (3.0.3)
+      ffi
+
+GIT
   remote: https://github.com/david942j/dentaku
   revision: 47bee012ea049d05767993cb8366986125e46ed1
   specs:
@@ -18,6 +25,7 @@ GEM
       simplecov (>= 0.7.1, < 1.0.0)
     coderay (1.1.1)
     docile (1.1.5)
+    ffi (1.9.18)
     json (2.0.2)
     method_source (0.8.2)
     minitest (5.10.1)
@@ -52,6 +60,7 @@ PLATFORMS
 
 DEPENDENCIES
   codeclimate-test-reporter (~> 0.6)
+  crabstone!
   dentaku!
   minitest (~> 5.8)
   pry (~> 0.10)
