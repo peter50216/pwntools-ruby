@@ -41,9 +41,10 @@ module Pwnlib
       end
 
       # Convert assembly code to machine code.
+      #
       # @param [String] code
       #   The assembly code to be converted.
-      # @return [String]
+      # @return [String] The result.
       # @example
       #   asm(shellcraft.amd64.linux.sh)
       #   #=> "jhH\xB8/bin///sPj;XH\x89\xE71\xF6\x99\x0F\x05"
