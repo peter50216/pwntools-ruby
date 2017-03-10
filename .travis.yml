@@ -19,8 +19,7 @@ matrix:
 before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install jq; fi
   - travis/travis_fastfail.sh || exit 1
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install capstone; export DYLD_LIBRARY_PATH=/usr/local/opt/capstone/lib/:$DYLD_LIBRARY_PATH; fi
   - gem update --system
   - gem install bundler
   - gem --version
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get update; sudo apt-get install -qq --force-yes libgd2-xpm ia32-libs ia32-libs-multiarch binutils libcapstone3 > /dev/null; fi
+  - source travis/install.sh
