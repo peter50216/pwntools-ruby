@@ -14,6 +14,7 @@ class AsmTest < MiniTest::Test
     context.local(arch: 'i386') do
       assert_equal "\x90", Asm.asm('nop')
       assert_equal "\xeb\xfe", Asm.asm(@shellcraft.infloop)
+      assert_equal "jhh///sh/binj\x0bX\x89\xe31\xc9\x99\xcd\x80", Asm.asm(@shellcraft.sh)
     end
   end
 
