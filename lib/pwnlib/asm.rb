@@ -1,6 +1,7 @@
 # encoding: ASCII-8BIT
 require 'pwnlib/context'
 require 'crabstone'
+require 'keystone' # https://github.com/keystone-engine/keystone
 
 module Pwnlib
   # Convert assembly code to machine code and vice versa.
@@ -39,6 +40,18 @@ module Pwnlib
         end
       end
 
+      # Convert assembly code to machine code.
+      #
+      # @param [String] code
+      #   The assembly code to be converted.
+      # @return [String] The result.
+      # @example
+      #   asm(shellcraft.amd64.linux.sh)
+      #   #=> "jhH\xB8/bin///sPj;XH\x89\xE71\xF6\x99\x0F\x05"
+      def asm(code)
+        Keystone::Ks.new(ks_arch, ks_mode).asm(code)[0]
+      end
+
       private
 
       def cap_arch
@@ -52,6 +65,20 @@ module Pwnlib
         {
           32 => Crabstone::MODE_32,
           64 => Crabstone::MODE_64
+        }[context.bits]
+      end
+
+      def ks_arch
+        {
+          'i386' => Keystone::KS_ARCH_X86,
+          'amd64' => Keystone::KS_ARCH_X86
+        }[context.arch]
+      end
+
+      def ks_mode
+        {
+          32 => Keystone::KS_MODE_32,
+          64 => Keystone::KS_MODE_64
         }[context.bits]
       end
       include ::Pwnlib::Context
