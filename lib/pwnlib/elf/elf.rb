@@ -57,7 +57,15 @@ module Pwnlib
       # Actually judged by if +__stack_chk_fail+ in symbols.
       # @return [Boolean]
       def canary?
-        true
+        # TODO(david942j): make here clearer
+        symbols = (@elf_file.sections_by_type(:rel) + @elf_file.sections_by_type(:rela)).map do |rel_sec|
+          symtab = @elf_file.section_at(rel_sec.header.sh_link)
+          next unless symtab.instance_of?(ELFTools::Sections::SymTabSection)
+          rel_sec.relocations.map do |rel|
+            symtab.symbol_at(rel.r_info_sym).name
+          end
+        end
+        symbols.flatten.include?('__stack_chk_fail')
       end
 
       # Is this ELF file stack executable?
