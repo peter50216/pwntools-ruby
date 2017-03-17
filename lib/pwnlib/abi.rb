@@ -78,8 +78,8 @@ module Pwnlib
     LINUX_AMD64_SYSCALL = SyscallABI.new(%w(rax rdi rsi rdx r10 r8 r9), 8, 0)
     LINUX_ARM_SYSCALL = SyscallABI.new(%w(r7 r0 r1 r2 r3 r4 r5 r6), 4, 0)
     LINUX_AARCH64_SYSCALL = SyscallABI.new(%w(x8 x0 x1 x2 x3 x4 x5 x6), 16, 0)
-    # Bug in python-pwntools abi.py, should be SyscallABI
-    # linux_mips_syscall = ABI(['$v0', '$a0','$a1','$a2','$a3'], 4, 0)
+
+    # Bug in python-pwntools abi.py, they use ABI, which should be SyscallABI.
     LINUX_MIPS_SYSCALL = SyscallABI.new(%w($v0 $a0 $a1 $a2 $a3), 4, 0)
 
     LINUX_I386_SIGRETURN = SigreturnABI.new(['eax'], 4, 0)
