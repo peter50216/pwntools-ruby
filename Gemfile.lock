@@ -8,7 +8,7 @@ PATH
   remote: .
   specs:
     pwntools (0.1.0)
-      elftools (~> 0)
+      elftools (~> 0.2)
       rainbow (~> 2.2)
 
 GEM
@@ -20,7 +20,7 @@ GEM
       simplecov (>= 0.7.1, < 1.0.0)
     coderay (1.1.1)
     docile (1.1.5)
-    elftools (0.1.0)
+    elftools (0.2.0)
       bindata (~> 2)
     json (2.0.2)
     method_source (0.8.2)

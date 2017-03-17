@@ -1,22 +1,61 @@
 require 'elftools'
 require 'rainbow'
+require 'ostruct'
 
 module Pwnlib
   # ELF module includes classes related to parsing ELF.
   module ELF
     # Main class for using {Pwnlib::ELF} module.
     class ELF
+      # @return [OpenStruct] GOT symbols.
+      attr_reader :got
+
+      # @return [OpenStruct] All symbols.
+      attr_reader :symbols
+
+      # @return [Integer] Base address
+      attr_accessor :address
+
       # Instantiate an {Pwnlib::ELF::ELF} object.
       #
       # Will show checksec information to stdout instantiate.
       # @param [String] path
       #   The path to the ELF file.
+      # @param [Boolean] checksec
+      #   The checksec information will be printed to stdout when
+      #   loaded ELF. Pass +checksec: false+ to disable this feature.
       # @example
-      #   Pwnlib::ELF::ELF.new('/lib/x86_64-linux-gnu/libc.so.6')
-      #   TODO(david942j): checksec information.
-      def initialize(path)
+      #   ELF.new('/lib/x86_64-linux-gnu/libc.so.6')
+      #   # RELRO:    Partial RELRO
+      #   # Stack:    No canary found
+      #   # NX:       NX enabled
+      #   # PIE:      PIE enabled
+      #   # => #<Pwnlib::ELF::ELF:0x00559bd670dcb8>
+      def initialize(path, checksec: true)
         @elf_file = ELFTools::ELFFile.new(File.open(path, 'rb')) # rubocop:disable Style/AutoResourceCleanup
-        puts checksec
+        load_got
+        load_plt
+        load_symbols
+        @address = base_address
+        show_info if checksec
+      end
+
+      # Set the base address.
+      #
+      # Value in following tables will be changed simultaneously:
+      #   got
+      #   plt
+      #   symbols
+      # @param [Integer] new
+      #   Address to be changed to.
+      # @return [void]
+      def address=(new)
+        old = @address
+        @address = new
+        [@got, @plt, @symbols].each do |tbl|
+          tbl.each_pair { |k, _| tbl[k] += new - old }
+        end
+        new
       end
 
       # Return the protection information,
@@ -39,7 +78,7 @@ module Pwnlib
           }[nx?],
           'PIE:'.ljust(10) + {
             true => Rainbow('PIE enabled').green,
-            false => Rainbow('No PIE').red
+            false => Rainbow(format('No PIE (0x%x)', address)).red
           }[pie?]
         ].join("\n")
       end
@@ -54,18 +93,10 @@ module Pwnlib
 
       # Is this ELF file has canary?
       #
-      # Actually judged by if +__stack_chk_fail+ in symbols.
-      # @return [Boolean]
+      # Actually judged by if +__stack_chk_fail+ in got symbols.
+      # @return [Boolean] Yes or not.
       def canary?
-        # TODO(david942j): make here clearer
-        symbols = (@elf_file.sections_by_type(:rel) + @elf_file.sections_by_type(:rela)).map do |rel_sec|
-          symtab = @elf_file.section_at(rel_sec.header.sh_link)
-          next unless symtab.instance_of?(ELFTools::Sections::SymTabSection)
-          rel_sec.relocations.map do |rel|
-            symtab.symbol_at(rel.r_info_sym).name
-          end
-        end
-        symbols.flatten.include?('__stack_chk_fail')
+        @got.respond_to?('__stack_chk_fail')
       end
 
       # Is this ELF file stack executable?
@@ -80,12 +111,17 @@ module Pwnlib
         @elf_file.elf_type == 'DYN'
       end
 
-      # There's too much, let pry now show so much information.
+      # There's too much objects inside, let pry not so verbose.
       def inspect
         nil
       end
 
       private
+
+      def show_info
+        # TODO: Use logger?
+        puts checksec
+      end
 
       # Get the dynamic tag with +type+.
       # @return [ELFTools::Dynamic::Tag, NilClass]
@@ -93,6 +129,55 @@ module Pwnlib
         dynamic = @elf_file.segment_by_type(:dynamic) || @elf.section_by_name('.dynamic')
         return nil if dynamic.nil? # No dynamic present, might be static-linked.
         dynamic.tag_by_type(type)
+      end
+
+      # load got symbols
+      # @return [void]
+      def load_got
+        @got = OpenStruct.new
+        sections_by_types(%i(rel rela)).each do |rel_sec|
+          symtab = @elf_file.section_at(rel_sec.header.sh_link)
+          next unless symtab.respond_to?(:symbol_at)
+          rel_sec.relocations.each do |rel|
+            symbol = symtab.symbol_at(rel.symbol_index)
+            next unless symbol
+            @got[symbol.name] = rel.header.r_offset
+          end
+        end
+      end
+
+      # load all plt symbols.
+      # @return [void]
+      def load_plt
+        @plt = OpenStruct.new
+        # TODO(david942j)
+      end
+
+      # Load all exist symbols.
+      # @return [void]
+      def load_symbols
+        @symbols = OpenStruct.new
+        @elf_file.each_sections do |section|
+          next unless section.respond_to?(:symbols)
+          section.each_symbols do |symbol|
+            # Don't care symbols without name.
+            next if symbol.name.empty?
+            @symbols[symbol.name] = symbol.header.st_value
+          end
+        end
+      end
+
+      def sections_by_types(types)
+        types.map { |type| @elf_file.sections_by_type(type) }.flatten
+      end
+
+      def base_address
+        return 0 if pie?
+        # Find the min of PT_LOAD's p_vaddr
+        @elf_file.segments_by_type(:load)
+                 .map { |seg| seg.header.p_vaddr }
+                 .select { |addr| addr > 0 }
+                 .min
       end
     end
   end
