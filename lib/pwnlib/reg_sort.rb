@@ -45,8 +45,7 @@ module Pwnlib
       #       ['xchg', 'a', 'b'],
       #       ['xchg', 'b', 'c']]
       #
-      # @note
-      #   Different from python-pwntools, we don't support +tmp+/+xchg+ options because there's no such usage at all.
+      # @diff We don't support +tmp+/+xchg+ options because there's no such usage at all.
       def regsort(in_out, all_regs, randomize: nil)
         # randomize = context.randomize if randomize.nil?
 
