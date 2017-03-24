@@ -10,9 +10,9 @@ module Pwnlib
           .concat(m2.to_a)
           .each do |method, proxy_to|
             class_eval <<-EOS
-            def #{method}(*args, &block)
-            #{mod}.#{proxy_to}(self, *args, &block)
-            end
+              def #{method}(*args, &block)
+              #{mod}.#{proxy_to}(self, *args, &block)
+              end
             EOS
           end
       end

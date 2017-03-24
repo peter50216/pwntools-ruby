@@ -8,8 +8,7 @@ require 'pwnlib/util/packing'
 
 module Pwnlib
   # DynELF class, resolve symbols in loaded, dynamically-linked ELF binaries.
-  # Given a function which can leak data at an arbitrary address,
-  # any symbol in any loaded library can be resolved.
+  # Given a function which can leak data at an arbitrary address, any symbol in any loaded library can be resolved.
   class DynELF
     PT_DYNAMIC = 2
     DT_GNU_HASH = 0x6ffffef5

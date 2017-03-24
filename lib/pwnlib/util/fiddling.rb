@@ -6,6 +6,7 @@ module Pwnlib
   module Util
     # Some fiddling methods.
     # See {ClassMethods} for method details.
+    #
     # @example Call by specifying full module path.
     #   require 'pwnlib/util/fiddling'
     #   Pwnlib::Util::Fiddling.enhex('217') #=> '323137'
@@ -19,6 +20,7 @@ module Pwnlib
         #
         # @param [String] s
         #   String to be encoded.
+        #
         # @return [String]
         #   Hex-encoded string.
         #
@@ -32,6 +34,7 @@ module Pwnlib
         #
         # @param [String] s
         #   String to be decoded.
+        #
         # @return [String]
         #   Hex-decoded string.
         #
@@ -61,6 +64,7 @@ module Pwnlib
         #
         # @param [String] s
         #   String to be encoded.
+        #
         # @return [String]
         #   URL-encoded string.
         #
@@ -78,6 +82,7 @@ module Pwnlib
         #   Whether invalid encoding should be ignore.
         #   If set to +true+,
         #   invalid encoding in input are left intact to output.
+        #
         # @return [String]
         #   URL-decoded string.
         # @raise [ArgumentError]
@@ -124,6 +129,7 @@ module Pwnlib
         #   Object representing a 0-bit.
         # @param one
         #   Object representing a 1-bit.
+        #
         # @return [Array]
         #   An array consisting of +zero+ and +one+.
         #
@@ -154,7 +160,9 @@ module Pwnlib
         # Simple wrapper around {#bits}, which converts output to string.
         #
         # @param (see #bits)
+        #
         # @return [String]
+        #   The output of {#bits} joined.
         #
         # @example
         #   bits_str('GG') #=> '0100011101000111'
@@ -171,6 +179,7 @@ module Pwnlib
         # @param [String] endian
         #   Endian for conversion.
         #   Can be any value accepted by context (See {Context::ContextType}).
+        #
         # @raise [ArgumentError]
         #   If input contains value not in <tt>[0, 1, '0', '1', true, false]</tt>.
         #
@@ -197,6 +206,7 @@ module Pwnlib
         #
         # @param [String] s
         #   Input string.
+        #
         # @return [String]
         #   The string with bits of each byte reversed.
         #
@@ -213,6 +223,7 @@ module Pwnlib
         #   The bit length of +n+,
         #   only the lower +bits+ bits of +n+ would be used.
         #   Default to context.bits
+        #
         # @return [Integer]
         #   The number with bits reversed.
         #
@@ -231,6 +242,7 @@ module Pwnlib
         #
         # @param [String] s
         #   String to be encoded.
+        #
         # @return [String]
         #   Base64-encoded string.
         #
@@ -244,6 +256,7 @@ module Pwnlib
         #
         # @param [String] s
         #   String to be decoded.
+        #
         # @return [String]
         #   Base64-decoded string.
         #

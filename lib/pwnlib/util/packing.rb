@@ -6,6 +6,7 @@ module Pwnlib
   module Util
     # Methods for integer pack/unpack.
     # See {ClassMethods} for method details.
+    #
     # @example Call by specifying full module path.
     #   require 'pwnlib/util/packing'
     #   Pwnlib::Util::Packing.p8(217) #=> "\xD9"
@@ -20,8 +21,8 @@ module Pwnlib
         # +bits+ indicates number of bits that packed output should use.
         # The output would be padded to be byte-aligned.
         #
-        # +bits+ can also be the string 'all',
-        # indicating that the result should be long enough to hold all bits of the number.
+        # +bits+ can also be the string 'all', indicating that the result should be long enough to hold all bits of the
+        # number.
         #
         # @param [Integer] number
         #   Number to be packed.
@@ -37,6 +38,7 @@ module Pwnlib
         #   Whether the input number should be considered signed when +bits+ is +'all'+.
         #   Can be any value accepted by context (See {Context::ContextType}).
         #   Default to +context.signed+.
+        #
         # @return [String]
         #   The packed string.
         # @raise [ArgumentError]
@@ -100,8 +102,7 @@ module Pwnlib
         #
         # +bits+ indicates number of bits that should be used from input data.
         #
-        # +bits+ can also be the string +'all'+,
-        # indicating that all bytes from input should be used.
+        # +bits+ can also be the string +'all'+, indicating that all bytes from input should be used.
         #
         # @param [String] data
         #   String to be unpacked.
@@ -117,6 +118,7 @@ module Pwnlib
         #   Whether the output number should be signed.
         #   Can be any value accepted by context (See {Context::ContextType}).
         #   Default to +context.signed+.
+        #
         # @return [Integer]
         #   The unpacked number.
         # @raise [ArgumentError]
@@ -155,12 +157,10 @@ module Pwnlib
         # Split the data into chunks, and unpack each element.
         #
         # +bits+ indicates how many bits each chunk should be.
-        # This should be a multiple of 8,
-        # and size of +data+ should be divisible by +bits / 8+.
+        # This should be a multiple of 8, and size of +data+ should be divisible by +bits / 8+.
         #
-        # +bits+ can also be the string +'all'+,
-        # indicating that all bytes from input would be used,
-        # and result would be an array with one element.
+        # +bits+ can also be the string +'all'+, indicating that all bytes from input would be used, and result would be
+        # an array with one element.
         #
         # @param [String] data
         #   String to be unpacked.
@@ -176,6 +176,7 @@ module Pwnlib
         #   Whether the output number should be signed.
         #   Can be any value accepted by context (See {Context::ContextType}).
         #   Default to +context.signed+.
+        #
         # @return [Array<Integer>]
         #   The unpacked numbers.
         # @raise [ArgumentError]
@@ -233,10 +234,10 @@ module Pwnlib
           end
         end
 
-        # TODO(Darkpi): pwntools-python have this for performance reason,
-        #               but current implementation doesn't offer that much performance
-        #               relative to what pwntools-python do. Maybe we should initialize
-        #               those functions (p8lu, ...) like in pwntools-python?
+        # TODO(Darkpi):
+        #     pwntools-python have this for performance reason, but current implementation doesn't offer that much
+        #     performance relative to what pwntools-python do. Maybe we should initialize those functions (p8lu, ...)
+        #     like in pwntools-python?
         [%w(pack p), %w(unpack u)].each do |v1, v2|
           define_method("make_#{v1}er") do |bits: nil, endian: nil, signed: nil|
             context.local(bits: bits, endian: endian, signed: signed) do

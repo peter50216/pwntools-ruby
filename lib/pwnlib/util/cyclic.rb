@@ -4,6 +4,7 @@ module Pwnlib
   module Util
     # Generate string with easy-to-find pattern.
     # See {ClassMethods} for method details.
+    #
     # @example Call by specifying full module path.
     #   require 'pwnlib/util/cyclic'
     #   Pwnlib::Util::Cyclic.cyclic_find(Pwnlib::Util::Cyclic.cyclic(200)[123, 4]) #=> 123
@@ -26,14 +27,17 @@ module Pwnlib
         #     Alphabet to be used.
         #   @param [Integer] n
         #     Length of substring that should be unique.
+        #
         #   @return [void]
         #   @yieldparam c
         #     Item of the result sequence in order.
+        #
         # @overload de_bruijn(alphabet: ASCII_LOWERCASE, n: 4)
         #   @param [String, Array] alphabet
         #     Alphabet to be used.
         #   @param [Integer] n
         #     Length of substring that should be unique.
+        #
         #   @return [Enumerator]
         #     The result sequence.
         def de_bruijn(alphabet: ASCII_LOWERCASE, n: 4)
@@ -66,6 +70,7 @@ module Pwnlib
         #   Alphabet to be used.
         # @param [Integer] n
         #   Length of substring that should be unique.
+        #
         # @return [String, Array]
         #   The result sequence of at most +length+ items,
         #   with same type as +alphabet+.
@@ -81,7 +86,6 @@ module Pwnlib
 
         # Find the position of a substring in a De Bruijn sequence
         #
-        # @todo Speed! See comment in Python pwntools.
         # @param [String, Array] subseq
         #   The substring to be found in the sequence.
         # @param [String, Array] alphabet
@@ -89,9 +93,12 @@ module Pwnlib
         # @param [Integer] n
         #   Length of substring that should be unique.
         #   Default to +subseq.size+.
+        #
         # @return [Integer, nil]
         #   The index +subseq+ first appear in the sequence,
         #   or +nil+ if not found.
+        #
+        # @todo Speed! See comment in Python pwntools.
         #
         # @example
         #   cyclic_find(cyclic(300)[217, 4]) #=> 217

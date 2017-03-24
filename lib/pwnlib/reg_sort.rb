@@ -9,21 +9,18 @@ module Pwnlib
     module ClassMethods
       # Sorts register dependencies.
       #
-      # Given a dictionary of registers to desired register contents,
-      # return the optimal order in which to set the registers to
-      # those contents.
+      # Given a dictionary of registers to desired register contents, return the optimal order in which to set the
+      # registers to those contents.
       #
-      # The implementation assumes that it is possible to move from
-      # any register to any other register.
+      # The implementation assumes that it is possible to move from any register to any other register.
       #
       # @param [Hash<Symbol, String => Object>] in_out
       #   Dictionary of desired register states.
       #   Keys are registers, values are either registers or any other value.
       # @param [Array<String>] all_regs
       #   List of all possible registers.
-      #   Used to determine which values in +in_out+ are registers, versus
-      #   regular values.
-      # @option [Boolean] randomize
+      #   Used to determine which values in +in_out+ are registers, versus regular values.
+      # @param [Boolean] randomize
       #   Randomize as much as possible about the order or registers.
       #
       # @return [Array]
@@ -49,8 +46,7 @@ module Pwnlib
       #       ['xchg', 'b', 'c']]
       #
       # @note
-      #   Different from python-pwntools, we don't support +tmp+/+xchg+ options
-      #   because there's no such usage at all.
+      #   Different from python-pwntools, we don't support +tmp+/+xchg+ options because there's no such usage at all.
       def regsort(in_out, all_regs, randomize: nil)
         # randomize = context.randomize if randomize.nil?
 
@@ -120,8 +116,8 @@ module Pwnlib
 
       private
 
-      # Walk down the assignment list of a register,
-      # return the path walked if it is encountered again.
+      # Walk down the assignment list of a register, return the path walked if it is encountered again.
+      #
       # @example
       #   check_cycle('a', {'a' => 1}) #=> []
       #   check_cycle('a', {'a' => 'a'}) #=> ['a']

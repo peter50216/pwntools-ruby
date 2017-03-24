@@ -6,7 +6,9 @@ module Pwnlib
     # Method for output a pretty hexdump.
     # Since this may be used in log module, to avoid cyclic dependency, it is put in a separate module as {Fiddling}
     # See {ClassMethods} for method details.
+    #
     # @todo Control coloring by context?
+    #
     # @example Call by specifying full module path.
     #   require 'pwnlib/util/hexdump'
     #   Pwnlib::Util::HexDump.hexdump('217')
@@ -50,13 +52,14 @@ module Pwnlib
         #   @param [String] highlight
         #     Convenient argument to highlight (red background) some bytes in style.
 
-        # Yields lines of a hexdump-dump of a string. Unless you have massive
-        # amounts of data you probably want to use {#hexdump}.
+        # Yields lines of a hexdump-dump of a string.
+        # Unless you have massive amounts of data you probably want to use {#hexdump}.
         # Returns an Enumerator if no block given.
         #
         # @param [#read] io
         #   The object to be dumped.
         # @!macro hexdump_options
+        #
         # @return [Enumerator<String>]
         #   The resulting hexdump, line by line.
         def hexdump_iter(io, width: 16, skip: true, offset: 0, style: {}, highlight: '')
@@ -130,6 +133,7 @@ module Pwnlib
         # @param [String] str
         #   The string to be hexdumped.
         # @!macro hexdump_options
+        #
         # @return [String]
         #   The resulting hexdump.
         def hexdump(str, width: 16, skip: true, offset: 0, style: {}, highlight: '')
