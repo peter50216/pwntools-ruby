@@ -23,7 +23,7 @@ module Pwnlib
     end
 
     # Call the leaker function on address `addr`.
-    # Store the result to @cache
+    # Store the result to @cache.
     def do_leak(addr)
       unless @cache.key?(addr)
         data = @leak.call(addr)
@@ -38,22 +38,22 @@ module Pwnlib
       (0...numb).map { |i| do_leak(addr + i) }.pack('C*')
     end
 
-    # Leak byte at ``((uint8_t*) addr)[ndx]``
+    # Leak byte at ``((uint8_t*) addr)[ndx]``.
     def b(addr)
       n(addr, 1)
     end
 
-    # Leak word at ``((uint16_t*) addr)[ndx]``
+    # Leak word at ``((uint16_t*) addr)[ndx]``.
     def w(addr)
       Util::Packing.u16(n(addr, 2))
     end
 
-    # Leak dword at ``((uint32_t*) addr)[ndx]``
+    # Leak dword at ``((uint32_t*) addr)[ndx]``.
     def d(addr)
       Util::Packing.u32(n(addr, 4))
     end
 
-    # Leak qword at ``((uint64_t*) addr)[ndx]``
+    # Leak qword at ``((uint64_t*) addr)[ndx]``.
     def q(addr)
       Util::Packing.u64(n(addr, 8))
     end

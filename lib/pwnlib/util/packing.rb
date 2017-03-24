@@ -27,8 +27,7 @@ module Pwnlib
         # @param [Integer] number
         #   Number to be packed.
         # @param [Integer, 'all'] bits
-        #   Number of bits the output should have,
-        #   or +'all'+ for all bits.
+        #   Number of bits the output should have, or +'all'+ for all bits.
         #   Default to +context.bits+.
         # @param [String] endian
         #   Endian to use when packing.
@@ -107,8 +106,7 @@ module Pwnlib
         # @param [String] data
         #   String to be unpacked.
         # @param [Integer, 'all'] bits
-        #   Number of bits to be used from +data+,
-        #   or +'all'+ for all bits.
+        #   Number of bits to be used from +data+, or +'all'+ for all bits.
         #   Default to +context.bits+
         # @param [String] endian
         #   Endian to use when unpacking.

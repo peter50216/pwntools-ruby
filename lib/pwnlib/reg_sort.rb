@@ -60,14 +60,14 @@ module Pwnlib
           raise ArgumentError, format('Unknown register! Know: %p.  Got: %p', all_regs, in_out)
         end
 
-        # Collapse constant values
+        # Collapse constant values.
         #
         # Ex. {eax: 1, ebx: 1} can be collapsed to {eax: 1, ebx: 'eax'}.
         # +post_mov+ are collapsed registers, set their values in the end.
         post_mov = in_out.group_by { |_, v| v }.each_value.with_object({}) do |list, hash|
           list.sort!
           first_reg, val = list.shift
-          # Special case for val.zero? because zeroify registers cost cheaper than mov.
+          # Special case for val.zero? because zeroify registers is cheaper than mov.
           next if list.empty? || all_regs.include?(val) || val.zero?
           list.each do |reg, _|
             hash[reg] = first_reg
@@ -130,13 +130,14 @@ module Pwnlib
       def check_cycle_(reg, assignments, path) # :nodoc:
         target = assignments[reg]
         path << reg
-        # No cycle, some other value (e.g. 1)
+        # No cycle, some other value (e.g. 1).
         return [] unless assignments.key?(target)
-        # Found a cycle
+        # Found a cycle.
         return target == path.first ? path : [] if path.include?(target)
         check_cycle_(target, assignments, path)
       end
     end
+
     extend ClassMethods
   end
 end

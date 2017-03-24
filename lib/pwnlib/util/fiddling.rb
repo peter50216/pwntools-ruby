@@ -80,14 +80,12 @@ module Pwnlib
         #   String to be decoded.
         # @param [Boolean] ignore_invalid
         #   Whether invalid encoding should be ignore.
-        #   If set to +true+,
-        #   invalid encoding in input are left intact to output.
+        #   If set to +true+, invalid encoding in input are left intact to output.
         #
         # @return [String]
         #   URL-decoded string.
         # @raise [ArgumentError]
-        #   If +ignore_invalid+ is +false+,
-        #   and there are invalid encoding in input.
+        #   If +ignore_invalid+ is +false+, and there are invalid encoding in input.
         #
         # @example
         #   urldecode('test%20url') #=> 'test url'
@@ -120,8 +118,7 @@ module Pwnlib
         #
         # @param [String, Integer] s
         #   Input to be converted into bits.
-        #   If input is integer,
-        #   output would be padded to byte aligned.
+        #   If input is integer, output would be padded to byte aligned.
         # @param [String] endian
         #   Endian for conversion.
         #   Can be any value accepted by context (See {Context::ContextType}).
@@ -174,8 +171,7 @@ module Pwnlib
         #
         # @param [String, Array<String, Integer, Boolean>] s
         #   String or array of bits to be convert back to string.
-        #   <tt>[0, '0', false]</tt> represents 0-bit,
-        #   and <tt>[1, '1', true]</tt> represents 1-bit.
+        #   <tt>[0, '0', false]</tt> represents 0-bit, and <tt>[1, '1', true]</tt> represents 1-bit.
         # @param [String] endian
         #   Endian for conversion.
         #   Can be any value accepted by context (See {Context::ContextType}).
@@ -222,7 +218,7 @@ module Pwnlib
         # @param [Integer] bits
         #   The bit length of +n+,
         #   only the lower +bits+ bits of +n+ would be used.
-        #   Default to context.bits
+        #   Default to +context.bits+.
         #
         # @return [Integer]
         #   The number with bits reversed.
@@ -238,7 +234,7 @@ module Pwnlib
         end
 
         # Base64-encodes a string.
-        # Do NOT contains those stupid newline (with RFC 4648)
+        # Do NOT contains those stupid newline (with RFC 4648).
         #
         # @param [String] s
         #   String to be encoded.

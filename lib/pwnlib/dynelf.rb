@@ -4,7 +4,7 @@ require 'pwnlib/context'
 require 'pwnlib/memleak'
 require 'pwnlib/util/packing'
 
-# TODO(hh): Use ELF datatype instead of magic offset
+# TODO(hh): Use ELF datatype instead of magic offset.
 
 module Pwnlib
   # DynELF class, resolve symbols in loaded, dynamically-linked ELF binaries.
@@ -23,7 +23,6 @@ module Pwnlib
       @libbase = @leak.find_elf_base(addr)
       @elfclass = { "\x01" => 32, "\x02" => 64 }[@leak.b(@libbase + 4)]
       @elfword = @elfclass / 8
-      @unp = ->(x) { Util::Packing.public_send({ 32 => :u32, 64 => :u64 }[@elfclass], x) }
       @dynamic = find_dynamic
       @hshtab = @strtab = @symtab = nil
     end
@@ -37,6 +36,10 @@ module Pwnlib
 
     private
 
+    def unpack(x)
+      Util::Packing.public_send({ 32 => :u32, 64 => :u64 }[@elfclass], x)
+    end
+
     # Function used to generated GNU-style hashes for strings.
     def gnu_hash(s)
       s.bytes.reduce(5381) { |acc, elem| (acc * 33 + elem) & 0xffffffff }
@@ -44,7 +47,7 @@ module Pwnlib
 
     def find_dynamic
       e_phoff_offset = { 32 => 28, 64 => 32 }[@elfclass]
-      e_phoff = @libbase + @unp.call(@leak.n(@libbase + e_phoff_offset, @elfword))
+      e_phoff = @libbase + unpack(@leak.n(@libbase + e_phoff_offset, @elfword))
       phdr_size = { 32 => 32, 64 => 56 }[@elfclass]
       loop do
         ptype = @leak.d(e_phoff)
@@ -52,8 +55,8 @@ module Pwnlib
         e_phoff += phdr_size
       end
       offset = { 32 => 8, 64 => 16 }[@elfclass]
-      dyn = @unp.call(@leak.n(e_phoff + offset, @elfword))
-      # Sometimes this is an offset instead of an address
+      dyn = unpack(@leak.n(e_phoff + offset, @elfword))
+      # Sometimes this is an offset instead of an address.
       dyn += @libbase if (0...0x400000).cover?(dyn)
       dyn
     end
@@ -63,8 +66,8 @@ module Pwnlib
       ptr = @dynamic
       loop do
         tmp = @leak.n(ptr, @elfword * 2)
-        d_tag = @unp.call(tmp[0, @elfword])
-        d_addr = @unp.call(tmp[@elfword, @elfword])
+        d_tag = unpack(tmp[0, @elfword])
+        d_addr = unpack(tmp[@elfword, @elfword])
         break if d_tag.zero?
         return d_addr if tag == d_tag
         ptr += dyn_size
@@ -74,7 +77,7 @@ module Pwnlib
 
     def resolve_symbol_gnu(symb)
       sym_size = { 32 => 16, 64 => 24 }[@elfclass]
-      # Leak GNU_HASH section header
+      # Leak GNU_HASH section header.
       nbuckets = @leak.d(@hshtab)
       symndx = @leak.d(@hshtab + 4)
       maskwords = @leak.d(@hshtab + 8)
@@ -97,7 +100,7 @@ module Pwnlib
           name = @leak.n(@strtab + st_name, symb.length + 1)
           if name == (symb + "\x00")
             offset = { 32 => 4, 64 => 8 }[@elfclass]
-            st_value = @unp.call(@leak.n(sym + offset, @elfword))
+            st_value = unpack(@leak.n(sym + offset, @elfword))
             return @libbase + st_value
           end
         end

@@ -64,16 +64,14 @@ module Pwnlib
         # Simple wrapper over {#de_bruijn}, returning at most +length+ items.
         #
         # @param [Integer, nil] length
-        #   Desired length of the sequence,
-        #   or +nil+ for the entire sequence.
+        #   Desired length of the sequence, or +nil+ for the entire sequence.
         # @param [String, Array] alphabet
         #   Alphabet to be used.
         # @param [Integer] n
         #   Length of substring that should be unique.
         #
         # @return [String, Array]
-        #   The result sequence of at most +length+ items,
-        #   with same type as +alphabet+.
+        #   The result sequence of at most +length+ items, with same type as +alphabet+.
         #
         # @example
         #   cyclic(alphabet: 'ABC', n: 3) #=> 'AAABAACABBABCACBACCBBBCBCCC'
@@ -84,7 +82,7 @@ module Pwnlib
           alphabet.is_a?(String) ? r.join : r
         end
 
-        # Find the position of a substring in a De Bruijn sequence
+        # Find the position of a substring in a De Bruijn sequence.
         #
         # @param [String, Array] subseq
         #   The substring to be found in the sequence.
@@ -95,8 +93,7 @@ module Pwnlib
         #   Default to +subseq.size+.
         #
         # @return [Integer, nil]
-        #   The index +subseq+ first appear in the sequence,
-        #   or +nil+ if not found.
+        #   The index +subseq+ first appear in the sequence, or +nil+ if not found.
         #
         # @todo Speed! See comment in Python pwntools.
         #

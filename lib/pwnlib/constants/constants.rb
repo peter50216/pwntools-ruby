@@ -1,11 +1,13 @@
 # encoding: ASCII-8BIT
 
-require 'pwnlib/context'
-require 'pwnlib/constants/constant'
 require 'dentaku'
 
+require 'pwnlib/context'
+require 'pwnlib/constants/constant'
+
 module Pwnlib
-  # Module containing constants
+  # Module containing constants.
+  #
   # @example
   #   context.arch = 'amd64'
   #   Pwnlib::Constants.SYS_read
@@ -13,7 +15,6 @@ module Pwnlib
   module Constants
     # @note Do not create and call instance method here. Instead, call module method on {Constants}.
     module ClassMethods
-      include ::Pwnlib::Context
       # Try getting constants when method missing
       def method_missing(method, *args, &block)
         args.empty? && block.nil? && get_constant(method) || super
@@ -23,7 +24,7 @@ module Pwnlib
         !get_constant(method).nil?
       end
 
-      # Eval for Constants
+      # Eval for Constants.
       #
       # @param [String] str
       #   The string to be evaluate.
@@ -66,9 +67,10 @@ module Pwnlib
         CALCULATORS[current_arch_key] ||= Dentaku::Calculator.new.store(current_store)
       end
 
-      # Small class for instance_eval loaded file
+      # Small class for instance_eval loaded file.
       class ConstantBuilder
         attr_reader :tbl
+
         def initialize
           @tbl = {}
         end
@@ -85,6 +87,8 @@ module Pwnlib
         builder.instance_eval(IO.read(filename))
         builder.tbl
       end
+
+      include ::Pwnlib::Context
     end
 
     extend ClassMethods

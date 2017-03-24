@@ -4,7 +4,7 @@ require 'pwnlib/util/fiddling'
 
 module Pwnlib
   module Constants
-    # A class that includes name and value
+    # A class that includes name and value representing a constant.
     class Constant < Numeric
       attr_reader :str, :val
       def initialize(str, val)

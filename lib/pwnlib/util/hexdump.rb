@@ -1,4 +1,5 @@
 # encoding: ASCII-8BIT
+
 require 'rainbow'
 
 module Pwnlib
@@ -7,7 +8,7 @@ module Pwnlib
     # Since this may be used in log module, to avoid cyclic dependency, it is put in a separate module as {Fiddling}
     # See {ClassMethods} for method details.
     #
-    # @todo Control coloring by context?
+    # @todo Control coloring by context.
     #
     # @example Call by specifying full module path.
     #   require 'pwnlib/util/hexdump'

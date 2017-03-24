@@ -2,7 +2,7 @@
 
 module Pwnlib
   module Ext
-    # Helper methods for defining extension
+    # Helper methods for defining extension.
     module Helper
       def def_proxy_method(mod, *ms, **m2)
         ms.flatten
