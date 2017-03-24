@@ -37,6 +37,12 @@ PIE:      No PIE (0x8048000)
     assert_equal(@elf.symbols.main, @elf.symbols[:main])
   end
 
+  def test_plt
+    assert_equal(4, @elf.plt.to_h.size)
+    assert_equal(0x8048350, @elf.plt.printf)
+    assert_equal(0x8048370, @elf.plt[:setvbuf])
+  end
+
   def test_address
     old_address = @elf.address
     assert_equal(0x8048000, @elf.address)

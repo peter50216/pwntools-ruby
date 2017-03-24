@@ -10,6 +10,9 @@ module Pwnlib
       # @return [OpenStruct] GOT symbols.
       attr_reader :got
 
+      # @return [OpenStruct] PLT symbols.
+      attr_reader :plt
+
       # @return [OpenStruct] All symbols.
       attr_reader :symbols
 
@@ -19,11 +22,13 @@ module Pwnlib
       # Instantiate an {Pwnlib::ELF::ELF} object.
       #
       # Will show checksec information to stdout instantiate.
+      #
       # @param [String] path
       #   The path to the ELF file.
       # @param [Boolean] checksec
-      #   The checksec information will be printed to stdout when
-      #   loaded ELF. Pass +checksec: false+ to disable this feature.
+      #   The checksec information will be printed to stdout when loaded ELF. Pass +checksec: false+ to disable this
+      #   feature.
+      #
       # @example
       #   ELF.new('/lib/x86_64-linux-gnu/libc.so.6')
       #   # RELRO:    Partial RELRO
@@ -42,12 +47,14 @@ module Pwnlib
 
       # Set the base address.
       #
-      # Value in following tables will be changed simultaneously:
+      # Values in following tables will be changed simultaneously:
       #   got
       #   plt
       #   symbols
+      #
       # @param [Integer] new
       #   Address to be changed to.
+      #
       # @return [void]
       def address=(new)
         old = @address
@@ -58,9 +65,10 @@ module Pwnlib
         new
       end
 
-      # Return the protection information,
-      # wrapper with color codes.
-      # @return [String] The checksec infor.
+      # Return the protection information, wrapper with color codes.
+      #
+      # @return [String]
+      #   The checksec information.
       def checksec
         [
           'RELRO:'.ljust(10) + {
@@ -84,6 +92,7 @@ module Pwnlib
       end
 
       # The method used in relro.
+      #
       # @return [String]
       def relro
         return 'Full' if dynamic_tag(:bind_now)
@@ -94,18 +103,21 @@ module Pwnlib
       # Is this ELF file has canary?
       #
       # Actually judged by if +__stack_chk_fail+ in got symbols.
+      #
       # @return [Boolean] Yes or not.
       def canary?
         @got.respond_to?('__stack_chk_fail')
       end
 
       # Is this ELF file stack executable?
+      #
       # @return [Boolean]
       def nx?
         !@elf_file.segment_by_type(:gnu_stack).executable?
       end
 
       # Is this ELF file a position-independent executable?
+      #
       # @return [Boolean]
       def pie?
         @elf_file.elf_type == 'DYN'
@@ -131,8 +143,7 @@ module Pwnlib
         dynamic.tag_by_type(type)
       end
 
-      # load got symbols
-      # @return [void]
+      # Load got symbols
       def load_got
         @got = OpenStruct.new
         sections_by_types(%i(rel rela)).each do |rel_sec|
@@ -146,15 +157,27 @@ module Pwnlib
         end
       end
 
-      # load all plt symbols.
-      # @return [void]
+      # Load all plt symbols.
       def load_plt
+        # Unlike pwntools-python, which use unicorn emulating instructions to find plt(s).
+        # Here only use section information, which won't find any plt(s) when compile option '-Wl' is enabled.
+        #
+        # The implementation here same as python-pwntools 3.5, and supports i386 and amd64 only.
         @plt = OpenStruct.new
-        # TODO(david942j)
+        plt_sec = @elf_file.section_by_name('.plt')
+        return if plt_sec.nil? # TODO: log.warn
+        rel_sec = @elf_file.section_by_name('.rel.plt') || @elf_file.section_by_name('.rela.plt')
+        return if rel_sec.nil? # -Wl enabled
+        symtab = @elf_file.section_at(rel_sec.header.sh_link)
+        address = plt_sec.header.sh_addr + 0x10 # magic offset, correct in i386/amd64
+        rel_sec.relocations.each do |rel|
+          symbol = symtab.symbol_at(rel.symbol_index)
+          @plt[symbol.name] = address
+          address += 0x10 # magic gap again
+        end
       end
 
       # Load all exist symbols.
-      # @return [void]
       def load_symbols
         @symbols = OpenStruct.new
         @elf_file.each_sections do |section|
@@ -162,6 +185,7 @@ module Pwnlib
           section.each_symbols do |symbol|
             # Don't care symbols without name.
             next if symbol.name.empty?
+            next if symbol.header.st_value.zero?
             @symbols[symbol.name] = symbol.header.st_value
           end
         end
