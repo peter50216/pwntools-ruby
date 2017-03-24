@@ -1,10 +1,11 @@
 # encoding: ASCII-8BIT
+
 require 'pwnlib/context'
 
 module Pwnlib
   module Util
     # Methods for integer pack/unpack.
-    # See {ClassMethod} for method details.
+    # See {ClassMethods} for method details.
     # @example Call by specifying full module path.
     #   require 'pwnlib/util/packing'
     #   Pwnlib::Util::Packing.p8(217) #=> "\xD9"
@@ -13,7 +14,7 @@ module Pwnlib
     #   p8(217) #=> "\xD9"
     module Packing
       # @note Do not create and call instance method here. Instead, call module method on {Packing}.
-      module ClassMethod
+      module ClassMethods
         # Pack arbitrary-sized integer.
         #
         # +bits+ indicates number of bits that packed output should use.
@@ -277,7 +278,7 @@ module Pwnlib
         include ::Pwnlib::Context
       end
 
-      extend ClassMethod
+      extend ClassMethods
     end
   end
 end

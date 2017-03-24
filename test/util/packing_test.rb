@@ -1,9 +1,10 @@
 # encoding: ASCII-8BIT
+
 require 'test_helper'
 require 'pwnlib/util/packing'
 
 class PackingTest < MiniTest::Test
-  include ::Pwnlib::Util::Packing::ClassMethod
+  include ::Pwnlib::Util::Packing::ClassMethods
 
   def test_pack
     assert_equal('ABC',

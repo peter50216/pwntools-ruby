@@ -1,4 +1,5 @@
 # encoding: ASCII-8BIT
+
 require 'pwnlib/util/packing'
 
 module Pwnlib

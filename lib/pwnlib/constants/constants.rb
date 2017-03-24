@@ -2,6 +2,7 @@
 
 require 'pwnlib/context'
 require 'pwnlib/constants/constant'
+require 'dentaku'
 
 module Pwnlib
   # Module containing constants
@@ -11,9 +12,8 @@ module Pwnlib
   #   # => Constant('SYS_read', 0x0)
   module Constants
     # @note Do not create and call instance method here. Instead, call module method on {Constants}.
-    module ClassMethod
+    module ClassMethods
       include ::Pwnlib::Context
-      ENV_STORE = {} # rubocop:disable Style/MutableConstant
       # Try getting constants when method missing
       def method_missing(method, *args, &block)
         args.empty? && block.nil? && get_constant(method) || super
@@ -34,12 +34,16 @@ module Pwnlib
       # @example
       #   eval('O_CREAT')
       #   => Constant('(O_CREAT)', 0x40)
-      #
-      # @todo(david942j): Support eval('O_CREAT | O_APPEND') (i.e. safeeval)
+      #   eval('O_CREAT | O_APPEND')
+      #   => Constant('(O_CREAT | O_APPEND)', 0x440)
       def eval(str)
         return str unless str.instance_of?(String)
-        const = get_constant(str.strip.to_sym)
-        ::Pwnlib::Constants::Constant.new("(#{str})", const.val)
+        begin
+          val = calculator.evaluate!(str.strip).to_i
+        rescue Dentaku::UnboundVariableError => e
+          raise NameError, e.message
+        end
+        ::Pwnlib::Constants::Constant.new("(#{str})", val)
       end
 
       private
@@ -48,12 +52,18 @@ module Pwnlib
         [context.os, context.arch]
       end
 
+      ENV_STORE = {} # rubocop:disable Style/MutableConstant
       def current_store
         ENV_STORE[current_arch_key] ||= load_constants(current_arch_key)
       end
 
       def get_constant(symbol)
         current_store[symbol]
+      end
+
+      CALCULATORS = {} # rubocop:disable Style/MutableConstant
+      def calculator
+        CALCULATORS[current_arch_key] ||= Dentaku::Calculator.new.store(current_store)
       end
 
       # Small class for instance_eval loaded file
@@ -77,6 +87,6 @@ module Pwnlib
       end
     end
 
-    extend ClassMethod
+    extend ClassMethods
   end
 end

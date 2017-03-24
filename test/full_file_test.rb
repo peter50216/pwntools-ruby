@@ -1,6 +1,8 @@
 # encoding: ASCII-8BIT
-require 'test_helper'
+
 require 'open3'
+
+require 'test_helper'
 
 class FullFileTest < MiniTest::Test
   parallelize_me!

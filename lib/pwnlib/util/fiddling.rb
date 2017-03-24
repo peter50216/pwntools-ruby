@@ -1,10 +1,11 @@
 # encoding: ASCII-8BIT
+
 require 'pwnlib/context'
 
 module Pwnlib
   module Util
     # Some fiddling methods.
-    # See {ClassMethod} for method details.
+    # See {ClassMethods} for method details.
     # @example Call by specifying full module path.
     #   require 'pwnlib/util/fiddling'
     #   Pwnlib::Util::Fiddling.enhex('217') #=> '323137'
@@ -13,7 +14,7 @@ module Pwnlib
     #   enhex('217') #=> '323137'
     module Fiddling
       # @note Do not create and call instance method here. Instead, call module method on {Fiddling}.
-      module ClassMethod
+      module ClassMethods
         # Hex-encodes a string.
         #
         # @param [String] s
@@ -256,7 +257,7 @@ module Pwnlib
         include ::Pwnlib::Context
       end
 
-      extend ClassMethod
+      extend ClassMethods
     end
   end
 end
