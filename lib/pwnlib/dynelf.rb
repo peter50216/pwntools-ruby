@@ -18,20 +18,61 @@ module Pwnlib
 
     attr_reader :libbase
 
+    # @param [Integer] addr
+    #   An address known to be inside the ELF.
+    #
+    # @yieldparam [Integer] leak_addr
+    #   The start address that the leaker should leak from.
+    # @yieldreturn [String]
+    #   A leaked non-empty byte string, starting from +leak_addr+.
     def initialize(addr, &block)
       @leak = ::Pwnlib::MemLeak.new(&block)
       @libbase = @leak.find_elf_base(addr)
-      @elfclass = { "\x01" => 32, "\x02" => 64 }[@leak.b(@libbase + 4)]
+      @elfclass = { 0x1 => 32, 0x2 => 64 }[@leak.b(@libbase + 4)]
       @elfword = @elfclass / 8
       @dynamic = find_dynamic
       @hshtab = @strtab = @symtab = nil
     end
 
-    def lookup(symb)
-      @hshtab ||= find_dt(DT_GNU_HASH)
-      @strtab ||= find_dt(DT_STRTAB)
-      @symtab ||= find_dt(DT_SYMTAB)
-      resolve_symbol_gnu(symb)
+    # Lookup a symbol from the ELF.
+    #
+    # @param [String] symbol
+    #   The symbol name.
+    #
+    # @return [Integer]
+    #   The address of the symbol, or +nil+ if not found.
+    def lookup(symbol)
+      sym_size = { 32 => 16, 64 => 24 }[@elfclass]
+      # Leak GNU_HASH section header.
+      nbuckets = @leak.d(hshtab)
+      symndx = @leak.d(hshtab + 4)
+      maskwords = @leak.d(hshtab + 8)
+
+      l_gnu_buckets = hshtab + 16 + (@elfword * maskwords)
+      l_gnu_chain_zero = l_gnu_buckets + (4 * nbuckets) - (4 * symndx)
+
+      hsh = gnu_hash(symbol)
+      bucket = hsh % nbuckets
+
+      i = @leak.d(l_gnu_buckets + bucket * 4)
+      return nil if i.zero?
+
+      hsh2 = 0
+      while (hsh2 & 1).zero?
+        hsh2 = @leak.d(l_gnu_chain_zero + i * 4)
+        if ((hsh ^ hsh2) >> 1).zero?
+          sym = symtab + sym_size * i
+          st_name = @leak.d(sym)
+          name = @leak.n(strtab + st_name, symbol.length + 1)
+          if name == (symbol + "\x00")
+            offset = { 32 => 4, 64 => 8 }[@elfclass]
+            st_value = unpack(@leak.n(sym + offset, @elfword))
+            return @libbase + st_value
+          end
+        end
+        i += 1
+      end
+      nil
     end
 
     private
@@ -75,38 +116,16 @@ module Pwnlib
       nil
     end
 
-    def resolve_symbol_gnu(symb)
-      sym_size = { 32 => 16, 64 => 24 }[@elfclass]
-      # Leak GNU_HASH section header.
-      nbuckets = @leak.d(@hshtab)
-      symndx = @leak.d(@hshtab + 4)
-      maskwords = @leak.d(@hshtab + 8)
+    def hshtab
+      @hshtab ||= find_dt(DT_GNU_HASH)
+    end
 
-      l_gnu_buckets = @hshtab + 16 + (@elfword * maskwords)
-      l_gnu_chain_zero = l_gnu_buckets + (4 * nbuckets) - (4 * symndx)
+    def strtab
+      @strtab ||= find_dt(DT_STRTAB)
+    end
 
-      hsh = gnu_hash(symb)
-      bucket = hsh % nbuckets
-
-      i = @leak.d(l_gnu_buckets + bucket * 4)
-      return nil if i.zero?
-
-      hsh2 = 0
-      while (hsh2 & 1).zero?
-        hsh2 = @leak.d(l_gnu_chain_zero + i * 4)
-        if ((hsh ^ hsh2) >> 1).zero?
-          sym = @symtab + sym_size * i
-          st_name = @leak.d(sym)
-          name = @leak.n(@strtab + st_name, symb.length + 1)
-          if name == (symb + "\x00")
-            offset = { 32 => 4, 64 => 8 }[@elfclass]
-            st_value = unpack(@leak.n(sym + offset, @elfword))
-            return @libbase + st_value
-          end
-        end
-        i += 1
-      end
-      nil
+    def symtab
+      @symtab ||= find_dt(DT_SYMTAB)
     end
   end
 end

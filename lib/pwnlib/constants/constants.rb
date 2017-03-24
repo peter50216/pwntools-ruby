@@ -15,7 +15,7 @@ module Pwnlib
   module Constants
     # @note Do not create and call instance method here. Instead, call module method on {Constants}.
     module ClassMethods
-      # Try getting constants when method missing
+      # To support getting constants like Pwnlib::Constants.SYS_read.
       def method_missing(method, *args, &block)
         args.empty? && block.nil? && get_constant(method) || super
       end
@@ -27,10 +27,10 @@ module Pwnlib
       # Eval for Constants.
       #
       # @param [String] str
-      #   The string to be evaluate.
+      #   The string to be evaluated.
       #
       # @return [Constant]
-      #   The evaluate result.
+      #   The evaluated result.
       #
       # @example
       #   eval('O_CREAT')
