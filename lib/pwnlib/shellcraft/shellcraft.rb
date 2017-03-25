@@ -17,20 +17,20 @@ module Pwnlib
     # For templates/*.rb to define shellcode generators.
     def self.define(filename, *args, &block)
       filename.sub!(Submodule::ROOT_DIR + '/', '')
-      path = filename.rpartition('.').first.tr('/', '.')
+      path = filename.rpartition('.').first # remove '.rb'
       AsmMethods.define(path, *args, &block)
     end
 
     # To support like +Shellcraft.amd64.linux.syscall+.
     #
-    # A {Shellcraft::Submodule} object will be returned when calling +Shellcraft.amd64+,
-    # so we can support continue to call +.linux.syscall+,
-    # which actually is 'directories traversal' in {Submodule}.
+    # A {Shellcraft::Submodule} object will be returned when calling +Shellcraft.amd64+, so we can support continue to
+    # call +.linux.syscall+, which actually is 'directories traversal' handled in {Submodule}.
     class Submodule
       ROOT_DIR = File.join(__dir__, 'templates').freeze
 
       # @param [String] name
       #   The relative path of this module.
+      #
       # @example
       #   Submodule.new('amd64/linux')
       def initialize(name)
@@ -106,7 +106,6 @@ module Pwnlib
           # If method already been defined but architecture changed,
           # needs to raise method_missing.
           return method_missing(method, *args) unless filepath
-          # here sucks...
           list = filepath.split('/')
           list = list[(list.rindex(@name) + 1)..-2]
           list.reduce(self) { |acc, elem| acc.public_send(elem) }.public_send(method, *args)
@@ -133,8 +132,10 @@ module Pwnlib
       #   Assembly method to be called.
       # @param [Array] args
       #   Arguments to be passed.
+      #
       # @return [String]
       #   The assembly codes.
+      #
       # @example
       #   AsmMethods.call('amd64/linux', :syscall, ['SYS_read', 0, 'rsp', 10])
       #   => <assembly codes>
@@ -151,10 +152,10 @@ module Pwnlib
       # @param [String] name
       #   The name to be defined, see examples.
       # @example
-      #   AsmMethods.define('amd64.nop') { cat 'nop' }
+      #   AsmMethods.define('amd64/nop') { cat 'nop' }
       #   # Now can invoke AsmMethods.call('amd64', :nop).
       def self.define(name, &block)
-        list = name.split('.').map(&:to_sym)
+        list = name.split('/').map(&:to_sym)
         obj = list[0...-1].reduce(@methods) do |cur, key|
           cur[key] = {} unless cur.key?(key)
           cur[key]
@@ -165,6 +166,7 @@ module Pwnlib
       end
 
       # A 'sandbox' class to run assembly generators (i.e. shellcraft/templates/*.rb).
+      #
       # @note This class should never be used externally, only {AsmMethods} can use it.
       class Runner
         def call(*args)
@@ -192,11 +194,10 @@ module Pwnlib
           !(s.include?("\x00") || s.include?("\n"))
         end
 
-        def eval(item)
+        def evaluate(item)
           return item if item.is_a?(Integer)
           Constants.eval(item)
         end
-        alias evaluate eval
 
         # @param [Constants::Constant, String, Integer] n
         def pretty(n)
