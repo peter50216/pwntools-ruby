@@ -10,9 +10,13 @@ module Pwnlib
     module ClassMethods
       # Disassembles a bytestring into human readable assembler.
       #
-      # @param [String] data The bytestring.
-      # @param [Integer] vma Virtual memory address.
+      # @param [String] data
+      #   The bytestring.
+      # @param [Integer] vma
+      #   Virtual memory address.
+      #
       # @return [String] Disassemble result with nice typesetting.
+      #
       # @example
       #   context.arch = 'i386'
       #   print disasm("\xb8\x5d\x00\x00")
