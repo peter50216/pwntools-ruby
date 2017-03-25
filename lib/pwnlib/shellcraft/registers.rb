@@ -2,19 +2,19 @@ module Pwnlib
   module Shellcraft
     # Define register names and methods for shellcode generators.
     module Registers
-      I386_BASEREGS = %w(ax cx dx bx sp bp si di ip).freeze
+      X86_BASEREGS = %w(ax cx dx bx sp bp si di ip).freeze
 
-      I386 = (I386_BASEREGS.map { |r| "e#{r}" } +
-             I386_BASEREGS +
+      I386 = (X86_BASEREGS.map { |r| "e#{r}" } +
+             X86_BASEREGS +
              %w(eflags cs ss ds es fs gs)).freeze
 
-      AMD64 = (I386_BASEREGS.map { |r| "r#{r}" } +
+      AMD64 = (X86_BASEREGS.map { |r| "r#{r}" } +
                (8..15).map { |r| "r#{r}" } +
                (8..15).map { |r| "r#{r}d" } +
                I386).freeze
 
-      # x86/amd64 registers in decreasing size
-      I386_ORDERED = [
+      # x86 registers in decreasing size
+      X86_ORDERED = [
         %w(rax eax ax al),
         %w(rbx ebx bx bl),
         %w(rcx ecx cx cl),
@@ -45,17 +45,21 @@ module Pwnlib
         # for fetching other information. For example, for
         # register 'ax', +#bigger+ contains 'rax' and 'eax'.
         #
-        # Normaly you don't need to create {Register} object,
+        # Normaly you don't need to any create {Register} object,
         # use {Register::ClassMethods#get_register} to get register by name.
-        # @param [String] name Register's name.
-        # @paran [Integer] size Register size in bits.
+        #
+        # @param [String] name
+        #   Register's name.
+        # @paran [Integer] size
+        #   Register size in bits.
+        #
         # @example
         #   Register.new('rax', 64)
         #   Register.new('bx', 16)
         def initialize(name, size)
           @name = name
           @size = size
-          I386_ORDERED.each do |row|
+          X86_ORDERED.each do |row|
             next unless row.include?(name)
             @bigger = row[0, row.index(name)]
             @smaller = row[(row.index(name) + 1)..-1]
@@ -66,8 +70,7 @@ module Pwnlib
             break
           end
           @ff00 = name[1] + 'h' if @size >= 32 && @name.end_with?('x')
-          # XXX(david942j): str.numeric?
-          @is64bit = true if @name.start_with?('r') || @name[1...3] =~ /\A[[:digit:]]+\Z/
+          @is64bit = true if @name.start_with?('r')
         end
 
         def bits
@@ -93,18 +96,21 @@ module Pwnlib
 
       # @note Do not create and call instance method here. Instead, call module method on {Shellcraft::Registers}.
       module ClassMethods
-        INTEL = I386_ORDERED.each_with_object({}) do |row, obj|
+        INTEL = X86_ORDERED.each_with_object({}) do |row, obj|
           row.each_with_index do |reg, i|
             obj[reg] = Register.new(reg, 64 >> i)
           end
         end
 
         # Get a {Register} object by name.
+        #
         # @param [String, Register] name
         #   The name of register.
-        #   If name is already a {Register} object,
-        #   name itself will be returned.
-        # @return [Register] Get register by name.
+        #   If +name+ is already a {Register} object, +name+ itself will be returned.
+        #
+        # @return [Register, nil]
+        #   Get register by name.
+        #
         # @example
         #   Registers.get_register('eax')
         #   #=> Register(eax)
@@ -119,7 +125,6 @@ module Pwnlib
         def register?(obj)
           get_register(obj) != nil
         end
-        alias is_register register?
 
         def bits_required(value)
           bits = 0

@@ -14,10 +14,6 @@ module Pwnlib
         @stack_minimum = minimum
       end
 
-      def returns
-        true
-      end
-
       def self.default
         {
           [32, 'i386', 'linux'] => LINUX_I386,
@@ -39,15 +35,6 @@ module Pwnlib
           [32, 'mips', 'linux'] => LINUX_MIPS_SYSCALL
         }[[context.bits, context.arch, context.os]]
       end
-
-      def self.sigreturn
-        {
-          [32, 'i386', 'linux'] => LINUX_I386_SIGRETURN,
-          [64, 'amd64', 'linux'] => LINUX_AMD64_SIGRETURN,
-          [32, 'arm', 'linux'] => LINUX_ARM_SIGRETURN,
-          [32, 'thumb', 'linux'] => LINUX_ARM_SIGRETURN
-        }[[context.bits, context.arch, context.os]]
-      end
       extend ::Pwnlib::Context
     end
 
@@ -60,14 +47,6 @@ module Pwnlib
       end
     end
 
-    # The sigreturn ABI is similar to the syscall ABI, except that
-    # both PC and SP are loaded from the stack.  Because of this, there
-    # is no 'return' slot necessary on the stack.
-    class SigreturnABI < SyscallABI
-      def returns
-        false
-      end
-    end
     LINUX_I386 = ABI.new([], 4, 0)
     LINUX_AMD64 = ABI.new(%w(rdi rsi rdx rcx r8 r9), 8, 0)
     LINUX_ARM = ABI.new(%w(r0 r1 r2 r3), 8, 0)
@@ -81,10 +60,6 @@ module Pwnlib
 
     # Bug in python-pwntools abi.py, they use ABI, which should be SyscallABI.
     LINUX_MIPS_SYSCALL = SyscallABI.new(%w($v0 $a0 $a1 $a2 $a3), 4, 0)
-
-    LINUX_I386_SIGRETURN = SigreturnABI.new(['eax'], 4, 0)
-    LINUX_AMD64_SIGRETURN = SigreturnABI.new(['rax'], 4, 0)
-    LINUX_ARM_SIGRETURN = SigreturnABI.new(['r7'], 4, 0)
 
     WINDOWS_I386 = ABI.new([], 4, 0)
     WINDOWS_AMD64 = ABI.new(%w(rcx rdx r8 r9), 32, 32)

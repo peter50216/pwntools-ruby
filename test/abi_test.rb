@@ -18,15 +18,4 @@ class AbiTest < MiniTest::Test
     context.local(arch: 'amd64', os: 'linux') { assert_same ABI::LINUX_AMD64_SYSCALL, ABI::ABI.syscall }
     context.local(arch: 'mips') { assert_same ABI::LINUX_MIPS_SYSCALL, ABI::ABI.syscall }
   end
-
-  def test_sigreturn
-    context.local(arch: 'i386', os: 'linux') { assert_same ABI::LINUX_I386_SIGRETURN, ABI::ABI.sigreturn }
-    context.local(arch: 'amd64', os: 'linux') { assert_same ABI::LINUX_AMD64_SIGRETURN, ABI::ABI.sigreturn }
-    context.local(arch: 'thumb') { assert_same ABI::LINUX_ARM_SIGRETURN, ABI::ABI.sigreturn }
-  end
-
-  def test_returns
-    assert(ABI::LINUX_AMD64_SYSCALL.returns)
-    refute(ABI::LINUX_AMD64_SIGRETURN.returns)
-  end
 end
