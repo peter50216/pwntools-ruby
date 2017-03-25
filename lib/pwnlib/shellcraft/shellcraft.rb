@@ -4,33 +4,34 @@ require 'pwnlib/context'
 require 'pwnlib/shellcraft/registers'
 require 'pwnlib/util/packing'
 require 'pwnlib/util/fiddling'
+
 require 'singleton'
 
 module Pwnlib
   # Implement shellcraft!
   module Shellcraft
-    # Return the shellcraft instance for furthur usage.
+    # Return the shellcraft instance for further usage.
     def self.instance
       Root.instance
     end
 
     # For templates/*.rb to define shellcode generators.
     def self.define(filename, *args, &block)
-      last = File.basename(filename, '.rb')
-      path = filename.split('/')
-      path = path[path.rindex('templates') + 1..-2] + [last]
-      AsmMethods.define(path.join('.'), *args, &block)
+      filename.sub!(Submodule::ROOT_DIR + '/', '')
+      path = filename.rpartition('.').first # remove '.rb'
+      AsmMethods.define(path, *args, &block)
     end
 
     # To support like +Shellcraft.amd64.linux.syscall+.
     #
-    # return a {Shellcraft::Submodule} object when call +Shellcraft.amd64+, and do the
-    # 'directories traversal' for furthur calling.
+    # A {Shellcraft::Submodule} object will be returned when calling +Shellcraft.amd64+, so we can support continue to
+    # call +.linux.syscall+, which actually is 'directories traversal' handled in {Submodule}.
     class Submodule
-      ROOT_DIR = File.join(__dir__, 'templates')
+      ROOT_DIR = File.join(__dir__, 'templates').freeze
 
       # @param [String] name
       #   The relative path of this module.
+      #
       # @example
       #   Submodule.new('amd64/linux')
       def initialize(name)
@@ -106,8 +107,8 @@ module Pwnlib
           # If method already been defined but architecture changed,
           # needs to raise method_missing.
           return method_missing(method, *args) unless filepath
-          # here sucks...
-          list = filepath[filepath.rindex("/#{@name}/")..-1].split('/').slice(2..-2).map(&:to_sym)
+          list = filepath.split('/')
+          list = list[(list.rindex(@name) + 1)..-2]
           list.reduce(self) { |acc, elem| acc.public_send(elem) }.public_send(method, *args)
         end
         true
@@ -120,12 +121,14 @@ module Pwnlib
       include ::Pwnlib::Context
     end
 
-    # Records every methods that invoked, lazy binding.
+    # Records every methods that have been invoked, lazy binding.
+    #
+    # This module is for internal use only.
     module AsmMethods
       @methods = {}
 
       # @param [String] path
-      #   The relative path that contains `method`.rb.
+      #   The relative path that contains +method+.rb.
       # @param [Symbol] method
       #   Assembly method to be called.
       # @param [Array] args
@@ -141,37 +144,34 @@ module Pwnlib
         require File.join(Submodule::ROOT_DIR, path, method.to_s) # require 'templates/amd64/linux/syscall'
         list = [*path.split('/').reject { |s| s.include?('.') }.map(&:to_sym), method]
         runner = list.reduce(@methods) do |cur, key|
-          raise ArgumentError, "Method `#{method}` not been defined by #{path}/#{method}.rb!" unless cur.key?(key)
+          raise ArgumentError, "Method `#{method}` has not been defined by #{path}/#{method}.rb!" unless cur.key?(key)
           cur[key]
         end
         runner.call(*args)
       end
 
       # @param [String] name
-      #   The name includes module path to be defined.
+      #   The name to be defined, see examples.
       # @example
-      #   AsmMethods.define('amd64.nop') { cat 'nop' }
+      #   AsmMethods.define('amd64/nop') { cat 'nop' }
       #   # Now can invoke AsmMethods.call('amd64', :nop).
       def self.define(name, &block)
-        list = name.split('.').map(&:to_sym)
+        list = name.split('/').map(&:to_sym)
         obj = list[0...-1].reduce(@methods) do |cur, key|
           cur[key] = {} unless cur.key?(key)
           cur[key]
         end
-        obj[list.last] = Runner.new
-        meta = class << obj[list.last]
-          self
-        end
-        meta.instance_eval do
-          define_method(:inner, &block)
+        obj[list.last] = Runner.new.tap do |runner|
+          runner.define_singleton_method(:inner, &block)
         end
       end
 
       # A 'sandbox' class to run assembly generators (i.e. shellcraft/templates/*.rb).
+      #
       # @note This class should never be used externally, only {AsmMethods} can use it.
       class Runner
         def call(*args)
-          @_output = ''
+          @_output = StringIO.new
           inner(*args)
           typesetting
         end
@@ -181,13 +181,13 @@ module Pwnlib
         # Indent each line 2 space.
         # TODO(david942j): consider labels
         def typesetting
-          @_output.lines.map { |line| line == "\n" ? line : ' ' * 2 + line.lstrip }.join
+          @_output.string.lines.map { |line| line == "\n" ? line : ' ' * 2 + line.lstrip }.join
         end
 
         # For templates/*.rb use.
 
         def cat(str)
-          @_output.concat str + (str.end_with?("\n") ? '' : "\n")
+          @_output.puts str
         end
 
         def okay(s, *a, **kw)
@@ -195,12 +195,11 @@ module Pwnlib
           !(s.include?("\x00") || s.include?("\n"))
         end
 
-        def eval(item)
+        def evaluate(item)
           return item if item.is_a?(Integer)
           return item if ::Pwnlib::Shellcraft::Registers.register?(item)
           Constants.eval(item)
         end
-        alias evaluate eval
 
         # @param [Constants::Constant, String, Integer] n
         def pretty(n)
