@@ -7,24 +7,22 @@ require 'pwnlib/shellcraft/registers'
 #
 # @param [String] path
 #   Can be either a absolute path or a register name.
-# @param [String, Array<String>, Integer, NilClass] argv
+# @param [String, Array<String>, Integer, nil] argv
 #   If +argv+ is a +String+, it would be seen as a register.
 #   If +Array<String>+, works like normal arguments array.
-#   If +Integer+, take it as a pointer adrress. (same as
-#   +nil+ if zero is given.
-#   If +NilClass+, use NULL pointer.
-# @param [String, Hash<String => String>, Integer, NilClass] envp
+#   If +Integer+, take it as a pointer adrress. (same as +nil+ if zero is given.)
+#   If +nil+, use NULL pointer.
+# @param [String, Hash{Symbol => String}, Integer, nil] envp
 #   +String+ for register name.
-#   If +envp+ is a +Hash<String => String>+, it will be
-#   convert into the environ form (i.e. key=value).
-#   If +Integer+, take it as a pointer adrress. (same as
-#   +nil+ if zero is given.
-#   If +NilClass+ is given, use NULL pointer.
+#   If +envp+ is a +Hash+, it will be converted into the environ form (i.e. key=value).
+#   If +Integer+, take it as a pointer adrress. (same as +nil+ if zero is given.)
+#   If +nil+ is given, use NULL pointer.
+#
 # @example
 #   shellcraft.x86.linux.syscalls.execve('/bin/sh', ['sh'], {PWD: '.'})
+#
 # @diff
-#   I think it's better to always specific +path, argv, envp+
-#   instead use default value since this is a basic function.
+#   Parameters have no default values since this is a basic function.
 ::Pwnlib::Shellcraft.define(__FILE__) do |path, argv, envp|
   extend ::Pwnlib::Shellcraft::Registers::ClassMethods
   abi = ::Pwnlib::ABI::ABI.syscall
