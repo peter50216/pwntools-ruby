@@ -11,7 +11,7 @@ RuboCop::RakeTask.new(:rubocop) do |task|
   task.patterns = ['lib/**/*.rb', 'test/**/*.rb']
 end
 
-task default: %i(install_git_hooks rubocop test doc)
+task default: %i(install_git_hooks rubocop test)
 
 Rake::TestTask.new(:test) do |test|
   test.libs << 'lib'
