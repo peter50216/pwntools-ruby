@@ -27,6 +27,8 @@ module Pwnlib
     # @return [Array]
     #   Array of instructions, see examples for more details.
     #
+    # @diff We don't support +tmp+/+xchg+ options because there's no such usage at all.
+    #
     # @example
     #   regs = %w(a b c d x y z)
     #   regsort({a: 1, b: 2}, regs)
@@ -45,8 +47,6 @@ module Pwnlib
     #        ['mov', 'z', 'c'],
     #        ['xchg', 'a', 'b'],
     #        ['xchg', 'b', 'c']]
-    #
-    # @diff We don't support +tmp+/+xchg+ options because there's no such usage at all.
     def regsort(in_out, all_regs, randomize: nil)
       # randomize = context.randomize if randomize.nil?
 
