@@ -16,17 +16,17 @@ module Pwnlib
       # @return [OpenStruct] All symbols.
       attr_reader :symbols
 
-      # @return [Integer] Base address
+      # @return [Integer] Base address.
       attr_accessor :address
 
       # Instantiate an {Pwnlib::ELF::ELF} object.
       #
-      # Will show checksec information to stdout instantiate.
+      # Will show checksec information to stdout.
       #
       # @param [String] path
       #   The path to the ELF file.
       # @param [Boolean] checksec
-      #   The checksec information will be printed to stdout when loaded ELF. Pass +checksec: false+ to disable this
+      #   The checksec information will be printed to stdout after ELF loaded. Pass +checksec: false+ to disable this
       #   feature.
       #
       # @example
@@ -55,7 +55,8 @@ module Pwnlib
       # @param [Integer] new
       #   Address to be changed to.
       #
-      # @return [void]
+      # @return [Integer]
+      #   The new address.
       def address=(new)
         old = @address
         @address = new
@@ -109,16 +110,16 @@ module Pwnlib
         @got.respond_to?('__stack_chk_fail')
       end
 
-      # Is this ELF file stack executable?
+      # Is stack executable?
       #
-      # @return [Boolean]
+      # @return [Boolean] Yes or not.
       def nx?
         !@elf_file.segment_by_type(:gnu_stack).executable?
       end
 
       # Is this ELF file a position-independent executable?
       #
-      # @return [Boolean]
+      # @return [Boolean] Yes or not.
       def pie?
         @elf_file.elf_type == 'DYN'
       end
@@ -136,7 +137,7 @@ module Pwnlib
       end
 
       # Get the dynamic tag with +type+.
-      # @return [ELFTools::Dynamic::Tag, NilClass]
+      # @return [ELFTools::Dynamic::Tag, nil]
       def dynamic_tag(type)
         dynamic = @elf_file.segment_by_type(:dynamic) || @elf.section_by_name('.dynamic')
         return nil if dynamic.nil? # No dynamic present, might be static-linked.
