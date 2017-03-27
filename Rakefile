@@ -5,12 +5,13 @@ require 'bundler/gem_tasks'
 require 'rainbow'
 require 'rake/testtask'
 require 'rubocop/rake_task'
+require 'yard'
 
 RuboCop::RakeTask.new(:rubocop) do |task|
   task.patterns = ['lib/**/*.rb', 'test/**/*.rb']
 end
 
-task default: %i(install_git_hooks rubocop test)
+task default: %i(install_git_hooks rubocop test doc)
 
 Rake::TestTask.new(:test) do |test|
   test.libs << 'lib'
@@ -18,6 +19,8 @@ Rake::TestTask.new(:test) do |test|
   test.pattern = 'test/**/*_test.rb'
   test.verbose = true
 end
+
+YARD::Rake::YardocTask.new(:doc)
 
 task :install_git_hooks do
   hooks = %w(pre-push)

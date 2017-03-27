@@ -4,7 +4,7 @@ require 'test_helper'
 require 'pwnlib/util/packing'
 
 class PackingTest < MiniTest::Test
-  include ::Pwnlib::Util::Packing::ClassMethods
+  include ::Pwnlib::Util::Packing
 
   def test_pack
     assert_equal('ABC',
@@ -115,8 +115,8 @@ class PackingTest < MiniTest::Test
   def test_up_rand
     srand(217)
     [8, 16, 32, 64].each do |sz|
-      u = ->(*x) { public_send("u#{sz}", *x) }
-      p = ->(*x) { public_send("p#{sz}", *x) }
+      u = ->(*x) { ::Pwnlib::Util::Packing.public_send("u#{sz}", *x) }
+      p = ->(*x) { ::Pwnlib::Util::Packing.public_send("p#{sz}", *x) }
       100.times do
         limit = (1 << sz)
         val = rand(0...limit)

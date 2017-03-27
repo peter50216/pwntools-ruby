@@ -13,9 +13,8 @@ module Pwnlib
   #   Pwnlib::Constants.SYS_read
   #   # => Constant('SYS_read', 0x0)
   module Constants
-    # @note Do not create and call instance method here. Instead, call module method on {Constants}.
-    module ClassMethods
-      # To support getting constants like Pwnlib::Constants.SYS_read.
+    class << self
+      # To support getting constants like +Pwnlib::Constants.SYS_read+.
       def method_missing(method, *args, &block)
         args.empty? && block.nil? && get_constant(method) || super
       end
@@ -90,7 +89,5 @@ module Pwnlib
 
       include ::Pwnlib::Context
     end
-
-    extend ClassMethods
   end
 end

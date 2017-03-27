@@ -30,10 +30,11 @@ module Pwnlib
       LITTLE_64 = { endian: 'little', bits: 64 }.freeze
 
       class << self
+        private
+
         def longest(d)
           Hash[d.sort_by { |k, _v| k.size }.reverse]
         end
-        private :longest
       end
 
       ARCHS = longest(
@@ -201,20 +202,30 @@ module Pwnlib
 
     @context = ContextType.new
 
+    # @!attribute [r] context
+    #   @return [ContextType] the singleton context for all class.
     class << self
       attr_reader :context
     end
 
-    # For include.
+    # A module for include hook for context.
+    # Including Pwnlib::Context from module M would add +context+ as a private instance method and a private class
+    # method for module M.
     # @!visibility private
-    def context
-      ::Pwnlib::Context.context
+    module IncludeContext
+      private
+
+      def context
+        ::Pwnlib::Context.context
+      end
     end
 
     # @!visibility private
     def self.included(base)
-      # XXX(Darkpi): Should we do this?
-      base.__send__(:private, :context)
+      base.include(IncludeContext)
+      class << base
+        include IncludeContext
+      end
     end
   end
 end

@@ -3,7 +3,7 @@ require 'test_helper'
 require 'pwnlib/reg_sort'
 
 class RegSortTest < MiniTest::Test
-  include ::Pwnlib::RegSort::ClassMethods
+  include ::Pwnlib::RegSort
 
   def setup
     @regs = %w(a b c d x y z)

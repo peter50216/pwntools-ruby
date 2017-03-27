@@ -23,6 +23,7 @@ module Pwnlib
     #
     # @yieldparam [Integer] leak_addr
     #   The start address that the leaker should leak from.
+    #
     # @yieldreturn [String]
     #   A leaked non-empty byte string, starting from +leak_addr+.
     def initialize(addr, &block)
@@ -39,7 +40,7 @@ module Pwnlib
     # @param [String] symbol
     #   The symbol name.
     #
-    # @return [Integer]
+    # @return [Integer, nil]
     #   The address of the symbol, or +nil+ if not found.
     def lookup(symbol)
       sym_size = { 32 => 16, 64 => 24 }[@elfclass]

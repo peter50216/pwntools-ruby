@@ -17,8 +17,8 @@ require 'pwnlib/util/packing'
 module Pwn
   include ::Pwnlib::Context
 
-  include ::Pwnlib::Util::Cyclic::ClassMethods
-  include ::Pwnlib::Util::Fiddling::ClassMethods
-  include ::Pwnlib::Util::HexDump::ClassMethods
-  include ::Pwnlib::Util::Packing::ClassMethods
+  include ::Pwnlib::Util::Cyclic
+  include ::Pwnlib::Util::Fiddling
+  include ::Pwnlib::Util::HexDump
+  include ::Pwnlib::Util::Packing
 end
