@@ -78,8 +78,8 @@ module Pwnlib
       VALID_SIGNED = SIGNEDNESSES.keys
 
       # XXX(Darkpi):
-      #     Should we just hard-coded all levels here, or should we use Logger#const_defined?
-      #     (This would include constant SEV_LEVEL, and exclude UNKNOWN)?
+      #   Should we just hard-coded all levels here, or should we use Logger#const_defined?
+      #   (This would include constant SEV_LEVEL, and exclude UNKNOWN)?
       LOG_LEVELS = %w(DEBUG INFO WARN ERROR FATAL UNKNOWN).freeze
 
       def initialize(**kwargs)
@@ -107,8 +107,8 @@ module Pwnlib
       def local(**kwargs)
         raise ArgumentError, "Need a block for #{self.class}##{__callee__}" unless block_given?
         # XXX(Darkpi):
-        #     improve performance for this if this is too slow, since we use this in many places that has argument
-        #     endian / signed / ...
+        #   improve performance for this if this is too slow, since we use this in many places that has argument
+        #   endian / signed / ...
         old_attrs = @attrs.dup
         begin
           update(**kwargs)

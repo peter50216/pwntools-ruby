@@ -235,9 +235,9 @@ module Pwnlib
       end
 
       # TODO(Darkpi):
-      #     pwntools-python have this for performance reason, but current implementation doesn't offer that much
-      #     performance relative to what pwntools-python do. Maybe we should initialize those functions (p8lu, ...)
-      #     like in pwntools-python?
+      #   pwntools-python have this for performance reason, but current implementation doesn't offer that much
+      #   performance relative to what pwntools-python do. Maybe we should initialize those functions (p8lu, ...)
+      #   like in pwntools-python?
       [%w(pack p), %w(unpack u)].each do |v1, v2|
         define_method("make_#{v1}er") do |bits: nil, endian: nil, signed: nil|
           context.local(bits: bits, endian: endian, signed: signed) do
