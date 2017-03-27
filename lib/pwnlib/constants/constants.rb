@@ -11,14 +11,18 @@ module Pwnlib
   # @example
   #   context.arch = 'amd64'
   #   Pwnlib::Constants.SYS_read
-  #   # => Constant('SYS_read', 0x0)
+  #   #=> Constant('SYS_read', 0x0)
   module Constants
     class << self
       # To support getting constants like +Pwnlib::Constants.SYS_read+.
+      #
+      # @return [Constant]
+      # @raise [NoMethodError]
       def method_missing(method, *args, &block)
         args.empty? && block.nil? && get_constant(method) || super
       end
 
+      # @return [Boolean]
       def respond_to_missing?(method, _include_all)
         !get_constant(method).nil?
       end
@@ -33,9 +37,9 @@ module Pwnlib
       #
       # @example
       #   eval('O_CREAT')
-      #   => Constant('(O_CREAT)', 0x40)
+      #   #=> Constant('(O_CREAT)', 0x40)
       #   eval('O_CREAT | O_APPEND')
-      #   => Constant('(O_CREAT | O_APPEND)', 0x440)
+      #   #=> Constant('(O_CREAT | O_APPEND)', 0x440)
       def eval(str)
         return str unless str.instance_of?(String)
         begin

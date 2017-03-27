@@ -175,6 +175,8 @@ module Pwnlib
       #   Endian for conversion.
       #   Can be any value accepted by context (See {Context::ContextType}).
       #
+      # @return [String]
+      #   A string with bits from +s+.
       # @raise [ArgumentError]
       #   If input contains value not in <tt>[0, 1, '0', '1', true, false]</tt>.
       #

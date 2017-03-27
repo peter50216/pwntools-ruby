@@ -30,21 +30,21 @@ module Pwnlib
     # @example
     #   regs = %w(a b c d x y z)
     #   regsort({a: 1, b: 2}, regs)
-    #   => [['mov', 'a', 1], ['mov', 'b', 2]]
+    #   #=> [['mov', 'a', 1], ['mov', 'b', 2]]
     #   regsort({a: 'b', b: 'a'}, regs)
-    #   => [['xchg', 'a', 'b']]
+    #   #=> [['xchg', 'a', 'b']]
     #   regsort({a: 1, b: 'a'}, regs)
-    #   => [['mov', 'b', 'a'], ['mov', 'a', 1]]
+    #   #=> [['mov', 'b', 'a'], ['mov', 'a', 1]]
     #   regsort({a: 'b', b: 'a', c: 3}, regs)
-    #   => [['mov', 'c', 3], ['xchg', 'a', 'b']]
+    #   #=> [['mov', 'c', 3], ['xchg', 'a', 'b']]
     #   regsort({a: 'b', b: 'a', c: 'b'}, regs)
-    #   => [['mov', 'c', 'b'], ['xchg', 'a', 'b']]
+    #   #=> [['mov', 'c', 'b'], ['xchg', 'a', 'b']]
     #   regsort({a: 'b', b: 'c', c: 'a', x: '1', y: 'z', z: 'c'}, regs)
-    #   => [['mov', 'x', '1'],
-    #       ['mov', 'y', 'z'],
-    #       ['mov', 'z', 'c'],
-    #       ['xchg', 'a', 'b'],
-    #       ['xchg', 'b', 'c']]
+    #   #=> [['mov', 'x', '1'],
+    #        ['mov', 'y', 'z'],
+    #        ['mov', 'z', 'c'],
+    #        ['xchg', 'a', 'b'],
+    #        ['xchg', 'b', 'c']]
     #
     # @diff We don't support +tmp+/+xchg+ options because there's no such usage at all.
     def regsort(in_out, all_regs, randomize: nil)
