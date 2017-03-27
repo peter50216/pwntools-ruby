@@ -17,6 +17,7 @@ module Pwnlib
       # To support getting constants like +Pwnlib::Constants.SYS_read+.
       #
       # @return [Constant]
+      #
       # @raise [NoMethodError]
       def method_missing(method, *args, &block)
         args.empty? && block.nil? && get_constant(method) || super

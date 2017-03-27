@@ -83,6 +83,7 @@ module Pwnlib
       #
       # @return [String]
       #   URL-decoded string.
+      #
       # @raise [ArgumentError]
       #   If +ignore_invalid+ is +false+, and there are invalid encoding in input.
       #
@@ -153,12 +154,12 @@ module Pwnlib
         end
       end
 
-      # Simple wrapper around {#bits}, which converts output to string.
+      # Simple wrapper around {.bits}, which converts output to string.
       #
-      # @param (see #bits)
+      # @param (see .bits)
       #
       # @return [String]
-      #   The output of {#bits} joined.
+      #   The output of {.bits} joined.
       #
       # @example
       #   bits_str('GG') #=> '0100011101000111'
@@ -166,7 +167,7 @@ module Pwnlib
         bits(s, endian: endian, zero: zero, one: one).join
       end
 
-      # Reverse of {#bits} and {#bits_str}, convert an array of bits back to string.
+      # Reverse of {.bits} and {.bits_str}, convert an array of bits back to string.
       #
       # @param [String, Array<String, Integer, Boolean>] s
       #   String or array of bits to be convert back to string.
@@ -177,6 +178,7 @@ module Pwnlib
       #
       # @return [String]
       #   A string with bits from +s+.
+      #
       # @raise [ArgumentError]
       #   If input contains value not in <tt>[0, 1, '0', '1', true, false]</tt>.
       #

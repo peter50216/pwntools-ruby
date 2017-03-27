@@ -28,6 +28,7 @@ module Pwnlib
       #     Length of substring that should be unique.
       #
       #   @return [void]
+      #
       #   @yieldparam c
       #     Item of the result sequence in order.
       #
@@ -60,7 +61,7 @@ module Pwnlib
         db[1, 1]
       end
 
-      # Simple wrapper over {#de_bruijn}, returning at most +length+ items.
+      # Simple wrapper over {.de_bruijn}, returning at most +length+ items.
       #
       # @param [Integer, nil] length
       #   Desired length of the sequence, or +nil+ for the entire sequence.

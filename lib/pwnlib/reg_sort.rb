@@ -127,7 +127,7 @@ module Pwnlib
         check_cycle_(reg, assignments, [])
       end
 
-      def check_cycle_(reg, assignments, path) # :nodoc:
+      def check_cycle_(reg, assignments, path)
         target = assignments[reg]
         path << reg
         # No cycle, some other value (e.g. 1).

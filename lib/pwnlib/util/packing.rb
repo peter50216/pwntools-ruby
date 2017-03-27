@@ -39,6 +39,7 @@ module Pwnlib
       #
       # @return [String]
       #   The packed string.
+      #
       # @raise [ArgumentError]
       #   When input integer can't be packed into the size specified by +bits+ and +signed+.
       #
@@ -118,6 +119,7 @@ module Pwnlib
       #
       # @return [Integer]
       #   The unpacked number.
+      #
       # @raise [ArgumentError]
       #   When +data.size+ doesn't match +bits+.
       #
@@ -176,6 +178,7 @@ module Pwnlib
       #
       # @return [Array<Integer>]
       #   The unpacked numbers.
+      #
       # @raise [ArgumentError]
       #   When +bits+ isn't divisible by 8 or +data.size+ isn't divisible by +bits / 8+.
       #

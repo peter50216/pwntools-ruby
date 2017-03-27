@@ -31,7 +31,7 @@ module Pwnlib
 
       module_function
 
-      # @!macro [new] hexdump_options
+      # @!macro [new] hexdump_params
       #   Color is provided using +rainbow+ gem and only when output is a tty.
       #   To force enable/disable coloring, call <tt>Rainbow.enabled = true / false</tt>.
       #   @param [Integer] width
@@ -53,12 +53,12 @@ module Pwnlib
       #     Convenient argument to highlight (red background) some bytes in style.
 
       # Yields lines of a hexdump-dump of a string.
-      # Unless you have massive amounts of data you probably want to use {#hexdump}.
+      # Unless you have massive amounts of data you probably want to use {.hexdump}.
       # Returns an Enumerator if no block given.
       #
       # @param [#read] io
       #   The object to be dumped.
-      # @!macro hexdump_options
+      # @!macro hexdump_params
       #
       # @return [Enumerator<String>]
       #   The resulting hexdump, line by line.
@@ -132,7 +132,7 @@ module Pwnlib
       #
       # @param [String] str
       #   The string to be hexdumped.
-      # @!macro hexdump_options
+      # @!macro hexdump_params
       #
       # @return [String]
       #   The resulting hexdump.
