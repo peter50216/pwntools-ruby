@@ -23,7 +23,6 @@ Gem::Specification.new do |s|
   s.required_ruby_version = '>= 2.1.0'
 
   s.add_runtime_dependency 'rainbow', '~> 2.2'
-  s.add_runtime_dependency 'keystone', '~> 0.9.0'
 
   s.add_development_dependency 'codeclimate-test-reporter', '~> 0.6'
   s.add_development_dependency 'minitest', '~> 5.8'

@@ -1,6 +1,7 @@
 # encoding: ASCII-8BIT
 require 'pwnlib/context'
 require 'keystone' # https://github.com/keystone-engine/keystone
+require 'keystone/keystone_const' # https://github.com/sashs/ruby-keystone/
 
 module Pwnlib
   # Convert assembly code to machine code and vice versa.
