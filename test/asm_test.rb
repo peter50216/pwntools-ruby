@@ -65,4 +65,10 @@ class AsmTest < MiniTest::Test
       EOS
     end
   end
+
+  # To ensure coverage
+  def test_require
+    err = assert_raises(LoadError) { Asm.__send__(:require_message, 'no_such_lib', 'meow') }
+    assert_match(/meow/, err.message)
+  end
 end
