@@ -1,5 +1,5 @@
-#!/usr/bin/env bash -e
-set -e
+#!/usr/bin/env bash
+set -e -x
 local_deb_extract()
 {
   wget $1
@@ -33,7 +33,7 @@ install_keystone_from_source()
 
 setup_linux()
 {
-  sudo apt-get install -qq --force-yes libgd2-xpm ia32-libs ia32-libs-multiarch binutils libatomic-ops-dev llvm-dev > /dev/null
+  sudo apt-get install -qq --force-yes gcc-multilib g++-multilib binutils > /dev/null
   # install capstone
   install_deb libcapstone3
   export LD_LIBRARY_PATH=$PWD/usr/lib:$LD_LIBRARY_PATH
@@ -57,4 +57,4 @@ if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
 elif [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
   setup_linux
 fi
-set +e
+set +e +x
