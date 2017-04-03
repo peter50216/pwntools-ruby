@@ -44,11 +44,12 @@ setup_osx()
 {
   # install capstone
   brew install capstone
-  export DYLD_LIBRARY_PATH=/usr/local/opt/capstone/lib/:$DYLD_LIBRARY_PATH
+  export DYLD_LIBRARY_PATH=/usr/local/opt/capstone/lib:$DYLD_LIBRARY_PATH
 
   # install keystone
   install_keystone_from_source
-  export DYLD_LIBRARY_PATH=$TRAVIS_BUILD_DIR/keystone/build/llvm/lib/:$DYLD_LIBRARY_PATH
+  export DYLD_LIBRARY_PATH=$TRAVIS_BUILD_DIR/keystone/build/llvm/lib:$DYLD_LIBRARY_PATH
+  echo $DYLD_LIBRARY_PATH
 }
 
 if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
