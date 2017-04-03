@@ -35,7 +35,7 @@ module Pwnlib
       #   # Stack:    No canary found
       #   # NX:       NX enabled
       #   # PIE:      PIE enabled
-      #   # => #<Pwnlib::ELF::ELF:0x00559bd670dcb8>
+      #   #=> #<Pwnlib::ELF::ELF:0x00559bd670dcb8>
       def initialize(path, checksec: true)
         @elf_file = ELFTools::ELFFile.new(File.open(path, 'rb')) # rubocop:disable Style/AutoResourceCleanup
         load_got
@@ -52,18 +52,18 @@ module Pwnlib
       #   plt
       #   symbols
       #
-      # @param [Integer] new
+      # @param [Integer] val
       #   Address to be changed to.
       #
       # @return [Integer]
       #   The new address.
-      def address=(new)
+      def address=(val)
         old = @address
-        @address = new
+        @address = val
         [@got, @plt, @symbols].each do |tbl|
-          tbl.each_pair { |k, _| tbl[k] += new - old }
+          tbl.each_pair { |k, _| tbl[k] += val - old }
         end
-        new
+        val
       end
 
       # Return the protection information, wrapper with color codes.
@@ -73,9 +73,9 @@ module Pwnlib
       def checksec
         [
           'RELRO:'.ljust(10) + {
-            'Full' => Rainbow('Full RELRO').green,
-            'Partial' => Rainbow('Partial RELRO').yellow,
-            'None' => Rainbow('No RELRO').red
+            full: Rainbow('Full RELRO').green,
+            partial: Rainbow('Partial RELRO').yellow,
+            none: Rainbow('No RELRO').red
           }[relro],
           'Stack:'.ljust(10) + {
             true =>  Rainbow('Canary found').green,
@@ -94,11 +94,11 @@ module Pwnlib
 
       # The method used in relro.
       #
-      # @return [String]
+      # @return [:full, :partial, :none]
       def relro
-        return 'Full' if dynamic_tag(:bind_now)
-        return 'Partial' if @elf_file.segment_by_type(:gnu_relro)
-        'None'
+        return :full if dynamic_tag(:bind_now)
+        return :partial if @elf_file.segment_by_type(:gnu_relro)
+        :none
       end
 
       # Is this ELF file has canary?
@@ -124,7 +124,8 @@ module Pwnlib
         @elf_file.elf_type == 'DYN'
       end
 
-      # There's too much objects inside, let pry not so verbose.
+      # There's too many objects inside, let pry not so verbose.
+      # @return [nil]
       def inspect
         nil
       end
