@@ -48,11 +48,11 @@ module Pwnlib
         # register 'ax', +#bigger+ contains 'rax' and 'eax'.
         #
         # Normaly you don't need to any create {Register} object,
-        # use {Register::ClassMethods#get_register} to get register by name.
+        # use {ClassMethods.get_register} to get register by name.
         #
         # @param [String] name
         #   Register's name.
-        # @paran [Integer] size
+        # @param [Integer] size
         #   Register size in bits.
         #
         # @example
