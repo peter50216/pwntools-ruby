@@ -18,17 +18,38 @@ install_deb()
   local_deb_extract "$URL"
 }
 
+install_keystone_from_source()
+{
+  # keystone can only build from source
+  # https://github.com/keystone-engine/keystone/blob/master/docs/COMPILE-NIX.md
+  #
+  # XXX: how to prevent compile every time on Travis-CI?
+  git clone https://github.com/keystone-engine/keystone.git -o keystone || echo 'clone keystone done'
+  mkdir keystone/build && cd keystone/build
+  ../make-share.sh
+  cd ../..
+  export LD_LIBRARY_PATH=$PWD/keystone/build/llvm/lib:$LD_LIBRARY_PATH
+}
+
 setup_linux()
 {
-  export LD_LIBRARY_PATH=$PWD/usr/lib:$LD_LIBRARY_PATH
-  sudo apt-get install -qq --force-yes libgd2-xpm ia32-libs ia32-libs-multiarch binutils > /dev/null
+  sudo apt-get install -qq --force-yes libgd2-xpm ia32-libs ia32-libs-multiarch binutils libatomic-ops-dev llvm-dev > /dev/null
+  # install capstone
   install_deb libcapstone3
+  export LD_LIBRARY_PATH=$PWD/usr/lib:$LD_LIBRARY_PATH
+
+  # install keystone
+  install_keystone_from_source
 }
 
 setup_osx()
 {
+  # install capstone
   brew install capstone
   export DYLD_LIBRARY_PATH=/usr/local/opt/capstone/lib/:$DYLD_LIBRARY_PATH
+
+  # install keystone
+  install_keystone_from_source
 }
 
 if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then

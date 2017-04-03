@@ -1,6 +1,5 @@
 # encoding: ASCII-8BIT
 require 'pwnlib/context'
-require 'keystone' # https://github.com/keystone-engine/keystone
 require 'keystone/keystone_const' # https://github.com/sashs/ruby-keystone/
 
 module Pwnlib
@@ -69,6 +68,7 @@ module Pwnlib
       #   asm(shellcraft.amd64.linux.sh)
       #   #=> "jhH\xB8/bin///sPj;XH\x89\xE71\xF6\x99\x0F\x05"
       def asm(code)
+        require_message('keystone', install_keystone_guide)
         Keystone::Ks.new(ks_arch, ks_mode).asm(code)[0]
       end
 
@@ -115,6 +115,16 @@ module Pwnlib
 Checkout the following link for installation guide:
 
 http://www.capstone-engine.org/documentation.html
+
+        EOS
+      end
+
+      def install_keystone_guide
+        <<-EOS
+#asm dependes on keystone, which is detected not installed yet.
+Checkout the following link for installation guide:
+
+https://github.com/keystone-engine/keystone/tree/master/docs
 
         EOS
       end
