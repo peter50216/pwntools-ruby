@@ -63,10 +63,19 @@ module Pwnlib
       #
       # @param [String] code
       #   The assembly code to be converted.
-      # @return [String] The result.
+      #
+      # @return [String]
+      #   The result.
+      #
       # @example
       #   asm(shellcraft.amd64.linux.sh)
       #   #=> "jhH\xB8/bin///sPj;XH\x89\xE71\xF6\x99\x0F\x05"
+      #
+      #   context.local(arch: 'i386') { asm(shellcraft.sh) }
+      #   #=> "jhh///sh/binj\vX\x89\xE31\xC9\x99\xCD\x80"
+      #
+      # @diff
+      #   Not support +asm('mov eax, SYS_execve')+.
       def asm(code)
         require_message('keystone', install_keystone_guide)
         Keystone::Ks.new(ks_arch, ks_mode).asm(code)[0]
