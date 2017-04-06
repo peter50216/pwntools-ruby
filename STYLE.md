@@ -21,7 +21,7 @@ a.upto(b).map { ... }
 ```
 
 ## YARD tag order
-Tag order is `@param, @return, @yieldparam, @yieldreturn, @todo, @note, @diff, @example`.
+Tag order is `@param, @return, @yieldparam, @yieldreturn, @raise, @todo, @note, @diff, @example`.
 
 No new line between tags of the same kind,
 a new line between tags of different kind,
@@ -39,10 +39,10 @@ and sort alphabetically in each group.
 ```ruby
 # Good
 # @param [String] bla
-#   a bla argument.
+#   A bla argument.
 
 # Bad
-# @param [String] bla a bla argument.
+# @param [String] bla A bla argument.
 ```
 
 ## Comment style
