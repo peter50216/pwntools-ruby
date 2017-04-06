@@ -34,19 +34,19 @@ module Pwnlib
       ].freeze
       # class Register, currently only supports i386 and amd64.
       class Register
-        # @return [String] register's name
+        # @return [String]
+        #   Register's name.
         attr_reader :name
         attr_reader :bigger, :smaller, :ff00, :is64bit, :native64, :native32, :xor
         attr_reader :size, :sizes
 
         # Instantiate a {Register} object.
         #
-        # Create a register by its name and size (in bits)
-        # for fetching other information. For example, for
-        # register 'ax', +#bigger+ contains 'rax' and 'eax'.
+        # Create a register by its name and size (in bits) for fetching other information. For example, for register
+        # 'ax', +#bigger+ contains 'rax' and 'eax'.
         #
-        # Normaly you don't need to any create {Register} object,
-        # use {ClassMethods.get_register} to get register by name.
+        # Normaly you don't need to create any {Register} object, use {ClassMethods.get_register} to get register by
+        # name.
         #
         # @param [String] name
         #   Register's name.
@@ -94,50 +94,47 @@ module Pwnlib
         end
       end
 
-      # @note Do not create and call instance method here. Instead, call module method on {Shellcraft::Registers}.
-      module ClassMethods
-        INTEL = X86_ORDERED.each_with_object({}) do |row, obj|
-          row.each_with_index do |reg, i|
-            obj[reg] = Register.new(reg, 64 >> i)
-          end
-        end
+      module_function
 
-        # Get a {Register} object by name.
-        #
-        # @param [String, Register] name
-        #   The name of register.
-        #   If +name+ is already a {Register} object, +name+ itself will be returned.
-        #
-        # @return [Register, nil]
-        #   Get register by name.
-        #
-        # @example
-        #   Registers.get_register('eax')
-        #   #=> Register(eax)
-        #   Registers.get_register('xdd')
-        #   #=> nil
-        def get_register(name)
-          return name if name.instance_of?(Register)
-          return INTEL[name] if name.instance_of?(String)
-          nil
-        end
-
-        def register?(obj)
-          get_register(obj) != nil
-        end
-
-        def bits_required(value)
-          bits = 0
-          value = value.abs
-          while value > 0
-            bits += 8
-            value >>= 8
-          end
-          bits
+      INTEL = X86_ORDERED.each_with_object({}) do |row, obj|
+        row.each_with_index do |reg, i|
+          obj[reg] = Register.new(reg, 64 >> i)
         end
       end
 
-      extend ClassMethods
+      # Get a {Register} object by name.
+      #
+      # @param [String, Register] name
+      #   The name of register.
+      #   If +name+ is already a {Register} object, +name+ itself will be returned.
+      #
+      # @return [Register, nil]
+      #   Get the register with name +name+.
+      #
+      # @example
+      #   Registers.get_register('eax')
+      #   #=> Register(eax)
+      #   Registers.get_register('xdd')
+      #   #=> nil
+      def get_register(name)
+        return name if name.instance_of?(Register)
+        return INTEL[name] if name.instance_of?(String)
+        nil
+      end
+
+      def register?(obj)
+        !get_register(obj).nil?
+      end
+
+      def bits_required(value)
+        bits = 0
+        value = value.abs
+        while value > 0
+          bits += 8
+          value >>= 8
+        end
+        bits
+      end
     end
   end
 end

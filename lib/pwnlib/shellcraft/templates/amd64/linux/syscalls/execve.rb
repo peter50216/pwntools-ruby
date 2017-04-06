@@ -27,7 +27,7 @@ require 'pwnlib/shellcraft/registers'
 #   I think it's better to always specific +path, argv, envp+
 #   instead use default value since this is a basic function.
 ::Pwnlib::Shellcraft.define(__FILE__) do |path, argv, envp|
-  extend ::Pwnlib::Shellcraft::Registers::ClassMethods
+  extend ::Pwnlib::Shellcraft::Registers
   abi = ::Pwnlib::ABI::LINUX_AMD64_SYSCALL
   amd64 = ::Pwnlib::Shellcraft.instance.amd64
 

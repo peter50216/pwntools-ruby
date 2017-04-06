@@ -1,10 +1,10 @@
 # encoding: ASCII-8BIT
+require 'singleton'
+
+require 'pwnlib/constants/constant'
 require 'pwnlib/context'
 require 'pwnlib/util/packing'
 require 'pwnlib/util/fiddling'
-require 'pwnlib/constants/constant'
-
-require 'singleton'
 
 module Pwnlib
   # Implement shellcraft!
@@ -16,15 +16,14 @@ module Pwnlib
 
     # For templates/*.rb to define shellcode generators.
     def self.define(filename, *args, &block)
-      filename.sub!(Submodule::ROOT_DIR + '/', '')
-      path = filename.rpartition('.').first # remove '.rb'
+      path = filename.sub(Submodule::ROOT_DIR + '/', '').rpartition('.').first # remove '.rb'
       AsmMethods.define(path, *args, &block)
     end
 
     # To support like +Shellcraft.amd64.linux.syscall+.
     #
-    # A {Shellcraft::Submodule} object will be returned when calling +Shellcraft.amd64+, so we can support continue to
-    # call +.linux.syscall+, which actually is 'directories traversal' handled in {Submodule}.
+    # A {Shellcraft::Submodule} object will be returned when calling +Shellcraft.amd64+, so we can continue to call
+    # +.linux.syscall+, which actually is 'directories traversal' handled in {Submodule}.
     class Submodule
       ROOT_DIR = File.join(__dir__, 'templates').freeze
 
@@ -195,7 +194,6 @@ module Pwnlib
         end
 
         def evaluate(item)
-          return item if item.is_a?(Integer)
           Constants.eval(item)
         end
 
