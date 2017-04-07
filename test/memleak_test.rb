@@ -5,6 +5,7 @@ require 'open3'
 require 'tty-platform'
 
 require 'test_helper'
+
 require 'pwnlib/memleak'
 
 class MemLeakTest < MiniTest::Test
@@ -50,8 +51,8 @@ class MemLeakTest < MiniTest::Test
   end
 
   def test_b
-    assert_equal(@victim[0x100], @leak.b(0x100))
-    assert_equal(@victim[514], @leak.b(514))
+    assert_equal(::Pwnlib::Util::Packing.u8(@victim[0x100]), @leak.b(0x100))
+    assert_equal(::Pwnlib::Util::Packing.u8(@victim[514]), @leak.b(514))
   end
 
   def test_w
