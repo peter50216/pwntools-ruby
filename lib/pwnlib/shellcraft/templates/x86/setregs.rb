@@ -24,7 +24,7 @@ require 'pwnlib/shellcraft/registers'
 #   puts setregs({rax: -1}, stack_allowed: false)
 #   # mov rax, -1
 ::Pwnlib::Shellcraft.define(__FILE__) do |reg_context, stack_allowed: true|
-  extend ::Pwnlib::RegSort::ClassMethods
+  extend ::Pwnlib::RegSort
   abi = ::Pwnlib::ABI::ABI.default
   reg_context = reg_context.reject { |_, v| v.nil? }.map { |k, v| [k.to_s, v] }.to_h
   ax_str, dx_str = abi.cdq_pair

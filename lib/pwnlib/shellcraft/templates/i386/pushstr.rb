@@ -4,9 +4,9 @@ require 'pwnlib/util/packing'
 
 # Push a string to stack
 ::Pwnlib::Shellcraft.define(__FILE__) do |str, append_null: true|
-  extend ::Pwnlib::Util::Fiddling::ClassMethods
+  extend ::Pwnlib::Util::Fiddling
   extend ::Pwnlib::Util::Lists
-  extend ::Pwnlib::Util::Packing::ClassMethods
+  extend ::Pwnlib::Util::Packing
   # This will not effect callee's +str+.
   str += "\x00" if append_null && !str.end_with?("\x00")
   next if str.empty?

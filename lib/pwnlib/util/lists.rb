@@ -5,7 +5,6 @@ require 'pwnlib/context'
 module Pwnlib
   module Util
     # Methods related to group / slice string into lists.
-    # See {ClassMethods} for method details.
     module Lists
       module_function
 

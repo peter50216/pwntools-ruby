@@ -138,7 +138,7 @@ module Pwnlib
         bits
       end
 
-      extend ::Pwnlib::Context
+      include ::Pwnlib::Context
     end
   end
 end
