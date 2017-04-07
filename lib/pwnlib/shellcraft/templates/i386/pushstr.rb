@@ -16,8 +16,7 @@ require 'pwnlib/util/packing'
   cat "/* push #{str.inspect} */"
   group(4, str, underfull_action: :fill, fill_value: padding).reverse_each do |word|
     sign = u32(word, endian: 'little', signed: true)
-    # simple forbidden byte case
-    if [0, 0xa].include?(sign)
+    if [0, 0xa].include?(sign) # simple forbidden byte case
       cat "push #{pretty(sign + 1)}"
       cat 'dec byte ptr [esp]'
     elsif sign >= -128 && sign <= 127

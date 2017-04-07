@@ -42,8 +42,7 @@ require 'pwnlib/util/packing'
     end
   elsif src.is_a?(Numeric) # Constant or immi
     xor = ->(dst) { "xor #{dst.xor}, #{dst.xor}" }
-    # Special case for zeroes
-    if src.zero?
+    if src.zero? # special case for zeroes
       cat "xor #{dest}, #{dest} /* #{src} */"
     elsif stack_allowed && dest.size == 32 && src == 10
       cat "push 9 /* mov #{dest}, '\\n' */"
@@ -52,21 +51,19 @@ require 'pwnlib/util/packing'
     elsif stack_allowed && dest.size == 32 && (-2**7 <= srcs && srcs < 2**7) && okay(srcp[0])
       cat "push #{pretty(src)}"
       cat "pop #{dest}"
-    # Easy case
-    # This implies that the register size and value are the same.
     elsif okay(srcp)
+      # Easy case. This implies that the register size and value are the same.
       cat "mov #{dest}, #{pretty(src)}"
-    # We can push 32-bit values onto the stack and they are sign-extended.
-    elsif srcu < 2**8 && okay(srcp[0, 1]) && dest.sizes.include?(8)
+    elsif srcu < 2**8 && okay(srcp[0]) && dest.sizes.include?(8)
+      # Move 8-bit value into reg.
       cat xor[dest]
       cat "mov #{dest.sizes[8]}, #{pretty(src)}"
-    # Target value is a 16-bit value with no data in the low 8 bits
-    # means we can use the 'AH' style register.
     elsif srcu == srcu & 0xff00 && okay(srcp[1]) && dest.ff00
+      # Target value is a 16-bit value with no data in the low 8 bits means we can use the 'AH' style register.
       cat xor[dest]
       cat "mov #{dest.ff00}, #{pretty(src)} >> 8"
-    # Target value is a 16-bit value, use a 16-bit mov
     elsif srcu < 2**16 && okay(srcp[0, 2])
+      # Target value is a 16-bit value, use a 16-bit mov.
       cat xor[dest]
       cat "mov #{dest.sizes[16]}, #{pretty(src)}"
     elsif okay(srcp_neg)
@@ -75,8 +72,8 @@ require 'pwnlib/util/packing'
     elsif okay(srcp_not)
       cat "mov #{dest}, (-1) ^ #{pretty(src)}"
       cat "not #{dest}"
-    # All else has failed.  Use some XOR magic to move things around.
     else
+      # All else has failed.  Use some XOR magic to move things around.
       a, b = xor_pair(srcp, avoid: "\x00\n")
       a = hex(unpack(a, bits: dest.size))
       b = hex(unpack(b, bits: dest.size))
