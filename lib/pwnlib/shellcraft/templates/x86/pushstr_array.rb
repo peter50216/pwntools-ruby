@@ -1,10 +1,10 @@
-# Pushes an array of pointers onto the stack.
+# Push an array of pointers onto the stack.
 #
 # @param [String] reg
 #   Destination register to hold the result pointer.
 # @param [Array<String>] array
-#   Single list of arguments to push. NULL termination is
-#   normalized so that each argument ends with exactly one NULL byte.
+#   List of arguments to push.
+#   NULL termination is normalized so that each argument ends with exactly one NULL byte.
 ::Pwnlib::Shellcraft.define(__FILE__) do |reg, array|
   abi = ::Pwnlib::ABI::ABI.default
   array = array.map { |a| a.gsub(/\x00+\Z/, '') + "\x00" }

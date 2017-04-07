@@ -49,6 +49,13 @@ class PushstrTest < MiniTest::Test
   mov rax, 0x101010101010101 ^ 0x68732f6e69622f
   xor [rsp], rax
       EOS
+      assert_equal(<<-'EOS', @shellcraft.pushstr("\x00\xff\xff\xff\xff\xff\xff\xff", append_null: false))
+  /* push "\x00\xFF\xFF\xFF\xFF\xFF\xFF\xFF" */
+  mov rax, 0x101010101010101
+  push rax
+  mov rax, 0x101010101010101 ^ -0x100
+  xor [rsp], rax
+      EOS
     end
   end
 

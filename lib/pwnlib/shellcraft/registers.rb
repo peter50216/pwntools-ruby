@@ -16,7 +16,7 @@ module Pwnlib
                I386).freeze
 
       # x86 registers in decreasing size
-      X86_ORDERED = [
+      X86_ORDERED = ([
         %w(rax eax ax al),
         %w(rbx ebx bx bl),
         %w(rcx ecx cx cl),
@@ -24,16 +24,9 @@ module Pwnlib
         %w(rdi edi di),
         %w(rsi esi si),
         %w(rbp ebp bp),
-        %w(rsp esp sp),
-        %w(r8 r8d r8w r8b),
-        %w(r9 r9d r9w r9b),
-        %w(r10 r10d r10w r10b),
-        %w(r11 r11d r11w r11b),
-        %w(r12 r12d r12w r12b),
-        %w(r13 r13d r13w r13b),
-        %w(r14 r14d r14w r14b),
-        %w(r15 r15d r15w r15b)
-      ].freeze
+        %w(rsp esp sp)
+      ] + (8..15).map { |r| ['', 'd', 'w', 'b'].map { |t| "r#{r}#{t}" } }).freeze
+
       # class Register, currently only supports i386 and amd64.
       class Register
         # @return [String]
@@ -47,7 +40,7 @@ module Pwnlib
         # Create a register by its name and size (in bits) for fetching other information. For example, for register
         # 'ax', +#bigger+ contains 'rax' and 'eax'.
         #
-        # Normaly you don't need to create any {Register} object, use {ClassMethods.get_register} to get register by
+        # Normally you don't need to create any {Register} object, use {.get_register} to get register by
         # name.
         #
         # @param [String] name

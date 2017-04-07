@@ -6,7 +6,7 @@ require 'pwnlib/shellcraft/registers'
 # Execute a different process.
 #
 # @param [String] path
-#   Can be either a absolute path or a register name.
+#   Can be either an absolute path or a register name.
 # @param [String, Array<String>, Integer, nil] argv
 #   If +argv+ is a +String+, it would be seen as a register.
 #   If +Array<String>+, works like normal arguments array.
@@ -15,7 +15,7 @@ require 'pwnlib/shellcraft/registers'
 # @param [String, Hash{Symbol => String}, Integer, nil] envp
 #   +String+ for register name.
 #   If +envp+ is a +Hash+, it will be converted into the environ form (i.e. key=value).
-#   If +Integer+, take it as a pointer adrress. (same as +nil+ if zero is given.)
+#   If +Integer+, take it as a pointer address (same as +nil+ if zero is given).
 #   If +nil+ is given, use NULL pointer.
 #
 # @example
@@ -34,7 +34,7 @@ require 'pwnlib/shellcraft/registers'
            cat shellcraft.pushstr_array(abi.register_arguments[2], argv)
            cat ''
            abi.register_arguments[2]
-         when Integer, NilClass
+         when Integer, nil
            argv.to_i
          end
 
@@ -46,7 +46,7 @@ require 'pwnlib/shellcraft/registers'
            cat shellcraft.pushstr_array(abi.register_arguments[3], envp.map { |k, v| "#{k}=#{v}" })
            cat ''
            abi.register_arguments[3]
-         when Integer, NilClass
+         when Integer, nil
            envp.to_i
          end
 

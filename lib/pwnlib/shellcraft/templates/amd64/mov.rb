@@ -1,6 +1,6 @@
+require 'pwnlib/shellcraft/registers'
 require 'pwnlib/util/packing'
 require 'pwnlib/util/fiddling'
-require 'pwnlib/shellcraft/registers'
 
 # Move src into dest without newlines and null bytes.
 ::Pwnlib::Shellcraft.define(__FILE__) do |dest, src, stack_allowed: true|
@@ -57,15 +57,15 @@ require 'pwnlib/shellcraft/registers'
     #
     # 6aff58           push -1; pop rax
     # 48c7c0ffffffff   mov rax, -1
-    elsif stack_allowed && [32, 64].include?(dest.size) && (-2**7 <= srcs && srcs < 2**7) && okay(srcp[0, 1])
+    elsif stack_allowed && [32, 64].include?(dest.size) && (-2**7 <= srcs && srcs < 2**7) && okay(srcp[0])
       cat "push #{pretty(src)}"
       cat "pop #{dest.native64}"
     # Easy case
     # This implies that the register size and value are the same.
     elsif okay(srcp)
       cat "mov #{dest}, #{pretty(src)}"
-    # We can push 32-bit values onto the stack and they are sign-extended.
-    elsif srcu < 2**8 && okay(srcp[0, 1]) && dest.sizes.include?(8)
+    # Move 8-bit value into register.
+    elsif srcu < 2**8 && okay(srcp[0]) && dest.sizes.include?(8)
       cat xor[dest]
       cat "mov #{dest.sizes[8]}, #{pretty(src)}"
     # Target value is a 16-bit value with no data in the low 8 bits

@@ -7,7 +7,7 @@
 #   If +true+ is given, use +['sh']+.
 #   If +Array<String>+ is given, use this as arguments array.
 #
-# @note +envp+ will always use null-pointer.
+# @note Null pointer is always used as +envp+.
 #
 # @diff
 #   By default, this method calls +execve('/bin///sh', 0, 0)+, which is different from python-pwntools:
