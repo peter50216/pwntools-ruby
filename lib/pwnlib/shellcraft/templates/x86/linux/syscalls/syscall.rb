@@ -1,7 +1,7 @@
 require 'pwnlib/abi'
 require 'pwnlib/constants/constant'
 
-# Assembly of `syscall`.
+# Assembly of +syscall+.
 ::Pwnlib::Shellcraft.define(__FILE__) do |*arguments|
   abi = ::Pwnlib::ABI::ABI.syscall
   syscall, arg0, arg1, arg2, arg3, arg4, arg5 = arguments
@@ -10,7 +10,7 @@ require 'pwnlib/constants/constant'
     args = []
   else
     syscall_repr = 'syscall(%s)'
-    args = syscall.nil? ? ['?'] : [syscall.inspect]
+    args = [syscall.nil? ? '?' : syscall.inspect]
   end
   # arg0 to arg5
   1.upto(6) do |i|

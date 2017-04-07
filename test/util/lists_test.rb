@@ -1,10 +1,11 @@
 # encoding: ASCII-8BIT
 
 require 'test_helper'
+
 require 'pwnlib/util/lists'
 
 class FiddlingTest < MiniTest::Test
-  include ::Pwnlib::Util::Lists::ClassMethods
+  include ::Pwnlib::Util::Lists
 
   def test_slice
     assert_equal(%w(A B C D), slice(1, 'ABCD'))

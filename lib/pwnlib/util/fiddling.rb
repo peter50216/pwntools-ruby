@@ -253,13 +253,13 @@ module Pwnlib
           s.unpack('m0')[0]
         end
 
-        # Finds two strings that will xor into a given string, while only
-        # using a given alphabet.
+        # Find two strings that will xor into a given string, while only using a given alphabet.
         #
         # @param [String] data
         #   The desired string.
-        # @option [String] avoid
+        # @param [String] avoid
         #   The list of disallowed characters. Defaults to nulls and newlines.
+        #
         # @return [String, String]
         #   Two strings which will xor to the given string. If no such two strings exist, then nil is returned.
         #
