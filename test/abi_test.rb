@@ -1,7 +1,8 @@
 # encoding: ASCII-8BIT
 require 'test_helper'
-require 'pwnlib/context'
+
 require 'pwnlib/abi'
+require 'pwnlib/context'
 
 class AbiTest < MiniTest::Test
   include ::Pwnlib::Context

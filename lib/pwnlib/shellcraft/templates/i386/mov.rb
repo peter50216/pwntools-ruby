@@ -1,12 +1,12 @@
-require 'pwnlib/util/packing'
-require 'pwnlib/util/fiddling'
 require 'pwnlib/shellcraft/registers'
+require 'pwnlib/util/fiddling'
+require 'pwnlib/util/packing'
 
-# Move src into dest without newlines and null bytes.
+# Move +src+ into +dest+ without newlines and null bytes.
 ::Pwnlib::Shellcraft.define(__FILE__) do |dest, src, stack_allowed: true|
-  extend ::Pwnlib::Util::Packing::ClassMethods
-  extend ::Pwnlib::Util::Fiddling::ClassMethods
-  extend ::Pwnlib::Shellcraft::Registers::ClassMethods
+  extend ::Pwnlib::Shellcraft::Registers
+  extend ::Pwnlib::Util::Packing
+  extend ::Pwnlib::Util::Fiddling
 
   raise ArgumentError, "#{dest} is not a register" unless register?(dest)
   dest = get_register(dest)

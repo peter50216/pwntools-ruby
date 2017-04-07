@@ -45,7 +45,9 @@ Style/CollectionMethods:
 Style/Encoding:
   Enabled: false
 
-# TODO(Darkpi): enable this when rubocop updated on rubygem.
+# TODO(Darkpi):
+#   Enable this when rubocop fix the setter methods being reported.
+#   (https://github.com/bbatsov/rubocop/issues/4152)
 # Style/MethodCallWithArgsParentheses:
 #   Enabled: true
 

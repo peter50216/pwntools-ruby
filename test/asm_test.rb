@@ -1,11 +1,14 @@
 # encoding: ASCII-8BIT
+
 require 'test_helper'
+
 require 'pwnlib/asm'
 require 'pwnlib/shellcraft/shellcraft'
 
 class AsmTest < MiniTest::Test
   include ::Pwnlib::Context
   Asm = ::Pwnlib::Asm
+
   def setup
     @shellcraft = ::Pwnlib::Shellcraft.instance
   end

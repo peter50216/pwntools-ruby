@@ -1,5 +1,5 @@
 ::Pwnlib::Shellcraft.define(__FILE__) do
-  cat <<EOS
+  cat <<-EOS
     pop rdi
     pop rsi
     pop rbp
@@ -8,5 +8,5 @@
     pop rdx
     pop rcx
     pop rax
-EOS
+  EOS
 end

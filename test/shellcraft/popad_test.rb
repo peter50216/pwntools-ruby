@@ -1,7 +1,9 @@
 # encoding: ASCII-8BIT
+
 require 'test_helper'
-require 'pwnlib/shellcraft/shellcraft'
+
 require 'pwnlib/context'
+require 'pwnlib/shellcraft/shellcraft'
 
 class PopadTest < MiniTest::Test
   include ::Pwnlib::Context
