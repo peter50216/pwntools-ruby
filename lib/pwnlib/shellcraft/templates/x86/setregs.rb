@@ -1,3 +1,5 @@
+# encoding: ASCII-8BIT
+
 require 'pwnlib/abi'
 require 'pwnlib/reg_sort'
 require 'pwnlib/shellcraft/registers'
@@ -22,7 +24,7 @@ require 'pwnlib/shellcraft/registers'
 #   #  pop rax
 #
 #   puts setregs({rax: -1}, stack_allowed: false)
-#   # mov rax, -1
+#   #  mov rax, -1
 ::Pwnlib::Shellcraft.define(__FILE__) do |reg_context, stack_allowed: true|
   extend ::Pwnlib::RegSort
   abi = ::Pwnlib::ABI::ABI.default

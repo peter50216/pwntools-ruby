@@ -1,3 +1,5 @@
+# encoding: ASCII-8BIT
+
 require 'pwnlib/shellcraft/registers'
 require 'pwnlib/util/fiddling'
 require 'pwnlib/util/packing'
@@ -5,8 +7,8 @@ require 'pwnlib/util/packing'
 # Move +src+ into +dest+ without newlines and null bytes.
 ::Pwnlib::Shellcraft.define(__FILE__) do |dest, src, stack_allowed: true|
   extend ::Pwnlib::Shellcraft::Registers
-  extend ::Pwnlib::Util::Packing
   extend ::Pwnlib::Util::Fiddling
+  extend ::Pwnlib::Util::Packing
 
   raise ArgumentError, "#{dest} is not a register" unless register?(dest)
   dest = get_register(dest)
@@ -43,11 +45,11 @@ require 'pwnlib/util/packing'
     # Special case for zeroes
     if src.zero?
       cat "xor #{dest}, #{dest} /* #{src} */"
-    elsif stack_allowed && [32].include?(dest.size) && src == 10
+    elsif stack_allowed && dest.size == 32 && src == 10
       cat "push 9 /* mov #{dest}, '\\n' */"
       cat "pop #{dest}"
       cat "inc #{dest}"
-    elsif stack_allowed && [32].include?(dest.size) && (-2**7 <= srcs && srcs < 2**7) && okay(srcp[0, 1])
+    elsif stack_allowed && dest.size == 32 && (-2**7 <= srcs && srcs < 2**7) && okay(srcp[0])
       cat "push #{pretty(src)}"
       cat "pop #{dest}"
     # Easy case

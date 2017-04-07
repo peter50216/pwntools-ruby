@@ -267,7 +267,7 @@ module Pwnlib
 
       # Find two strings that will xor into a given string, while only using a given alphabet.
       #
-      # @param [String] data
+      # @param [String, Integer] data
       #   The desired string.
       # @param [String] avoid
       #   The list of disallowed characters. Defaults to nulls and newlines.
@@ -286,8 +286,8 @@ module Pwnlib
           # alphabet.shuffle! if context.randomize
           c2 = alphabet.find { |c| alphabet.include?(c1 ^ c) }
           return nil if c2.nil?
-          res1 += c2.chr
-          res2 += (c1 ^ c2).chr
+          res1 << c2.chr
+          res2 << (c1 ^ c2).chr
         end
         [res1, res2]
       end

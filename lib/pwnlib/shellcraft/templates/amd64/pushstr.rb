@@ -1,3 +1,5 @@
+# encoding: ASCII-8BIT
+
 require 'pwnlib/util/fiddling'
 require 'pwnlib/util/lists'
 require 'pwnlib/util/packing'
@@ -7,7 +9,7 @@ require 'pwnlib/util/packing'
   extend ::Pwnlib::Util::Fiddling
   extend ::Pwnlib::Util::Lists
   extend ::Pwnlib::Util::Packing
-  # This will not effect callee's +str+.
+  # This will not affect callee's +str+.
   str += "\x00" if append_null && !str.end_with?("\x00")
   next if str.empty?
   padding = str[-1].ord >= 128 ? "\xff" : "\x00"

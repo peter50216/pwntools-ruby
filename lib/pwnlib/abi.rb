@@ -10,7 +10,7 @@ module Pwnlib
       attr_reader :register_arguments
       attr_reader :arg_alignment
       attr_reader :stack_pointer
-      # Only use for x86, to specific the +eax+, +edx+ pair.
+      # Only use for x86, to specify the +eax+, +edx+ pair.
       attr_reader :cdq_pair
       def initialize(regs, align, stack_pointer, cdq_pair: nil)
         @register_arguments = regs
