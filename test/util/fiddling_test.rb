@@ -1,6 +1,7 @@
 # encoding: ASCII-8BIT
 
 require 'test_helper'
+
 require 'pwnlib/util/fiddling'
 
 class FiddlingTest < MiniTest::Test

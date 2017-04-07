@@ -5,6 +5,7 @@ require 'open3'
 require 'tty-platform'
 
 require 'test_helper'
+
 require 'pwnlib/dynelf'
 
 class DynELFTest < MiniTest::Test

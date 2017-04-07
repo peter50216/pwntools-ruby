@@ -28,10 +28,26 @@ a new line between tags of different kind,
 and a new line between the document string and the first tag.
 
 ## `require` order
-Three groups: Ruby stdlib, other dependencies, our library.
+Four groups: Ruby stdlib, other dependencies, `test_helper` (for tests), our library.
 
 A new line between each group,
 and sort alphabetically in each group.
+
+Example for header:
+```ruby
+# encoding: ASCII-8BIT
+
+require 'open3'
+require 'socket'
+
+require 'dentaku'
+require 'rainbow'
+
+require 'test_helper'
+
+require 'pwnlib/context'
+require 'pwnlib/version'
+```
 
 ## Document style
 * Public methods intended to be used by user should be documented.

@@ -1,6 +1,7 @@
 # encoding: ASCII-8BIT
 
 require 'test_helper'
+
 require 'pwnlib/ext/array'
 require 'pwnlib/ext/integer'
 require 'pwnlib/ext/string'

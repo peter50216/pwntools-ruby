@@ -2,8 +2,8 @@
 
 require 'dentaku'
 
-require 'pwnlib/context'
 require 'pwnlib/constants/constant'
+require 'pwnlib/context'
 
 module Pwnlib
   # Module containing constants.
