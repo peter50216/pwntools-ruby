@@ -24,7 +24,7 @@ require 'pwnlib/shellcraft/registers'
 # @diff
 #   Parameters have no default values since this is a basic function.
 ::Pwnlib::Shellcraft.define(__FILE__) do |path, argv, envp|
-  extend ::Pwnlib::Shellcraft::Registers::ClassMethods
+  extend ::Pwnlib::Shellcraft::Registers
   abi = ::Pwnlib::ABI::ABI.syscall
   argv = case argv
          when String

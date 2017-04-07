@@ -6,7 +6,7 @@ require 'pwnlib/shellcraft/registers'
 ::Pwnlib::Shellcraft.define(__FILE__) do |dest, src, stack_allowed: true|
   extend ::Pwnlib::Util::Packing::ClassMethods
   extend ::Pwnlib::Util::Fiddling::ClassMethods
-  extend ::Pwnlib::Shellcraft::Registers::ClassMethods
+  extend ::Pwnlib::Shellcraft::Registers
 
   raise ArgumentError, "#{dest} is not a register" unless register?(dest)
   dest = get_register(dest)
