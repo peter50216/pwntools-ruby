@@ -1,6 +1,7 @@
 # encoding: ASCII-8BIT
 
 require 'test_helper'
+
 require 'pwnlib/constants/constant'
 
 class ConstantTest < MiniTest::Test

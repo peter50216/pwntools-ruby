@@ -1,10 +1,11 @@
 # encoding: ASCII-8BIT
 
 require 'test_helper'
+
 require 'pwnlib/util/fiddling'
 
 class FiddlingTest < MiniTest::Test
-  include ::Pwnlib::Util::Fiddling::ClassMethods
+  include ::Pwnlib::Util::Fiddling
 
   def test_enhex
     assert_equal('4141313233', enhex('AA123'))
