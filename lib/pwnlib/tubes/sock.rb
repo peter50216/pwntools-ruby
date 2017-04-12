@@ -32,6 +32,10 @@ module Pwnlib
       def io
         @sock
       end
+
+      def io
+        @sock
+      end
     end
   end
 end
