@@ -27,6 +27,10 @@ module Pwnlib
         return if rs.nil?
         @sock.readpartial(BUFSIZE)
       end
+
+      def io
+        @sock
+      end
     end
   end
 end
