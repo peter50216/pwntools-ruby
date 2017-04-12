@@ -1,4 +1,5 @@
 # encoding: ASCII-8BIT
+
 require 'pwnlib/timer'
 require 'pwnlib/tubes/buffer'
 
@@ -17,6 +18,7 @@ module Pwnlib
         return '' if @buffer.empty? && !fillbuffer(timeout: timeout)
         @buffer.get(num_bytes)
       end
+      alias :read :recv
 
       def unrecv(data)
         @buffer.unget(data)
@@ -67,8 +69,8 @@ module Pwnlib
           begin
             while @timer.active?
               begin
-                s = recv
-              rescue
+                s = recv(1)
+              rescue  # TODO(Darkpi): QQ
                 return ''
               end
 
@@ -80,7 +82,7 @@ module Pwnlib
               delims.each do |d|
                 idx = matching.index(d)
                 next unless idx
-                if idx + d.size < sidx + match_len
+                if idx + d.size <= sidx + match_len
                   sidx = idx
                   match_len = d.size
                 end
@@ -98,6 +100,36 @@ module Pwnlib
           ensure
             unrecv(matching)
             unrecv(data)
+          end
+        end
+      end
+
+      def recvline(drop: false, timeout: nil)
+        recvuntil("\n", drop: drop, timeout: timeout)
+      end
+      alias :gets :recvline
+
+      def send(data)
+        send_raw(data)
+      end
+      alias :write :send
+
+      def sendline(data)
+        send_raw(data + "\n")
+      end
+      alias :puts :sendline
+
+      def interact
+        $stdout.write(@buffer.get)
+        until io.closed? do
+          rs, = IO.select([$stdin, io])
+          if rs.include?($stdin)
+            s = $stdin.readpartial(BUFSIZE)
+            io.write(s)
+          end
+          if rs.include?(io)
+            s = io.readpartial(BUFSIZE)
+            $stdout.write(s)
           end
         end
       end
