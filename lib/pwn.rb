@@ -12,6 +12,7 @@ require 'pwnlib/ext/array'
 extend Pwn
 
 include Pwnlib
+include Pwnlib::Tubes
 
 # Small "fix" for irb context problem.
 # irb defines main.context for IRB::Context, which overrides our
