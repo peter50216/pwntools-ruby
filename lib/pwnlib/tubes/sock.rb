@@ -6,6 +6,7 @@ require 'pwnlib/tubes/tube'
 
 module Pwnlib
   module Tubes
+    # Socket!
     class Sock < Tube
       def initialize(host, port)
         super()
@@ -14,7 +15,7 @@ module Pwnlib
         @timeout = :forever
       end
 
-      def set_timeout_raw(timeout)
+      def timeout_raw=(timeout)
         @timeout = timeout == :forever ? nil : timeout
       end
 
@@ -22,10 +23,10 @@ module Pwnlib
         @sock.write(data)
       end
 
-      def recv_raw(data)
+      def recv_raw(size)
         rs, = IO.select([@sock], [], [], @timeout)
         return if rs.nil?
-        @sock.readpartial(BUFSIZE)
+        @sock.readpartial(size)
       end
 
       def io

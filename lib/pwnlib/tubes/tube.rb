@@ -18,7 +18,7 @@ module Pwnlib
         return '' if @buffer.empty? && !fillbuffer(timeout: timeout)
         @buffer.get(num_bytes)
       end
-      alias :read :recv
+      alias read recv
 
       def unrecv(data)
         @buffer.unget(data)
@@ -70,7 +70,7 @@ module Pwnlib
             while @timer.active?
               begin
                 s = recv(1)
-              rescue  # TODO(Darkpi): QQ
+              rescue # TODO(Darkpi): QQ
                 return ''
               end
 
@@ -107,21 +107,21 @@ module Pwnlib
       def recvline(drop: false, timeout: nil)
         recvuntil("\n", drop: drop, timeout: timeout)
       end
-      alias :gets :recvline
+      alias gets recvline
 
       def send(data)
         send_raw(data)
       end
-      alias :write :send
+      alias write send
 
       def sendline(data)
         send_raw(data + "\n")
       end
-      alias :puts :sendline
+      alias puts sendline
 
       def interact
         $stdout.write(@buffer.get)
-        until io.closed? do
+        until io.closed?
           rs, = IO.select([$stdin, io])
           if rs.include?($stdin)
             s = $stdin.readpartial(BUFSIZE)
@@ -138,7 +138,7 @@ module Pwnlib
 
       def fillbuffer(timeout: nil)
         data = @timer.countdown(timeout) do
-          set_timeout_raw(@timer.timeout)
+          self.timeout_raw = @timer.timeout
           recv_raw(BUFSIZE)
         end
         # TODO(Darkpi): Logging.
