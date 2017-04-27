@@ -1,4 +1,5 @@
 # encoding: ASCII-8BIT
+
 require 'singleton'
 
 require 'pwnlib/constants/constant'
