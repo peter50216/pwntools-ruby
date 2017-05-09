@@ -22,12 +22,13 @@ Gem::Specification.new do |s|
   s.required_ruby_version = '>= 2.1.0'
 
   s.add_runtime_dependency 'rainbow', '~> 2.2'
+  s.add_runtime_dependency 'dentaku', '~> 2.0.11'
 
   s.add_development_dependency 'codeclimate-test-reporter', '~> 0.6'
   s.add_development_dependency 'minitest', '~> 5.8'
   s.add_development_dependency 'pry', '~> 0.10'
   s.add_development_dependency 'rake', '~> 12.0'
-  s.add_development_dependency 'rubocop', '~> 0.47'
+  s.add_development_dependency 'rubocop', '= 0.47.1'
   s.add_development_dependency 'simplecov', '~> 0.12'
   s.add_development_dependency 'tty-platform', '~> 0.1'
   s.add_development_dependency 'yard', '~> 0.9'
