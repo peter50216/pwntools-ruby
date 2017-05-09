@@ -15,6 +15,10 @@ install:
 
 build: off
 
+branches:
+  only:
+    - master
+
 before_test:
   - bundle exec ruby -v
   - bundle exec gem -v
