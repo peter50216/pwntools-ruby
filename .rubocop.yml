@@ -46,7 +46,7 @@ Style/Encoding:
   Enabled: false
 
 Style/EndOfLine:
-    EnforcedStyle: lf
+  EnforcedStyle: lf
 
 Style/IndentHeredoc:
   Enabled: false
