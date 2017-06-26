@@ -7,6 +7,10 @@ require 'pwnlib/asm'
 class AsmTest < MiniTest::Test
   include ::Pwnlib::Context
   Asm = ::Pwnlib::Asm
+  def setup
+    skip 'Not test asm/disasm on Windows' if TTY::Platform.new.windows?
+  end
+
   def test_i386_disasm
     context.local(arch: 'i386') do
       str = Asm.disasm("h\x01\x01\x01\x01\x814$ri\x01\x011\xd2"\
