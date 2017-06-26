@@ -40,8 +40,7 @@ module Pwnlib
         # Create a register by its name and size (in bits) for fetching other information. For example, for register
         # 'ax', +#bigger+ contains 'rax' and 'eax'.
         #
-        # Normally you don't need to create any {Register} object, use {.get_register} to get register by
-        # name.
+        # Normally you don't need to create any {Register} object, use {.get_register} to get register by name.
         #
         # @param [String] name
         #   Register's name.
@@ -98,11 +97,11 @@ module Pwnlib
         }[[context.bits, context.arch, context.os]]
       end
 
-      INTEL = X86_ORDERED.each_with_object({}) do |row, obj|
+      INTEL = (X86_ORDERED.each_with_object({}) do |row, obj|
         row.each_with_index do |reg, i|
           obj[reg] = Register.new(reg, 64 >> i)
         end
-      end
+      end).freeze
 
       # Get a {Register} object by name.
       #

@@ -1,3 +1,5 @@
+# encoding: ASCII-8BIT
+
 require 'pwnlib/abi'
 require 'pwnlib/constants/constant'
 
@@ -10,11 +12,11 @@ require 'pwnlib/constants/constant'
     args = []
   else
     syscall_repr = 'syscall(%s)'
-    args = [syscall.nil? ? '?' : syscall.inspect]
+    args = [syscall ? syscall.inspect : '?']
   end
   # arg0 to arg5
   1.upto(6) do |i|
-    args.push(arguments[i].nil? ? '?' : arguments[i].inspect)
+    args.push(arguments[i] ? arguments[i].inspect : '?')
   end
 
   args.pop while args.last == '?'

@@ -1,3 +1,5 @@
+# encoding: ASCII-8BIT
+
 ::Pwnlib::Shellcraft.define(__FILE__) do |dst, src, n|
   cat "/* memcpy(#{pretty(dst)}, #{pretty(src)}, #{pretty(n)}) */"
   cat 'cld'
