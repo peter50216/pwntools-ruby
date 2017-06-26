@@ -13,7 +13,7 @@ extend Pwn
 
 include Pwnlib
 
-# Don't need to type ELF::ELF every time!
+# No need to type ELF::ELF every time!
 ELF = ::Pwnlib::ELF::ELF
 
 # Small "fix" for irb context problem.

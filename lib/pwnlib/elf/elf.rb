@@ -1,9 +1,9 @@
 require 'elftools'
-require 'rainbow'
 require 'ostruct'
+require 'rainbow'
 
 module Pwnlib
-  # ELF module includes classes related to parsing ELF.
+  # ELF module includes classes for parsing an ELF file.
   module ELF
     # Main class for using {Pwnlib::ELF} module.
     class ELF
