@@ -45,6 +45,12 @@ Style/CollectionMethods:
 Style/Encoding:
   Enabled: false
 
+Style/EndOfLine:
+  EnforcedStyle: lf
+
+Style/IndentHeredoc:
+  Enabled: false
+
 # TODO(Darkpi):
 #   Enable this when rubocop fix the setter methods being reported.
 #   (https://github.com/bbatsov/rubocop/issues/4152)
@@ -56,6 +62,9 @@ Style/MethodCalledOnDoEndBlock:
 
 Style/OptionHash:
   Enabled: true
+
+Style/PercentLiteralDelimiters:
+  Enabled: false
 
 Style/Send:
   Enabled: true
