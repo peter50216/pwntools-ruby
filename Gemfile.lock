@@ -1,13 +1,8 @@
-GIT
-  remote: https://github.com/david942j/dentaku
-  revision: 47bee012ea049d05767993cb8366986125e46ed1
-  specs:
-    dentaku (2.0.10)
-
 PATH
   remote: .
   specs:
     pwntools (0.1.0)
+      dentaku (~> 2.0.11)
       rainbow (~> 2.2)
 
 GEM
@@ -17,8 +12,9 @@ GEM
     codeclimate-test-reporter (0.6.0)
       simplecov (>= 0.7.1, < 1.0.0)
     coderay (1.1.1)
+    dentaku (2.0.11)
     docile (1.1.5)
-    json (2.0.2)
+    json (2.1.0)
     method_source (0.8.2)
     minitest (5.10.1)
     parser (2.4.0.0)
@@ -28,31 +24,31 @@ GEM
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
       slop (~> 3.4)
-    rainbow (2.2.1)
+    rainbow (2.2.2)
+      rake
     rake (12.0.0)
-    rubocop (0.47.1)
+    rubocop (0.48.1)
       parser (>= 2.3.3.1, < 3.0)
       powerpack (~> 0.1)
       rainbow (>= 1.99.1, < 3.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (~> 1.0, >= 1.0.1)
     ruby-progressbar (1.8.1)
-    simplecov (0.12.0)
+    simplecov (0.14.1)
       docile (~> 1.1.0)
       json (>= 1.8, < 3)
       simplecov-html (~> 0.10.0)
     simplecov-html (0.10.0)
     slop (3.6.0)
     tty-platform (0.1.0)
-    unicode-display_width (1.1.3)
-    yard (0.9.7)
+    unicode-display_width (1.2.1)
+    yard (0.9.9)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
   codeclimate-test-reporter (~> 0.6)
-  dentaku!
   minitest (~> 5.8)
   pry (~> 0.10)
   pwntools!
@@ -63,4 +59,4 @@ DEPENDENCIES
   yard (~> 0.9)
 
 BUNDLED WITH
-   1.14.4
+   1.14.6

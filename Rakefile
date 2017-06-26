@@ -23,6 +23,7 @@ end
 YARD::Rake::YardocTask.new(:doc)
 
 task :install_git_hooks do
+  next if ENV['CI']
   hooks = %w(pre-push)
   git_hook_dir = Pathname.new('.git/hooks/')
   hook_dir = Pathname.new('git-hooks/')
