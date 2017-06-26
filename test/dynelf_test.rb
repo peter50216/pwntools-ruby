@@ -30,18 +30,35 @@ class DynELFTest < MiniTest::Test
         mem.getc
       end
 
-      yield d, libc_path
+      yield d, { libc: libc_path, main_ra: main_ra, pid: t.pid }
 
       mem.close
       i.write('bye')
     end
   end
 
+  def test_find_base
+    [32, 64].each do |b|
+      popen_victim(b) do |d, options|
+        main_ra = options[:main_ra]
+        realbase = nil
+        IO.readlines("/proc/#{options[:pid]}/maps").map(&:split).each do |s|
+          st, ed = s[0].split('-').map { |x| x.to_i(16) }
+          next unless main_ra.between?(st, ed)
+          realbase = st
+          break
+        end
+        refute_nil(realbase)
+        assert_equal(realbase, d.libbase)
+      end
+    end
+  end
+
   def test_lookup
     [32, 64].each do |b|
-      popen_victim(b) do |d, libc_path|
+      popen_victim(b) do |d, options|
         assert_nil(d.lookup('pipi_hao_wei!'))
-        elf = ::Pwnlib::ELF::ELF.new(libc_path, checksec: false)
+        elf = ::Pwnlib::ELF::ELF.new(options[:libc], checksec: false)
         %i(system open read write execve printf puts sprintf mmap mprotect).each do |sym|
           assert_equal(d.lookup(sym), d.libbase + elf.symbols[sym])
         end

@@ -10,38 +10,8 @@ require 'pwnlib/memleak'
 
 class MemLeakTest < MiniTest::Test
   def setup
-    @victim = IO.binread(File.expand_path('../data/victim32', __FILE__))
+    @victim = IO.binread(File.expand_path('data/victim32', __dir__))
     @leak = ::Pwnlib::MemLeak.new { |addr| @victim[addr] }
-  end
-
-  def test_find_elf_base_basic
-    assert_equal(0, @leak.find_elf_base(@victim.length * 2 / 3))
-  end
-
-  def test_find_elf_base_running
-    skip 'Only tested on linux' unless TTY::Platform.new.linux?
-    [32, 64].each do |b|
-      # TODO(hh): Use process instead of popen2
-      Open3.popen2(File.expand_path("../data/victim#{b}", __FILE__)) do |i, o, t|
-        main_ra = o.readline[2...-1].to_i(16)
-        realbase = nil
-        IO.readlines("/proc/#{t.pid}/maps").map(&:split).each do |s|
-          st, ed = s[0].split('-').map { |x| x.to_i(16) }
-          next unless main_ra.between?(st, ed)
-          realbase = st
-          break
-        end
-        refute_nil(realbase)
-        mem = open("/proc/#{t.pid}/mem", 'rb')
-        l2 = ::Pwnlib::MemLeak.new do |addr|
-          mem.seek(addr)
-          mem.getc
-        end
-        assert_equal(realbase, l2.find_elf_base(main_ra))
-        mem.close
-        i.write('bye')
-      end
-    end
   end
 
   def test_n
