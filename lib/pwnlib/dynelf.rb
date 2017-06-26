@@ -6,34 +6,30 @@ require 'pwnlib/context'
 require 'pwnlib/memleak'
 require 'pwnlib/util/packing'
 
-# TODO(hh): Use ELF datatype instead of magic offset.
-
 module Pwnlib
   # DynELF class, resolve symbols in loaded, dynamically-linked ELF binaries.
   # Given a function which can leak data at an arbitrary address, any symbol in any loaded library can be resolved.
   class DynELF
-    PT_DYNAMIC = 2
-    DT_GNU_HASH = 0x6ffffef5
-    DT_HASH = 4
-    DT_STRTAB = 5
-    DT_SYMTAB = 6
+    attr_reader :libbase # @return [Integer] Base of lib.
 
-    attr_reader :libbase
-
-    # @param [Integer] addr
-    #   An address known to be inside the ELF.
+    # Instantiate an {Pwnlib::DynELF} object.
     #
-    # @yieldparam [Integer] leak_addr
-    #   The start address that the leaker should leak from.
+    # @param [Integer] addr
+    #   One of address in lib.
+    #
+    # @yieldparam [Integer] addr
+    #   The address to leak.
     #
     # @yieldreturn [String]
-    #   A leaked non-empty byte string, starting from +leak_addr+.
+    #   Some bytes began from +addr+.
+    #
     def initialize(addr, &block)
       @leak = ::Pwnlib::MemLeak.new(&block)
       @libbase = @leak.find_elf_base(addr)
-      @elfclass = { 0x1 => 32, 0x2 => 64 }[@leak.b(@libbase + 4)]
+      @elfclass = { "\x01" => 32, "\x02" => 64 }[@leak.n(@libbase + 4, 1)]
       @elfword = @elfclass / 8
       @dynamic = find_dynamic
+      @hshtab = @strtab = @symtab = nil
       @build_id = nil
     end
 
@@ -78,6 +74,10 @@ module Pwnlib
       nil
     end
 
+    # Leak the Build ID of the remote libc.so.
+    #
+    # @return [String?]
+    #   Return build_id, or nil.
     def build_id
       build_id_offsets.each do |offset|
         next unless @leak.n(@libbase + offset + 12, 4) == "GNU\x00"
@@ -103,7 +103,7 @@ module Pwnlib
       phdr_size = { 32 => 32, 64 => 56 }[@elfclass]
       loop do
         ptype = @leak.d(e_phoff)
-        break if ptype == PT_DYNAMIC
+        break if ptype == ELFTools::Constants::PT::PT_DYNAMIC
         e_phoff += phdr_size
       end
       offset = { 32 => 8, 64 => 16 }[@elfclass]
@@ -139,6 +139,9 @@ module Pwnlib
       @symtab ||= find_dt(DT_SYMTAB)
     end
 
+    # Given the corpus of almost all libc to have been released with RedHat, Fedora, Ubuntu, Debian, etc. over the past
+    # several years, pwntools said with 99% certainty that the GNU Build ID section will be at one of the specified
+    # addresses.
     def build_id_offsets
       {
         i386: [0x174],

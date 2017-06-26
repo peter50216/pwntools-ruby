@@ -8,6 +8,14 @@ module Pwnlib
     PAGE_SIZE = 0x1000
     PAGE_MASK = ~(PAGE_SIZE - 1)
 
+    # Instantiate an {Pwnlib::MemLeak} object.
+    #
+    # @yieldparam [Integer] addr
+    #   The address to leak.
+    #
+    # @yieldreturn [String]
+    #   Some bytes began from +addr+.
+    #
     def initialize(&block)
       @leak = block
       @cache = {}
