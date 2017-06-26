@@ -15,18 +15,17 @@ module Pwnlib
     # Instantiate an {Pwnlib::DynELF} object.
     #
     # @param [Integer] addr
-    #   One of address in lib.
+    #   An address known to be inside the ELF.
     #
-    # @yieldparam [Integer] addr
-    #   The address to leak.
+    # @yieldparam [Integer] leak_addr
+    #   The start address that the leaker should leak from.
     #
     # @yieldreturn [String]
-    #   Some bytes began from +addr+.
-    #
+    #   A leaked non-empty byte string, starting from +leak_addr+.
     def initialize(addr, &block)
       @leak = ::Pwnlib::MemLeak.new(&block)
       @libbase = find_base(addr)
-      @elfclass = { "\x01" => 32, "\x02" => 64 }[@leak.n(@libbase + 4, 1)]
+      @elfclass = { 0x1 => 32, 0x2 => 64 }[@leak.b(@libbase + 4)]
       @elfword = @elfclass / 8
       @dynamic = find_dynamic
       @hshtab = @strtab = @symtab = nil

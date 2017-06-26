@@ -7,12 +7,11 @@ module Pwnlib
   class MemLeak
     # Instantiate an {Pwnlib::MemLeak} object.
     #
-    # @yieldparam [Integer] addr
-    #   The address to leak.
+    # @yieldparam [Integer] leak_addr
+    #   The start address that the leaker should leak from.
     #
     # @yieldreturn [String]
-    #   Some bytes began from +addr+.
-    #
+    #   A leaked non-empty byte string, starting from +leak_addr+.
     def initialize(&block)
       @leak = block
       @cache = {}
