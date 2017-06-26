@@ -1,3 +1,5 @@
+# encoding: ASCII-8BIT
+
 require 'pwnlib/abi'
 require 'pwnlib/reg_sort'
 require 'pwnlib/shellcraft/registers'
@@ -22,7 +24,7 @@ require 'pwnlib/shellcraft/registers'
 #   #  pop rax
 #
 #   puts setregs({rax: -1}, stack_allowed: false)
-#   # mov rax, -1
+#   #  mov rax, -1
 ::Pwnlib::Shellcraft.define(__FILE__) do |reg_context, stack_allowed: true|
   extend ::Pwnlib::RegSort
   abi = ::Pwnlib::ABI::ABI.default
@@ -38,12 +40,11 @@ require 'pwnlib/shellcraft/registers'
   eax = ev[eax]
   edx = ev[edx]
 
-  # @diff
-  #   The condition is wrong in python-pwntools,
-  #   and here we don't care the case of edx==0xffffffff
   if eax.is_a?(Numeric) && edx.is_a?(Numeric) && edx.zero? && (eax & (1 << 31)).zero?
+    # @diff
+    #   The condition is wrong in python-pwntools, and here we don't care the case of edx==0xffffffff.
     cdq = true
-    reg_context.delete dx_str
+    reg_context.delete(dx_str)
   end
   sorted_regs = regsort(reg_context, ::Pwnlib::Shellcraft::Registers.registers)
   if sorted_regs.empty?
@@ -53,8 +54,8 @@ require 'pwnlib/shellcraft/registers'
       if how == 'xchg'
         cat "xchg #{src}, #{dst}"
       else
-        # bug in python-pwntools, which is missing `stack_allowed`
-        # pwnlib.shellcraft.setregs({'rax': 1}, stack_allowed=False)
+        # Bug in python-pwntools, which is missing `stack_allowed`.
+        # Proof of bug: pwnlib.shellcraft.setregs({'rax': 1}, stack_allowed=False)
         cat ::Pwnlib::Shellcraft.instance.mov(src, dst, stack_allowed: stack_allowed)
       end
     end

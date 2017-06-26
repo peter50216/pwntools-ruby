@@ -1,11 +1,12 @@
 # encoding: ASCII-8BIT
+
 require 'singleton'
 
 require 'pwnlib/constants/constant'
 require 'pwnlib/context'
 require 'pwnlib/shellcraft/registers'
-require 'pwnlib/util/packing'
 require 'pwnlib/util/fiddling'
+require 'pwnlib/util/packing'
 
 module Pwnlib
   # Implement shellcraft!
@@ -40,17 +41,14 @@ module Pwnlib
 
       # For dynamic define methods.
       def method_missing(method, *args, &_)
-        return @modules[method] if add_module(method)
-
-        # not a dir, define method.
-        return super unless add_method(method) # +return super+ when file not found
-        # method must be defined now.
-        public_send(method, *args)
+        # +add_module+ success if +method+ is a directory
+        return public_send(method, *args) if add_module(method) || add_method(method)
+        # neither a dir nor a file
+        super
       end
 
       def respond_to_missing?(method, _include_private)
-        return true if add_module(method)
-        return true if add_method(method)
+        return true if add_module(method) || add_method(method)
         false
       end
 
@@ -78,7 +76,7 @@ module Pwnlib
       end
 
       def rbfile?(method)
-        File.exist?(path("#{method}.rb"))
+        File.file?(path("#{method}.rb"))
       end
 
       def path(method)
@@ -137,11 +135,11 @@ module Pwnlib
       #   The assembly codes.
       #
       # @example
-      #   AsmMethods.call('amd64/linux', :syscall, ['SYS_read', 0, 'rsp', 10])
+      #   AsmMethods.call('./amd64/linux', :syscall, ['SYS_read', 0, 'rsp', 10])
       #   => <assembly codes>
       def self.call(path, method, *args)
         require File.join(Submodule::ROOT_DIR, path, method.to_s) # require 'templates/amd64/linux/syscall'
-        list = [*path.split('/').reject { |s| s.include?('.') }.map(&:to_sym), method]
+        list = [*path.split('/')[1..-1].map(&:to_sym), method]
         runner = list.reduce(@methods) do |cur, key|
           raise ArgumentError, "Method `#{method}` has not been defined by #{path}/#{method}.rb!" unless cur.key?(key)
           cur[key]
@@ -151,16 +149,17 @@ module Pwnlib
 
       # @param [String] name
       #   The name to be defined, see examples.
+      #
       # @example
       #   AsmMethods.define('amd64/nop') { cat 'nop' }
       #   # Now can invoke AsmMethods.call('amd64', :nop).
       def self.define(name, &block)
         list = name.split('/').map(&:to_sym)
-        obj = list[0...-1].reduce(@methods) do |cur, key|
-          cur[key] = {} unless cur.key?(key)
-          cur[key]
+        method = list.pop
+        obj = list.reduce(@methods) do |cur, key|
+          cur[key] ||= {}
         end
-        obj[list.last] = Runner.new.tap do |runner|
+        obj[method] = Runner.new.tap do |runner|
           runner.define_singleton_method(:inner, &block)
         end
       end

@@ -5,7 +5,7 @@
 # @param [Boolean, Array<String>] argv
 #   Arguments of +argv+ when calling +execve+.
 #   If +true+ is given, use +['sh']+.
-#   If +Array<String>+ is given, use this as arguments array.
+#   If +Array<String>+ is given, use it as arguments array.
 #
 # @note Null pointer is always used as +envp+.
 #

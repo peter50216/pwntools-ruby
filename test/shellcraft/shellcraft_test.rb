@@ -12,9 +12,11 @@ class ShellcraftTest < MiniTest::Test
     @shellcraft = ::Pwnlib::Shellcraft.instance
   end
 
-  def test_respond_to?
+  def test_respond
     assert @shellcraft.respond_to?(:amd64)
     context.local(arch: 'amd64') { assert @shellcraft.respond_to?(:mov) }
     refute @shellcraft.respond_to?(:linux)
+
+    assert_raises(NoMethodError) { @shellcraft.meow }
   end
 end

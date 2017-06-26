@@ -1,3 +1,5 @@
+# encoding: ASCII-8BIT
+
 # Push an array of pointers onto the stack.
 #
 # @param [String] reg

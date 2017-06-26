@@ -12,7 +12,7 @@ require 'pwnlib/shellcraft/registers'
 #   If +Array<String>+, works like normal arguments array.
 #   If +Integer+, take it as a pointer adrress. (same as +nil+ if zero is given.)
 #   If +nil+, use NULL pointer.
-# @param [String, Hash{Symbol => String}, Integer, nil] envp
+# @param [String, Hash{#to_s => #to_s}, Integer, nil] envp
 #   +String+ for register name.
 #   If +envp+ is a +Hash+, it will be converted into the environ form (i.e. key=value).
 #   If +Integer+, take it as a pointer address (same as +nil+ if zero is given).
