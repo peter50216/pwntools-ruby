@@ -30,10 +30,11 @@ module Pwnlib
       LITTLE_64 = { endian: 'little', bits: 64 }.freeze
 
       class << self
+        private
+
         def longest(d)
           Hash[d.sort_by { |k, _v| k.size }.reverse]
         end
-        private :longest
       end
 
       ARCHS = longest(
@@ -76,9 +77,9 @@ module Pwnlib
 
       VALID_SIGNED = SIGNEDNESSES.keys
 
-      # XXX(Darkpi): Should we just hard-coded all levels here,
-      # or should we use Logger#const_defined?
-      # (This would include constant SEV_LEVEL, and exclude UNKNOWN)?
+      # XXX(Darkpi):
+      #   Should we just hard-coded all levels here, or should we use Logger#const_defined?
+      #   (This would include constant SEV_LEVEL, and exclude UNKNOWN)?
       LOG_LEVELS = %w(DEBUG INFO WARN ERROR FATAL UNKNOWN).freeze
 
       def initialize(**kwargs)
@@ -105,8 +106,9 @@ module Pwnlib
       # This would return what the block return.
       def local(**kwargs)
         raise ArgumentError, "Need a block for #{self.class}##{__callee__}" unless block_given?
-        # XXX(Darkpi): improve performance for this if this is too slow, since we use this in many
-        #              places that has argument endian / signed / ...
+        # XXX(Darkpi):
+        #   improve performance for this if this is too slow, since we use this in many places that has argument
+        #   endian / signed / ...
         old_attrs = @attrs.dup
         begin
           update(**kwargs)
@@ -134,8 +136,7 @@ module Pwnlib
         @attrs[:timeout] = timeout
       end
 
-      # Difference from Python pwntools:
-      # We always change +bits+ and +endian+ field whether user have already changed them.
+      # @diff We always change +bits+ and +endian+ field whether user have already changed them.
       def arch=(arch)
         arch = arch.downcase.gsub(/[[:punct:]]/, '')
         defaults = ARCHS[arch]
@@ -201,20 +202,30 @@ module Pwnlib
 
     @context = ContextType.new
 
+    # @!attribute [r] context
+    #   @return [ContextType] the singleton context for all class.
     class << self
       attr_reader :context
     end
 
-    # For include.
+    # A module for include hook for context.
+    # Including Pwnlib::Context from module M would add +context+ as a private instance method and a private class
+    # method for module M.
     # @!visibility private
-    def context
-      ::Pwnlib::Context.context
+    module IncludeContext
+      private
+
+      def context
+        ::Pwnlib::Context.context
+      end
     end
 
     # @!visibility private
     def self.included(base)
-      # XXX(Darkpi): Should we do this?
-      base.__send__(:private, :context)
+      base.include(IncludeContext)
+      class << base
+        include IncludeContext
+      end
     end
   end
 end

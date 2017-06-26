@@ -1,41 +1,46 @@
 # encoding: ASCII-8BIT
 
-require 'pwnlib/context'
-require 'pwnlib/constants/constant'
 require 'dentaku'
 
+require 'pwnlib/constants/constant'
+require 'pwnlib/context'
+
 module Pwnlib
-  # Module containing constants
+  # Module containing constants.
+  #
   # @example
   #   context.arch = 'amd64'
   #   Pwnlib::Constants.SYS_read
-  #   # => Constant('SYS_read', 0x0)
+  #   #=> Constant('SYS_read', 0x0)
   module Constants
-    # @note Do not create and call instance method here. Instead, call module method on {Constants}.
-    module ClassMethods
-      include ::Pwnlib::Context
-      # Try getting constants when method missing
+    class << self
+      # To support getting constants like +Pwnlib::Constants.SYS_read+.
+      #
+      # @return [Constant]
+      #
+      # @raise [NoMethodError]
       def method_missing(method, *args, &block)
         args.empty? && block.nil? && get_constant(method) || super
       end
 
+      # @return [Boolean]
       def respond_to_missing?(method, _include_all)
         !get_constant(method).nil?
       end
 
-      # Eval for Constants
+      # Eval for Constants.
       #
       # @param [String] str
-      #   The string to be evaluate.
+      #   The string to be evaluated.
       #
       # @return [Constant]
-      #   The evaluate result.
+      #   The evaluated result.
       #
       # @example
       #   eval('O_CREAT')
-      #   => Constant('(O_CREAT)', 0x40)
+      #   #=> Constant('(O_CREAT)', 0x40)
       #   eval('O_CREAT | O_APPEND')
-      #   => Constant('(O_CREAT | O_APPEND)', 0x440)
+      #   #=> Constant('(O_CREAT | O_APPEND)', 0x440)
       def eval(str)
         return str unless str.instance_of?(String)
         begin
@@ -66,9 +71,10 @@ module Pwnlib
         CALCULATORS[current_arch_key] ||= Dentaku::Calculator.new.store(current_store)
       end
 
-      # Small class for instance_eval loaded file
+      # Small class for instance_eval loaded file.
       class ConstantBuilder
         attr_reader :tbl
+
         def initialize
           @tbl = {}
         end
@@ -85,8 +91,8 @@ module Pwnlib
         builder.instance_eval(IO.read(filename))
         builder.tbl
       end
-    end
 
-    extend ClassMethods
+      include ::Pwnlib::Context
+    end
   end
 end

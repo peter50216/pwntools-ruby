@@ -1,13 +1,14 @@
 # encoding: ASCII-8BIT
 
 require 'test_helper'
+
 require 'pwnlib/ext/array'
 require 'pwnlib/ext/integer'
 require 'pwnlib/ext/string'
 
 class ExtTest < MiniTest::Test
-  # Thought that test one method in each module for each type is enough, since it's quite
-  # stupid (and meaningless) to copy the list of proxied functions to here...
+  # Thought that test one method in each module for each type is enough, since it's quite stupid (and meaningless) to
+  # copy the list of proxied functions to here...
   def test_ext_string
     assert_equal(0x4142, 'AB'.u16(endian: 'be'))
     assert_equal([1, 1, 0, 0, 0, 1, 0, 0], "\xC4".bits)

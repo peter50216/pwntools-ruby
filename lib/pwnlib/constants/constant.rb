@@ -4,9 +4,23 @@ require 'pwnlib/util/fiddling'
 
 module Pwnlib
   module Constants
-    # A class that includes name and value
+    # A class that includes name and value representing a constant.
+    # This class works like an integer, and support operations with integers.
+    #
+    # @example
+    #   a = Pwnlib::Constants::Constant.new('a', 0x3)
+    #   #=> Constant("a", 0x3)
+    #   [a + 1, 2 * a, a | 6, a == 3, 0 > a]
+    #   #=> [4, 6, 7, true, false]
     class Constant < Numeric
-      attr_reader :str, :val
+      # @return [String]
+      attr_reader :str
+
+      # @return [Integer]
+      attr_reader :val
+
+      # @param [String] str
+      # @param [Integer] val
       def initialize(str, val)
         @str = str
         @val = val

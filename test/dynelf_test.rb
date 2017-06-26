@@ -5,6 +5,7 @@ require 'open3'
 require 'tty-platform'
 
 require 'test_helper'
+
 require 'pwnlib/dynelf'
 
 class DynELFTest < MiniTest::Test
@@ -24,8 +25,7 @@ class DynELFTest < MiniTest::Test
         refute_nil(libc_path)
 
         # TODO(hh): Use ELF instead of objdump
-        # Methods in libc might have multi-versions, so we record and check if
-        # we can find one of them.
+        # Methods in libc might have multi-versions, so we record and check if we can find one of them.
         h = Hash.new { |hsh, key| hsh[key] = [] }
         symbols = `objdump -T #{libc_path}`.lines.map(&:split).select { |a| a[2] == 'DF' }
         symbols.map { |a| h[a[-1]] << a[0].to_i(16) }
