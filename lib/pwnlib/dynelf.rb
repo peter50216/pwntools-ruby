@@ -1,5 +1,7 @@
 # encoding: ASCII-8BIT
 
+require 'elftools'
+
 require 'pwnlib/context'
 require 'pwnlib/memleak'
 require 'pwnlib/util/packing'
@@ -32,7 +34,7 @@ module Pwnlib
       @elfclass = { 0x1 => 32, 0x2 => 64 }[@leak.b(@libbase + 4)]
       @elfword = @elfclass / 8
       @dynamic = find_dynamic
-      @hshtab = @strtab = @symtab = nil
+      @build_id = nil
     end
 
     # Lookup a symbol from the ELF.
@@ -72,6 +74,14 @@ module Pwnlib
           end
         end
         i += 1
+      end
+      nil
+    end
+
+    def build_id
+      build_id_offsets.each do |offset|
+        next unless @leak.n(@libbase + offset + 12, 4) == "GNU\x00"
+        return @leak.n(@libbase + offset + 16, 20).unpack('H*').first
       end
       nil
     end
@@ -128,5 +138,21 @@ module Pwnlib
     def symtab
       @symtab ||= find_dt(DT_SYMTAB)
     end
+
+    def build_id_offsets
+      {
+        i386: [0x174],
+        arm:  [0x174],
+        thumb:  [0x174],
+        aarch64: [0x238],
+        amd64: [0x270, 0x174],
+        powerpc: [0x174],
+        powerpc64: [0x238],
+        sparc: [0x174],
+        sparc64: [0x270]
+      }[context.arch.to_sym] || []
+    end
+
+    include Context
   end
 end
