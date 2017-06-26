@@ -1,5 +1,7 @@
 # encoding: ASCII-8BIT
+
 require 'test_helper'
+
 require 'pwnlib/elf/elf'
 
 class ELFTest < MiniTest::Test
