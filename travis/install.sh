@@ -21,8 +21,8 @@ install_deb()
 setup_linux()
 {
   export LD_LIBRARY_PATH=$PWD/usr/lib:$LD_LIBRARY_PATH
-  sudo apt-get install -qq --force-yes libgd2-xpm ia32-libs ia32-libs-multiarch binutils > /dev/null
-  install_deb libcapstone3
+  sudo apt-get install -qq --force-yes gcc-multilib g++-multilib binutils libcapstone3 > /dev/null
+  # install_deb libcapstone3
 }
 
 setup_osx()
