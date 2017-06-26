@@ -10,10 +10,9 @@ local_deb_extract()
 
 install_deb()
 {
-  version=${2:-zesty}
   package=$1
   echo "Installing $package"
-  INDEX="http://packages.ubuntu.com/en/$version/amd64/$package/download"
+  INDEX="https://packages.ubuntu.com/en/zesty/amd64/$package/download"
   URL=$(curl "$INDEX" | grep -Eo "https?://.*$package.*\.deb" | head -1)
   local_deb_extract "$URL"
 }
@@ -21,8 +20,8 @@ install_deb()
 setup_linux()
 {
   export LD_LIBRARY_PATH=$PWD/usr/lib:$LD_LIBRARY_PATH
-  sudo apt-get install -qq --force-yes gcc-multilib g++-multilib binutils libcapstone3 > /dev/null
-  # install_deb libcapstone3
+  sudo apt-get install -qq --force-yes gcc-multilib g++-multilib binutils > /dev/null
+  install_deb libcapstone3
 }
 
 setup_osx()
