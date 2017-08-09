@@ -11,6 +11,8 @@ require 'pwnlib/dynelf'
 require 'pwnlib/elf/elf'
 
 class DynELFTest < MiniTest::Test
+  include ::Pwnlib::Context
+
   def setup
     skip 'Only tested on linux' unless TTY::Platform.new.linux?
   end
@@ -71,11 +73,9 @@ class DynELFTest < MiniTest::Test
       [32, 'ac333186c6b532511a68d16aca4c61422eb772da', 'i386'],
       [64, '088a6e00a1814622219f346b41e775b8dd46c518', 'amd64']
     ].each do |b, answer, arch|
-      popen_victim(b) do |d|
-        ::Pwnlib::Context.context.arch = arch
-        assert_equal(answer, d.build_id)
+      context.local(arch: arch) do
+        popen_victim(b) { |d| assert_equal(answer, d.build_id) }
       end
     end
-    ::Pwnlib::Context.context.clear
   end
 end
