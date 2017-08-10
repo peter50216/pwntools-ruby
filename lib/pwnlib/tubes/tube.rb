@@ -30,7 +30,7 @@ module Pwnlib
       # @return [String]
       #   A string containing bytes received from the tube, or +''+ if a timeout occurred while
       #   waiting.
-      def recv(num_bytes, timeout: nil)
+      def recv(num_bytes = nil, timeout: nil)
         return '' if @buffer.empty? && !fillbuffer(timeout: timeout)
         @buffer.get(num_bytes)
       end
@@ -187,7 +187,7 @@ module Pwnlib
       #   A string containing bytes received from the tube, or +''+ if a timeout occurred while
       #   waiting.
       def recvregex(regex, timeout: nil)
-        recvpred(timeout) { |data| data =~ regex }
+        recvpred(timeout: timeout) { |data| data =~ regex }
       end
 
       # Sends data
