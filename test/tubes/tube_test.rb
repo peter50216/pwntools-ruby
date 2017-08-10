@@ -93,6 +93,8 @@ class TubeTest < MiniTest::Test
     assert_equal('DARKHH', t.buf)
     t.write(' QQ')
     assert_equal('DARKHH QQ', t.buf)
+    t.write(333)
+    assert_equal('DARKHH QQ333', t.buf)
   end
 
   def test_sendline
