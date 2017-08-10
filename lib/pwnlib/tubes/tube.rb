@@ -1,5 +1,6 @@
 # encoding: ASCII-8BIT
 
+require 'pwnlib/context'
 require 'pwnlib/timer'
 require 'pwnlib/tubes/buffer'
 
@@ -9,21 +10,57 @@ module Pwnlib
     class Tube
       BUFSIZE = 4096
 
+      # Instantiate an {Pwnlib::Tubes::Tube} object.
+      #
+      # @param [Float] timeout
+      #   Any positive float, indicates timeouts in seconds.
       def initialize(timeout: nil)
         @timer = Timer.new(timeout)
         @buffer = Buffer.new
       end
 
+      # Receives up to +num_bytes+ bytes of data from the tube, and returns as soon as any quantity
+      # of data is available.
+      #
+      # @param [Integer] num_bytes
+      #   The maximum number of bytes to receive.
+      # @param [Float] timeout
+      #   Any positive float, indicates timeouts in seconds.
+      #
+      # @return [String]
+      #   A string containing bytes received from the tube, or +''+ if a timeout occurred while
+      #   waiting.
       def recv(num_bytes, timeout: nil)
         return '' if @buffer.empty? && !fillbuffer(timeout: timeout)
         @buffer.get(num_bytes)
       end
       alias read recv
 
+      # Puts the specified data back at the beginning of the receive buffer.
+      #
+      # @param [String] data
+      #   A string to put back.
       def unrecv(data)
         @buffer.unget(data)
       end
 
+      # Receives one byte at a time from the tube, until +pred(bytes)+ evaluates to True.
+      #
+      # @param [Float] timeout
+      #   Any positive float, indicates timeouts in seconds.
+      #
+      # @yieldparam [String] data
+      #   A string data to be validated by +pred+.
+      #
+      # @yieldreturn [Boolean]
+      #   Whether the data passed +pred+.
+      #
+      # @return [String]
+      #   A string containing bytes received from the tube, or +''+ if a timeout occurred while
+      #   waiting.
+      #
+      # @raise [ArgumentError]
+      #   If the block is not given.
       def recvpred(timeout: nil)
         raise ArgumentError, 'recvpred with no pred' unless block_given?
         @timer.countdown(timeout) do
@@ -49,6 +86,18 @@ module Pwnlib
         end
       end
 
+      # Receives exactly +num_bytes+ bytes.
+      # If the request is not satisfied before +timeout+ seconds pass, all data is buffered and an
+      # empty string +''+ is returned.
+      #
+      # @param [Integer] num_bytes
+      #   The number of bytes to receive.
+      # @param [Float] timeout
+      #   Any positive float, indicates timeouts in seconds.
+      #
+      # @return [String]
+      #   A string containing bytes received from the tube, or +''+ if a timeout occurred while
+      #   waiting.
       def recvn(num_bytes, timeout: nil)
         @timer.countdown(timeout) do
           # TODO(Darkpi): Select!
@@ -60,6 +109,12 @@ module Pwnlib
       # DIFF: We return the string that ends the earliest, rather then starts the earliest,
       #       since the latter can't be done greedly. Still, it would be bad to call this
       #       for case with ambiguity.
+      #
+      # @param [Regexp] regex
+      #   A regex to match.
+      # @param [Float] timeout
+      #   Any positive float, indicates timeouts in seconds.
+      #
       def recvuntil(delims, drop: false, timeout: nil)
         delims = Array(delims)
         max_len = delims.map(&:size).max
@@ -104,21 +159,57 @@ module Pwnlib
         end
       end
 
+      # Receive a single line from the tube.
+      # A "line" is any sequence of bytes terminated by the byte sequence set in +newline+, which
+      # defaults to +"\n"+.
+      #
+      # @param [Boolean] drop
+      #   Whether drop the line ending.
+      # @param [Float] timeout
+      #   Any positive float, indicates timeouts in seconds.
+      #
+      # @return [String]
+      #   All bytes received over the tube until the first newline is received.
+      #   Optionally retains the ending.
       def recvline(drop: false, timeout: nil)
-        recvuntil("\n", drop: drop, timeout: timeout)
+        recvuntil(context.newline, drop: drop, timeout: timeout)
       end
       alias gets recvline
 
+      # Wrapper around +recvpred+, which will return when a regex matches the string in the buffer.
+      #
+      # @param [Regexp] regex
+      #   A regex to match.
+      # @param [Float] timeout
+      #   Any positive float, indicates timeouts in seconds.
+      #
+      # @return [String]
+      #   A string containing bytes received from the tube, or +''+ if a timeout occurred while
+      #   waiting.
+      def recvregex(regex, timeout: nil)
+        recvpred(timeout) { |data| data =~ regex }
+      end
+
+      # Sends data
+      #
+      # @param [String] data
+      #   The +data+ string to send.
       def send(data)
         send_raw(data)
       end
       alias write send
 
+      # Sends data with +context.newline+.
+      #
+      # @param [String] data
+      #   The +data+ string to send.
       def sendline(data)
-        send_raw(data + "\n")
+        send_raw(data + context.newline)
       end
       alias puts sendline
 
+      # Does simultaneous reading and writing to the tube. In principle this just connects the tube
+      # to standard in and standard out.
       def interact
         $stdout.write(@buffer.get)
         until io.closed?
@@ -145,6 +236,8 @@ module Pwnlib
         @buffer << data if data
         data
       end
+
+      include Context
     end
   end
 end
