@@ -195,7 +195,7 @@ module Pwnlib
       # @param [String] data
       #   The +data+ string to send.
       def send(data)
-        send_raw(data)
+        send_raw(data.to_s)
       end
       alias write send
 
@@ -204,7 +204,7 @@ module Pwnlib
       # @param [String] data
       #   The +data+ string to send.
       def sendline(data)
-        send_raw(data + context.newline)
+        send_raw(data.to_s + context.newline)
       end
       alias puts sendline
 
