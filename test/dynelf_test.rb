@@ -37,8 +37,8 @@ class DynELFTest < MiniTest::Test
         end
 
         assert_nil(d.lookup('pipi_hao_wei!'))
-        h.each do |sym, off|
-          assert_includes(off, d.lookup(sym) - d.libbase)
+        %w(system open read write execve printf puts sprintf mmap mprotect).each do |sym|
+          assert_includes(h[sym], d.lookup(sym) - d.libbase)
         end
 
         i.write('bye')
