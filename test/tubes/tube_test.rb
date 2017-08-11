@@ -122,4 +122,44 @@ class TubeTest < MiniTest::Test
     t.puts(' QQ')
     assert_equal("DARKHH QQ\n", t.buf)
   end
+
+  FLAG_FILE = File.expand_path('../data/flag', __dir__)
+  def test_interact_send
+    save_stdin = $stdin.dup
+    $stdin = File.new(FLAG_FILE, File::RDONLY)
+    begin
+      t = Tube.new
+      def t.io
+        @fakeio ||= Tempfile.new('pwntools_ruby_test')
+      end
+      t.interact
+    rescue EOFError
+      t.io.rewind
+      assert_equal(IO.binread(FLAG_FILE), t.io.read)
+    end
+    $stdin.close
+    t.io.close
+    $stdin = save_stdin
+  end
+
+  def test_interact_recv
+    save_stdin = $stdin.dup
+    save_stdout = $stdout.dup
+    $stdin = UDPSocket.new
+    $stdout = Tempfile.new('pwntools_ruby_test')
+    begin
+      t = Tube.new
+      def t.io
+        @fakeio ||= File.new(FLAG_FILE, File::RDONLY)
+      end
+      t.interact
+    rescue EOFError
+      $stdout.rewind
+      assert_equal(IO.binread(FLAG_FILE), $stdout.read)
+    end
+    $stdout.close
+    t.io.close
+    $stdin = save_stdin
+    $stdout = save_stdout
+  end
 end
