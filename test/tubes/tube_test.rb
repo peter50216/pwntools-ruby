@@ -10,20 +10,38 @@ class TubeTest < MiniTest::Test
 
   def hello_tube
     t = Tube.new
-    def t.recv_raw(_)
-      'Hello, world'
-    end
-
-    def t.timeout_raw=(timeout)
-      @timeout = timeout == :forever ? nil : timeout
-    end
 
     class << t
-      attr_accessor :buf
+      def buf
+        @buf ||= ''
+      end
+
+      private
+
+      def recv_raw(_n)
+        'Hello, world'
+      end
+
+      def timeout_raw=(timeout)
+        @timeout = timeout == :forever ? nil : timeout
+      end
+
+      def send_raw(data)
+        buf << data
+      end
     end
-    t.buf = ''
-    def t.send_raw(data)
-      @buf << data
+
+    t
+  end
+
+  def eof_tube
+    t = Tube.new
+    class << t
+      def recv_raw(_size)
+        raise EOFError
+      end
+
+      def timeout_raw=(_timeout); end
     end
 
     t
@@ -50,7 +68,7 @@ class TubeTest < MiniTest::Test
     assert_equal('Hello,', t.recvuntil(' wor', drop: true))
     assert_equal('', t.recvuntil('DARKHH', drop: true, timeout: 0.1))
 
-    t = Tube.new
+    t = eof_tube
     t.unrecv('meow')
     assert_equal('', t.recvuntil('DARKHH'))
   end
@@ -74,7 +92,7 @@ class TubeTest < MiniTest::Test
     10.times { assert_match(r, t.recvpred { |data| data =~ r }) }
     r = /H.*W/
     assert_match('', t.recvpred(timeout: 0.01) { |data| data =~ r })
-    t = Tube.new
+    t = eof_tube
     t.unrecv('darkhh')
     assert_match('', t.recvpred { |data| data =~ r })
   end

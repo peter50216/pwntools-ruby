@@ -237,6 +237,15 @@ module Pwnlib
         data
       end
 
+      def send_raw(_data); raise NotImplementedError, 'Not implemented'
+      end
+
+      def recv_raw(_size); raise NotImplementedError, 'Not implemented'
+      end
+
+      def timeout_raw=(_timeout); raise NotImplementedError, 'Not implemented'
+      end
+
       include Context
     end
   end
