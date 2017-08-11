@@ -19,8 +19,19 @@ module Pwnlib
         super()
         @sock = TCPSocket.new(host, port)
         @sock.binmode
-        @timeout = :forever
+        @timeout = nil
         @closed = { recv: false, send: false }
+      end
+
+      def io
+        @sock
+      end
+      alias sock io
+
+      private
+
+      def shutdown(direction)
+        @closed[direction] = true
       end
 
       def timeout_raw=(timeout)
@@ -43,26 +54,12 @@ module Pwnlib
           begin
             rs, = IO.select([@sock], [], [], @timeout)
             return if rs.nil?
-            @sock.readpartial(size)
-          rescue Errno::EAGAIN
-            ''
-          rescue Errno::ECONNREFUSED, Errno::ECONNRESET
+            return @sock.readpartial(size)
+          rescue Errno::ECONNREFUSED, Errno::ECONNRESET, EOFError
             shutdown(:recv)
             raise EOFError
-          rescue Errno::EINTR
-            next
           end
         end
-      end
-
-      def io
-        @sock
-      end
-
-      private
-
-      def shutdown(direction)
-        @closed[direction] = true
       end
     end
   end
