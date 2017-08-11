@@ -55,7 +55,7 @@ module Pwnlib
             rs, = IO.select([@sock], [], [], @timeout)
             return if rs.nil?
             return @sock.readpartial(size)
-          rescue Errno::ECONNREFUSED, Errno::ECONNRESET, EOFError
+          rescue Errno::ECONNREFUSED, Errno::ECONNRESET, Errno::ECONNABORTED, EOFError
             shutdown(:recv)
             raise EOFError
           end
