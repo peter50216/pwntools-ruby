@@ -13,7 +13,7 @@ class SockTest < MiniTest::Test
 
   def test_io
     data = 'DARKHH'
-    Open3.popen2("#{ECHO_FILE} #{BIND_PORT}") do |_i, o, _t|
+    Open3.popen2("bundle exec ruby #{ECHO_FILE} #{BIND_PORT}") do |_i, o, _t|
       o.gets
       s = Sock.new('localhost', BIND_PORT)
       s.io.puts(data)
@@ -25,13 +25,14 @@ class SockTest < MiniTest::Test
 
   def test_sock
     data = 'DARKHH'
-    Open3.popen2("#{ECHO_FILE} #{BIND_PORT}") do |_i, o, _t|
+    Open3.popen2("bundle exec ruby #{ECHO_FILE} #{BIND_PORT}") do |_i, o, _t|
       o.gets
       s = Sock.new('localhost', BIND_PORT)
       s.puts(data)
       assert_equal(data + "\n", s.gets)
       o.gets
       s.puts(514)
+      sleep(0.1) # Wait for connection reset
       assert_raises(EOFError) { s.puts(514) }
       assert_raises(EOFError) { s.puts(514) }
       assert_raises(EOFError) { s.recv }
