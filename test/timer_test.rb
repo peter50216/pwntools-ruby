@@ -9,8 +9,8 @@ class TimerTest < MiniTest::Test
 
   def test_countdown
     t = Timer.new
-    assert_nil(t.started?)
-    assert_nil(t.active?)
+    refute(t.started?)
+    refute(t.active?)
     assert_equal('DARKHH QQ', t.countdown(0.1) { 'DARKHH QQ' })
     exception = assert_raises(RuntimeError) { t.countdown(0.1) { t.countdown(0.1) {} } }
     assert_equal('Nested countdown not permitted', exception.message)
