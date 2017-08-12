@@ -1,5 +1,7 @@
 # encoding: ASCII-8BIT
+
 require 'time'
+
 require 'pwnlib/context'
 
 module Pwnlib
