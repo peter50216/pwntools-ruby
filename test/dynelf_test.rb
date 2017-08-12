@@ -62,7 +62,7 @@ class DynELFTest < MiniTest::Test
         assert_nil(d.lookup('pipi_hao_wei!'))
         elf = ::Pwnlib::ELF::ELF.new(options[:libc], checksec: false)
         %i(system open read write execve printf puts sprintf mmap mprotect).each do |sym|
-          assert_equal(d.lookup(sym), d.libbase + elf.symbols[sym])
+          assert_equal(d.libbase + elf.symbols[sym], d.lookup(sym))
         end
       end
     end
