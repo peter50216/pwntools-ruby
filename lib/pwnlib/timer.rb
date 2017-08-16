@@ -11,7 +11,7 @@ module Pwnlib
   #               intended after we have some use cases. (e.g. sock)
   # NOTE(Darkpi): This class is actually quite weird, and expected to be used only in tubes.
   class Timer
-    # DIFF: We just use nil for default and :forever for forever.
+    # @diff We just use nil for default and :forever for forever.
 
     def initialize(timeout = nil)
       @deadline = nil
@@ -36,7 +36,7 @@ module Pwnlib
       @timeout = timeout
     end
 
-    # DIFF: We do NOT allow nested countdown with non-default value. This simplifies thing a lot.
+    # @diff We do NOT allow nested countdown with non-default value. This simplifies thing a lot.
     # NOTE(Darkpi): timeout = nil means default value for the first time, and nop after that.
     def countdown(timeout = nil)
       raise ArgumentError, 'Need a block for countdown' unless block_given?

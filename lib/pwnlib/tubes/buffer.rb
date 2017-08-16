@@ -4,7 +4,7 @@ module Pwnlib
   module Tubes
     # Buffer that support deque-like string operations.
     class Buffer
-      # Instantiate an {Pwnlib::Tubes::Buffer} object.
+      # Instantiate a {Pwnlib::Tubes::Buffer} object.
       def initialize
         @data = []
         @size = 0
@@ -13,14 +13,16 @@ module Pwnlib
       attr_reader :size
       alias length size
 
-      # @return
+      # Check whether the buffer is empty.
+      #
+      # @return [Boalean]
       #   Returns true if contains no elements.
       def empty?
         size.zero?
       end
 
       # Python __contains__ and index is only correct with single-char input, which doesn't seems to
-      # be useful, and they're not used anywhere too. Just ignore them for now.
+      # be useful, and they're not used anywhere either. Just ignore them for now.
 
       # Adds data to the buffer.
       #
@@ -62,7 +64,7 @@ module Pwnlib
       # @param [Integer] n
       #   Maximum number of bytes to fetch.
       #
-      # @return
+      # @return [String]
       #   Data as string.
       def get(n = nil)
         if n.nil? || n >= size

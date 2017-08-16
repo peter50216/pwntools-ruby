@@ -7,13 +7,17 @@ require 'pwnlib/tubes/buffer'
 module Pwnlib
   module Tubes
     # Things common to all tubes (sockets, tty, ...)
+    # @!macro [new] timeout_definition
+    #   @param [Float] timeout
+    #     Any positive floating number, indicates timeout in seconds.
+    #     Using +context.timeout+ if +timeout+ equals to +nil+.
+    # TODO(hh): Using hexdump in send/recv.
     class Tube
       BUFSIZE = 4096
 
-      # Instantiate an {Pwnlib::Tubes::Tube} object.
+      # Instantiate a {Pwnlib::Tubes::Tube} object.
       #
-      # @param [Float] timeout
-      #   Any positive float, indicates timeouts in seconds.
+      # @!macro timeout_definition
       def initialize(timeout: nil)
         @timer = Timer.new(timeout)
         @buffer = Buffer.new
@@ -24,11 +28,10 @@ module Pwnlib
       #
       # @param [Integer] num_bytes
       #   The maximum number of bytes to receive.
-      # @param [Float] timeout
-      #   Any positive float, indicates timeouts in seconds.
+      # @!macro timeout_definition
       #
       # @return [String]
-      #   A string containing bytes received from the tube, or +''+ if a timeout occurred while
+      #   A string contains bytes received from the tube, or +''+ if a timeout occurred while
       #   waiting.
       def recv(num_bytes = nil, timeout: nil)
         return '' if @buffer.empty? && !fillbuffer(timeout: timeout)
@@ -44,25 +47,27 @@ module Pwnlib
         @buffer.unget(data)
       end
 
-      # Receives one byte at a time from the tube, until +pred(bytes)+ evaluates to True.
+      # Receives one byte at a time from the tube, until the predicate evaluates to +true+.
       #
-      # @param [Float] timeout
-      #   Any positive float, indicates timeouts in seconds.
+      # @!macro timeout_definition
+      #
+      # @yield
+      #   A predicate to evaluate whether the data satisfy the condition.
       #
       # @yieldparam [String] data
-      #   A string data to be validated by +pred+.
+      #   A string data to be validated by the predicate.
       #
       # @yieldreturn [Boolean]
-      #   Whether the data passed +pred+.
+      #   Whether the data satisfy the condition.
       #
       # @return [String]
-      #   A string containing bytes received from the tube, or +''+ if a timeout occurred while
+      #   A string contains bytes received from the tube, or +''+ if a timeout occurred while
       #   waiting.
       #
       # @raise [ArgumentError]
       #   If the block is not given.
       def recvpred(timeout: nil)
-        raise ArgumentError, 'recvpred with no pred' unless block_given?
+        raise ArgumentError, 'Need a block for recvpred' unless block_given?
         @timer.countdown(timeout) do
           data = ''
           begin
@@ -92,28 +97,30 @@ module Pwnlib
       #
       # @param [Integer] num_bytes
       #   The number of bytes to receive.
-      # @param [Float] timeout
-      #   Any positive float, indicates timeouts in seconds.
+      # @!macro timeout_definition
       #
       # @return [String]
-      #   A string containing bytes received from the tube, or +''+ if a timeout occurred while
+      #   A string contains bytes received from the tube, or +''+ if a timeout occurred while
       #   waiting.
       def recvn(num_bytes, timeout: nil)
         @timer.countdown(timeout) do
-          # TODO(Darkpi): Select!
           fillbuffer while @timer.active? && @buffer.size < num_bytes
           @buffer.size >= num_bytes ? @buffer.get(num_bytes) : ''
         end
       end
 
-      # DIFF: We return the string that ends the earliest, rather then starts the earliest,
+      # Receive data until one of +delims+ is encountered. If the request is not satisfied before
+      # +timeout+ seconds pass, all data is buffered and an empty string is returned.
+      #
+      # @diff We return the string that ends the earliest, rather then starts the earliest,
       #       since the latter can't be done greedly. Still, it would be bad to call this
       #       for case with ambiguity.
       #
-      # @param [Regexp] regex
-      #   A regex to match.
-      # @param [Float] timeout
-      #   Any positive float, indicates timeouts in seconds.
+      # @param [Array<String>] delims
+      #   String of delimiters characters, or list of delimiter strings.
+      # @param [Boalean] drop
+      #   Whether drop the ending.
+      # @!macro timeout_definition
       #
       def recvuntil(delims, drop: false, timeout: nil)
         delims = Array(delims)
@@ -160,13 +167,12 @@ module Pwnlib
       end
 
       # Receive a single line from the tube.
-      # A "line" is any sequence of bytes terminated by the byte sequence set in +newline+, which
-      # defaults to +"\n"+.
+      # A "line" is any sequence of bytes terminated by the byte sequence set in +context.newline+,
+      # which defaults to +"\n"+.
       #
       # @param [Boolean] drop
       #   Whether drop the line ending.
-      # @param [Float] timeout
-      #   Any positive float, indicates timeouts in seconds.
+      # @!macro timeout_definition
       #
       # @return [String]
       #   All bytes received over the tube until the first newline is received.
@@ -180,11 +186,10 @@ module Pwnlib
       #
       # @param [Regexp] regex
       #   A regex to match.
-      # @param [Float] timeout
-      #   Any positive float, indicates timeouts in seconds.
+      # @!macro timeout_definition
       #
       # @return [String]
-      #   A string containing bytes received from the tube, or +''+ if a timeout occurred while
+      #   A string contains bytes received from the tube, or +''+ if a timeout occurred while
       #   waiting.
       def recvregex(regex, timeout: nil)
         recvpred(timeout: timeout) { |data| data =~ regex }

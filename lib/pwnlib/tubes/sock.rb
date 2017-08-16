@@ -8,11 +8,10 @@ module Pwnlib
   module Tubes
     # Socket!
     class Sock < Tube
-      # Instantiate an {Pwnlib::Tubes::Sock} object.
+      # Instantiate a {Pwnlib::Tubes::Sock} object.
       #
       # @param [String] host
       #   The host to connect.
-      #
       # @param [Integer] port
       #   The port to connect.
       def initialize(host, port)
@@ -28,8 +27,15 @@ module Pwnlib
       end
       alias sock io
 
+      # Close the TCPSocket.
+      def close
+        @closed[:recv] = @closed[:send] = true
+        @sock.close
+      end
+
       private
 
+      # TODO(hh): Disallows further read/write using shutdown system call in +sock+.
       def shutdown(direction)
         @closed[direction] = true
       end
@@ -50,15 +56,13 @@ module Pwnlib
 
       def recv_raw(size)
         raise EOFError if @closed[:recv]
-        loop do
-          begin
-            rs, = IO.select([@sock], [], [], @timeout)
-            return if rs.nil?
-            return @sock.readpartial(size)
-          rescue Errno::ECONNREFUSED, Errno::ECONNRESET, Errno::ECONNABORTED, EOFError
-            shutdown(:recv)
-            raise EOFError
-          end
+        begin
+          rs, = IO.select([@sock], [], [], @timeout)
+          return if rs.nil?
+          return @sock.readpartial(size)
+        rescue Errno::ECONNREFUSED, Errno::ECONNRESET, Errno::ECONNABORTED, EOFError
+          shutdown(:recv)
+          raise EOFError
         end
       end
     end

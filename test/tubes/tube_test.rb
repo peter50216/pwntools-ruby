@@ -34,6 +34,23 @@ class TubeTest < MiniTest::Test
     t
   end
 
+  def hello_once_tube
+    t = Tube.new
+
+    t.unrecv('Hello, world')
+    class << t
+      def recv_raw
+        raise EOFError
+      end
+
+      def timeout_raw=(timeout)
+        @timeout = timeout == :forever ? nil : timeout
+      end
+    end
+
+    t
+  end
+
   def eof_tube
     t = Tube.new
     class << t
@@ -71,6 +88,7 @@ class TubeTest < MiniTest::Test
     t = eof_tube
     t.unrecv('meow')
     assert_equal('', t.recvuntil('DARKHH'))
+    assert_equal('meow', t.recv)
   end
 
   def test_recvline
@@ -84,6 +102,10 @@ class TubeTest < MiniTest::Test
       t.unrecv("Foo\nBar\r\nBaz\n")
       assert_equal("Foo\nBar", t.recvline(drop: true))
     end
+
+    t = hello_once_tube
+    assert_equal('', t.recvline)
+    assert_equal('Hello, world', t.recv)
   end
 
   def test_recvpred
