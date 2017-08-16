@@ -159,6 +159,7 @@ module Pwnlib
         end
       end
 
+      PLT_OFFSET = 0x10 # magic offset, correct in i386/amd64.
       # Load all plt symbols.
       def load_plt
         # Unlike pwntools-python, which use unicorn emulating instructions to find plt(s).
@@ -167,15 +168,17 @@ module Pwnlib
         # The implementation here same as python-pwntools 3.5, and supports i386 and amd64 only.
         @plt = OpenStruct.new
         plt_sec = @elf_file.section_by_name('.plt')
-        return if plt_sec.nil? # TODO: log.warn
+        return if plt_sec.nil? # TODO(david942j): log.warn
         rel_sec = @elf_file.section_by_name('.rel.plt') || @elf_file.section_by_name('.rela.plt')
         return if rel_sec.nil? # -Wl enabled
         symtab = @elf_file.section_at(rel_sec.header.sh_link)
-        address = plt_sec.header.sh_addr + 0x10 # magic offset, correct in i386/amd64
+        return if symtab.nil? # Unusual case
+        address = plt_sec.header.sh_addr + PLT_OFFSET
         rel_sec.relocations.each do |rel|
           symbol = symtab.symbol_at(rel.symbol_index)
+          next if symbol.nil? # Unusual case.
           @plt[symbol.name] = address
-          address += 0x10 # magic gap again
+          address += PLT_OFFSET
         end
       end
 
@@ -188,6 +191,7 @@ module Pwnlib
             # Don't care symbols without name.
             next if symbol.name.empty?
             next if symbol.header.st_value.zero?
+            # TODO(david942j): handle symbols with same name.
             @symbols[symbol.name] = symbol.header.st_value
           end
         end
@@ -202,7 +206,6 @@ module Pwnlib
         # Find the min of PT_LOAD's p_vaddr
         @elf_file.segments_by_type(:load)
                  .map { |seg| seg.header.p_vaddr }
-                 .select { |addr| addr > 0 }
                  .min
       end
     end

@@ -13,8 +13,8 @@ extend Pwn
 
 include Pwnlib
 
-# No need to type ELF::ELF every time!
-ELF = ::Pwnlib::ELF::ELF
+# XXX(david942j): include here because module ELF and class ELF have same name..
+include ::Pwnlib::ELF
 
 # Small "fix" for irb context problem.
 # irb defines main.context for IRB::Context, which overrides our Pwnlib::Context. :(
