@@ -153,7 +153,7 @@ module Pwnlib
           next unless symtab.respond_to?(:symbol_at)
           rel_sec.relocations.each do |rel|
             symbol = symtab.symbol_at(rel.symbol_index)
-            next unless symbol
+            next if symbol.nil? # Unusual case.
             @got[symbol.name] = rel.header.r_offset
           end
         end
@@ -172,7 +172,7 @@ module Pwnlib
         rel_sec = @elf_file.section_by_name('.rel.plt') || @elf_file.section_by_name('.rela.plt')
         return if rel_sec.nil? # -Wl enabled
         symtab = @elf_file.section_at(rel_sec.header.sh_link)
-        return if symtab.nil? # Unusual case
+        return unless symtab.respond_to?(:symbol_at)
         address = plt_sec.header.sh_addr + PLT_OFFSET
         rel_sec.relocations.each do |rel|
           symbol = symtab.symbol_at(rel.symbol_index)
