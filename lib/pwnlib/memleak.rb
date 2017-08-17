@@ -5,28 +5,16 @@ require 'pwnlib/util/packing'
 module Pwnlib
   # A class caching and heuristic tool for exploiting memory leaks.
   class MemLeak
-    PAGE_SIZE = 0x1000
-    PAGE_MASK = ~(PAGE_SIZE - 1)
-
+    # Instantiate an {Pwnlib::MemLeak} object.
+    #
+    # @yieldparam [Integer] leak_addr
+    #   The start address that the leaker should leak from.
+    #
+    # @yieldreturn [String]
+    #   A leaked non-empty byte string, starting from +leak_addr+.
     def initialize(&block)
       @leak = block
       @cache = {}
-    end
-
-    # Get the base address of the ELF, based on heuristic of finding ELF header.
-    # A known address in ELF should be given.
-    #
-    # @param [Integer] addr
-    #   An address that is known to be inside ELF.
-    #
-    # @return [Integer]
-    #   The base address of ELF.
-    def find_elf_base(addr)
-      addr &= PAGE_MASK
-      loop do
-        return addr if n(addr, 4) == "\x7fELF"
-        addr -= PAGE_SIZE
-      end
     end
 
     # Leak +numb+ bytes at +addr+.

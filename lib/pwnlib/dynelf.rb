@@ -1,23 +1,19 @@
 # encoding: ASCII-8BIT
 
+require 'elftools'
+
 require 'pwnlib/context'
 require 'pwnlib/memleak'
 require 'pwnlib/util/packing'
-
-# TODO(hh): Use ELF datatype instead of magic offset.
 
 module Pwnlib
   # DynELF class, resolve symbols in loaded, dynamically-linked ELF binaries.
   # Given a function which can leak data at an arbitrary address, any symbol in any loaded library can be resolved.
   class DynELF
-    PT_DYNAMIC = 2
-    DT_GNU_HASH = 0x6ffffef5
-    DT_HASH = 4
-    DT_STRTAB = 5
-    DT_SYMTAB = 6
+    attr_reader :libbase # @return [Integer] Base of lib.
 
-    attr_reader :libbase
-
+    # Instantiate an {Pwnlib::DynELF} object.
+    #
     # @param [Integer] addr
     #   An address known to be inside the ELF.
     #
@@ -28,11 +24,12 @@ module Pwnlib
     #   A leaked non-empty byte string, starting from +leak_addr+.
     def initialize(addr, &block)
       @leak = ::Pwnlib::MemLeak.new(&block)
-      @libbase = @leak.find_elf_base(addr)
+      @libbase = find_base(addr)
       @elfclass = { 0x1 => 32, 0x2 => 64 }[@leak.b(@libbase + 4)]
       @elfword = @elfclass / 8
       @dynamic = find_dynamic
       @hshtab = @strtab = @symtab = nil
+      @build_id = nil
     end
 
     # Lookup a symbol from the ELF.
@@ -43,6 +40,7 @@ module Pwnlib
     # @return [Integer, nil]
     #   The address of the symbol, or +nil+ if not found.
     def lookup(symbol)
+      symbol = symbol.to_s
       sym_size = { 32 => 16, 64 => 24 }[@elfclass]
       # Leak GNU_HASH section header.
       nbuckets = @leak.d(hshtab)
@@ -76,7 +74,22 @@ module Pwnlib
       nil
     end
 
+    # Leak the Build ID of the remote libc.so.
+    #
+    # @return [String?]
+    #   Return build_id, or nil.
+    def build_id
+      build_id_offsets.each do |offset|
+        next unless @leak.n(@libbase + offset + 12, 4) == "GNU\x00"
+        return @leak.n(@libbase + offset + 16, 20).unpack('H*').first
+      end
+      nil
+    end
+
     private
+
+    PAGE_SIZE = 0x1000
+    PAGE_MASK = ~(PAGE_SIZE - 1)
 
     def unpack(x)
       Util::Packing.public_send({ 32 => :u32, 64 => :u64 }[@elfclass], x)
@@ -87,13 +100,23 @@ module Pwnlib
       s.bytes.reduce(5381) { |acc, elem| (acc * 33 + elem) & 0xffffffff }
     end
 
+    # Get the base address of the ELF, based on heuristic of finding ELF header.
+    # A known address in ELF should be given.
+    def find_base(ptr)
+      ptr &= PAGE_MASK
+      loop do
+        return @base = ptr if @leak.n(ptr, 4) == "\x7fELF"
+        ptr -= PAGE_SIZE
+      end
+    end
+
     def find_dynamic
       e_phoff_offset = { 32 => 28, 64 => 32 }[@elfclass]
       e_phoff = @libbase + unpack(@leak.n(@libbase + e_phoff_offset, @elfword))
       phdr_size = { 32 => 32, 64 => 56 }[@elfclass]
       loop do
         ptype = @leak.d(e_phoff)
-        break if ptype == PT_DYNAMIC
+        break if ptype == ELFTools::Constants::PT::PT_DYNAMIC
         e_phoff += phdr_size
       end
       offset = { 32 => 8, 64 => 16 }[@elfclass]
@@ -118,15 +141,34 @@ module Pwnlib
     end
 
     def hshtab
-      @hshtab ||= find_dt(DT_GNU_HASH)
+      @hshtab ||= find_dt(ELFTools::Constants::DT::DT_GNU_HASH)
     end
 
     def strtab
-      @strtab ||= find_dt(DT_STRTAB)
+      @strtab ||= find_dt(ELFTools::Constants::DT::DT_STRTAB)
     end
 
     def symtab
-      @symtab ||= find_dt(DT_SYMTAB)
+      @symtab ||= find_dt(ELFTools::Constants::DT::DT_SYMTAB)
     end
+
+    # Given the corpus of almost all libc to have been released with RedHat, Fedora, Ubuntu, Debian, etc. over the past
+    # several years, pwntools said with 99% certainty that the GNU Build ID section will be at one of the specified
+    # addresses.
+    def build_id_offsets
+      {
+        i386: [0x174],
+        arm:  [0x174],
+        thumb:  [0x174],
+        aarch64: [0x238],
+        amd64: [0x270, 0x174],
+        powerpc: [0x174],
+        powerpc64: [0x238],
+        sparc: [0x174],
+        sparc64: [0x270]
+      }[context.arch.to_sym] || []
+    end
+
+    include Context
   end
 end

@@ -23,6 +23,7 @@ Gem::Specification.new do |s|
 
   s.add_runtime_dependency 'rainbow', '~> 2.2'
   s.add_runtime_dependency 'dentaku', '~> 2.0.11'
+  s.add_runtime_dependency 'elftools', '~> 0.2.1'
 
   s.add_development_dependency 'codeclimate-test-reporter', '~> 0.6'
   s.add_development_dependency 'minitest', '~> 5.8'
