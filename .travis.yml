@@ -1,6 +1,7 @@
 language: ruby
 sudo: required
 cache: bundler
+dist: trusty
 os:
 - linux
 - osx
@@ -22,4 +23,4 @@ before_install:
   - gem update --system
   - gem install bundler
   - gem --version
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install -qq --force-yes libgd2-xpm ia32-libs ia32-libs-multiarch binutils > /dev/null; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install -qq --force-yes gcc-multilib g++-multilib binutils > /dev/null; fi
