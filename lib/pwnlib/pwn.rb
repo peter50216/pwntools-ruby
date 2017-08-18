@@ -6,6 +6,7 @@ require 'pwnlib/constants/constant'
 require 'pwnlib/constants/constants'
 require 'pwnlib/context'
 require 'pwnlib/dynelf'
+require 'pwnlib/elf/elf'
 require 'pwnlib/reg_sort'
 require 'pwnlib/tubes/sock'
 

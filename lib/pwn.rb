@@ -14,6 +14,9 @@ extend Pwn
 include Pwnlib
 include Pwnlib::Tubes
 
+# XXX(david942j): include here because module ELF and class ELF have same name..
+include ::Pwnlib::ELF
+
 # Small "fix" for irb context problem.
 # irb defines main.context for IRB::Context, which overrides our Pwnlib::Context. :(
 # Since our "context" should be more important for someone requiring 'pwn', and the IRB::Context can still be accessible
