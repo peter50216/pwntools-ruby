@@ -49,6 +49,19 @@ class SockTest < MiniTest::Test
       assert_raises(EOFError) { s.puts(514) }
       assert_raises(EOFError) { s.recv }
       assert_raises(EOFError) { s.recv }
+      assert_raises(ArgumentError) { s.close(:hh) }
+    end
+
+    popen_echo('DARKHH') do |s, _data, _o|
+      3.times { s.close(:read) }
+      3.times { s.close(:recv) }
+      3.times { s.close(:send) }
+      3.times { s.close(:write) }
+      assert_raises(EOFError) { s.puts(514) }
+      assert_raises(EOFError) { s.puts(514) }
+      assert_raises(EOFError) { s.recv }
+      assert_raises(EOFError) { s.recv }
+      3.times { s.close }
     end
   end
 end

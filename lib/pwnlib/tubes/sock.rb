@@ -27,17 +27,41 @@ module Pwnlib
       end
       alias sock io
 
-      # Close the TCPSocket.
-      def close
-        @closed[:recv] = @closed[:send] = true
-        @sock.close
+      # Close the TCPSocket if no arguments passed.
+      # Or close the direction in +sock+.
+      #
+      # @param [:both, :recv, :read, :send, :write]
+      #   Close the TCPSocket if +:both+ or no arguments passed.
+      #   Disallow further read in +sock+ if +:recv+ or +:read+ passed.
+      #   Disallow further write in +sock+ if +:send+ or +:write+ passed.
+      def close(direction = :both)
+        case direction
+        when :both
+          return if @sock.closed?
+          @closed[:recv] = @closed[:send] = true
+          @sock.close
+        when :recv, :read
+          return if @closed[:recv]
+          shutdown(:recv)
+        when :send, :write
+          return if @closed[:send]
+          shutdown(:send)
+        else
+          raise ArgumentError
+        end
       end
 
       private
 
-      # TODO(hh): Disallows further read/write using shutdown system call in +sock+.
       def shutdown(direction)
+        return if @closed[direction]
         @closed[direction] = true
+
+        if direction.equal?(:recv)
+          @sock.close_read
+        elsif direction.equal?(:send)
+          @sock.close_write
+        end
       end
 
       def timeout_raw=(timeout)
