@@ -1,23 +1,19 @@
 # encoding: ASCII-8BIT
 
+require 'elftools'
+
 require 'pwnlib/context'
 require 'pwnlib/memleak'
 require 'pwnlib/util/packing'
-
-# TODO(hh): Use ELF datatype instead of magic offset.
 
 module Pwnlib
   # DynELF class, resolve symbols in loaded, dynamically-linked ELF binaries.
   # Given a function which can leak data at an arbitrary address, any symbol in any loaded library can be resolved.
   class DynELF
-    PT_DYNAMIC = 2
-    DT_GNU_HASH = 0x6ffffef5
-    DT_HASH = 4
-    DT_STRTAB = 5
-    DT_SYMTAB = 6
+    attr_reader :libbase # @return [Integer] Base of lib.
 
-    attr_reader :libbase
-
+    # Instantiate a {Pwnlib::DynELF} object.
+    #
     # @param [Integer] addr
     #   An address known to be inside the ELF.
     #
@@ -28,7 +24,7 @@ module Pwnlib
     #   A leaked non-empty byte string, starting from +leak_addr+.
     def initialize(addr, &block)
       @leak = ::Pwnlib::MemLeak.new(&block)
-      @libbase = @leak.find_elf_base(addr)
+      @libbase = find_base(addr)
       @elfclass = { 0x1 => 32, 0x2 => 64 }[@leak.b(@libbase + 4)]
       @elfword = @elfclass / 8
       @dynamic = find_dynamic
@@ -43,6 +39,7 @@ module Pwnlib
     # @return [Integer, nil]
     #   The address of the symbol, or +nil+ if not found.
     def lookup(symbol)
+      symbol = symbol.to_s
       sym_size = { 32 => 16, 64 => 24 }[@elfclass]
       # Leak GNU_HASH section header.
       nbuckets = @leak.d(hshtab)
@@ -78,6 +75,9 @@ module Pwnlib
 
     private
 
+    PAGE_SIZE = 0x1000
+    PAGE_MASK = ~(PAGE_SIZE - 1)
+
     def unpack(x)
       Util::Packing.public_send({ 32 => :u32, 64 => :u64 }[@elfclass], x)
     end
@@ -87,13 +87,23 @@ module Pwnlib
       s.bytes.reduce(5381) { |acc, elem| (acc * 33 + elem) & 0xffffffff }
     end
 
+    # Get the base address of the ELF, based on heuristic of finding ELF header.
+    # A known address in ELF should be given.
+    def find_base(ptr)
+      ptr &= PAGE_MASK
+      loop do
+        return @base = ptr if @leak.n(ptr, 4) == "\x7fELF"
+        ptr -= PAGE_SIZE
+      end
+    end
+
     def find_dynamic
       e_phoff_offset = { 32 => 28, 64 => 32 }[@elfclass]
       e_phoff = @libbase + unpack(@leak.n(@libbase + e_phoff_offset, @elfword))
       phdr_size = { 32 => 32, 64 => 56 }[@elfclass]
       loop do
         ptype = @leak.d(e_phoff)
-        break if ptype == PT_DYNAMIC
+        break if ptype == ELFTools::Constants::PT::PT_DYNAMIC
         e_phoff += phdr_size
       end
       offset = { 32 => 8, 64 => 16 }[@elfclass]
@@ -118,15 +128,17 @@ module Pwnlib
     end
 
     def hshtab
-      @hshtab ||= find_dt(DT_GNU_HASH)
+      @hshtab ||= find_dt(ELFTools::Constants::DT::DT_GNU_HASH)
     end
 
     def strtab
-      @strtab ||= find_dt(DT_STRTAB)
+      @strtab ||= find_dt(ELFTools::Constants::DT::DT_STRTAB)
     end
 
     def symtab
-      @symtab ||= find_dt(DT_SYMTAB)
+      @symtab ||= find_dt(ELFTools::Constants::DT::DT_SYMTAB)
     end
+
+    include Context
   end
 end
