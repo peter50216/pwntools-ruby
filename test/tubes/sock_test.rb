@@ -62,6 +62,7 @@ class SockTest < MiniTest::Test
       assert_raises(EOFError) { s.recv }
       assert_raises(EOFError) { s.recv }
       3.times { s.close }
+      assert_raises(ArgumentError) { s.close(:shik) }
     end
   end
 end

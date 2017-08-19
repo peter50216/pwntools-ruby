@@ -122,6 +122,8 @@ module Pwnlib
       #   Whether drop the ending.
       # @!macro timeout_definition
       #
+      # @return [String]
+      #   A string contains bytes, which ends string in +delims+, received from the tube.
       def recvuntil(delims, drop: false, timeout: nil)
         delims = Array(delims)
         max_len = delims.map(&:size).max
