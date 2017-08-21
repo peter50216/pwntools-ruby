@@ -34,6 +34,7 @@ module Pwnlib
       #   * Close the TCPSocket if +:both+ or no arguments passed.
       #   * Disallow further read in +sock+ if +:recv+ or +:read+ passed.
       #   * Disallow further write in +sock+ if +:send+ or +:write+ passed.
+      #
       # @diff In pwntools-python, method +shutdown(direction)+ is for closing socket one side,
       #   +close()+ is for closing both side. We merge these two methods into one here.
       def close(direction = :both)

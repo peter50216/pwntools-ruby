@@ -51,6 +51,10 @@ module Pwnlib
       #
       # @!macro timeout_definition
       #
+      # @return [String]
+      #   A string contains bytes received from the tube, or +''+ if a timeout occurred while
+      #   waiting.
+      #
       # @yield
       #   A predicate to evaluate whether the data satisfy the condition.
       #
@@ -59,10 +63,6 @@ module Pwnlib
       #
       # @yieldreturn [Boolean]
       #   Whether the data satisfy the condition.
-      #
-      # @return [String]
-      #   A string contains bytes received from the tube, or +''+ if a timeout occurred while
-      #   waiting.
       #
       # @raise [ArgumentError]
       #   If the block is not given.
@@ -112,10 +112,6 @@ module Pwnlib
       # Receive data until one of +delims+ is encountered. If the request is not satisfied before
       # +timeout+ seconds pass, all data is buffered and an empty string is returned.
       #
-      # @diff We return the string that ends the earliest, rather then starts the earliest,
-      #       since the latter can't be done greedly. Still, it would be bad to call this
-      #       for case with ambiguity.
-      #
       # @param [Array<String>] delims
       #   String of delimiters characters, or list of delimiter strings.
       # @param [Boalean] drop
@@ -124,6 +120,10 @@ module Pwnlib
       #
       # @return [String]
       #   A string contains bytes, which ends string in +delims+, received from the tube.
+      #
+      # @diff We return the string that ends the earliest, rather then starts the earliest,
+      #       since the latter can't be done greedly. Still, it would be bad to call this
+      #       for case with ambiguity.
       def recvuntil(delims, drop: false, timeout: nil)
         delims = Array(delims)
         max_len = delims.map(&:size).max
