@@ -2,7 +2,6 @@
 
 require 'elftools'
 
-require 'pwnlib/context'
 require 'pwnlib/memleak'
 require 'pwnlib/util/packing'
 
@@ -138,7 +137,5 @@ module Pwnlib
     def symtab
       @symtab ||= find_dt(ELFTools::Constants::DT::DT_SYMTAB)
     end
-
-    include Context
   end
 end
