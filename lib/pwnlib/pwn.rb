@@ -8,6 +8,7 @@ require 'pwnlib/context'
 require 'pwnlib/dynelf'
 require 'pwnlib/elf/elf'
 require 'pwnlib/reg_sort'
+require 'pwnlib/tubes/sock'
 
 require 'pwnlib/util/cyclic'
 require 'pwnlib/util/fiddling'

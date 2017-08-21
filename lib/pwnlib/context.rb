@@ -17,7 +17,7 @@ module Pwnlib
         newline: "\n",
         os: 'linux',
         signed: false,
-        timeout: Float::INFINITY
+        timeout: :forever
       }.freeze
 
       OSES = %w(linux freebsd windows).sort
@@ -131,7 +131,6 @@ module Pwnlib
         @attrs[:newline] = newline
       end
 
-      # TODO(Darkpi): Timeout module.
       def timeout=(timeout)
         @attrs[:timeout] = timeout
       end

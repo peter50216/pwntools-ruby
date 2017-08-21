@@ -12,6 +12,7 @@ require 'pwnlib/ext/array'
 extend Pwn
 
 include Pwnlib
+include Pwnlib::Tubes
 
 # XXX(david942j): include here because module ELF and class ELF have same name..
 include ::Pwnlib::ELF
