@@ -24,6 +24,7 @@ module Pwn
   include ::Pwnlib::Util::Cyclic
   include ::Pwnlib::Util::Fiddling
   include ::Pwnlib::Util::HexDump
+  include ::Pwnlib::Util::Lists
   include ::Pwnlib::Util::Packing
 
   def shellcraft

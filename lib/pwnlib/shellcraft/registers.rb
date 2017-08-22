@@ -109,7 +109,7 @@ module Pwnlib
       #   The name of register.
       #   If +name+ is already a {Register} object, +name+ itself will be returned.
       #
-      # @return [Register, nil]
+      # @return [Register?]
       #   Get the register with name +name+.
       #
       # @example
