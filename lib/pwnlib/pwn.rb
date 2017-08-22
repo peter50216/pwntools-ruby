@@ -9,6 +9,7 @@ require 'pwnlib/dynelf'
 require 'pwnlib/elf/elf'
 require 'pwnlib/reg_sort'
 require 'pwnlib/shellcraft/shellcraft'
+require 'pwnlib/tubes/sock'
 
 require 'pwnlib/util/cyclic'
 require 'pwnlib/util/fiddling'

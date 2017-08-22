@@ -15,7 +15,7 @@ Gem::Specification.new do |s|
   Would still try to have similar name whenever possible.
   EOS
   s.license       = 'MIT'
-  s.authors       = ['peter50216@gmail.com', 'david942j@gmail.com']
+  s.authors       = ['peter50216@gmail.com', 'david942j@gmail.com', 'hanhan0912@gmail.com']
   s.files         = Dir['lib/**/*.rb'] + %w(README.md Rakefile)
   s.test_files    = Dir['test/**/*']
   s.require_paths = ['lib']
