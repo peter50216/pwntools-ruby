@@ -4,7 +4,6 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'date'
 
 require 'pwnlib/version'
-require 'date'
 
 Gem::Specification.new do |s|
   s.name          = 'pwntools'
