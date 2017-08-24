@@ -8,11 +8,13 @@ require 'pwnlib/context'
 require 'pwnlib/dynelf'
 require 'pwnlib/elf/elf'
 require 'pwnlib/reg_sort'
+require 'pwnlib/shellcraft/shellcraft'
 require 'pwnlib/tubes/sock'
 
 require 'pwnlib/util/cyclic'
 require 'pwnlib/util/fiddling'
 require 'pwnlib/util/hexdump'
+require 'pwnlib/util/lists'
 require 'pwnlib/util/packing'
 
 # include this module in a class to use all pwnlib functions in that class instance.
@@ -22,5 +24,10 @@ module Pwn
   include ::Pwnlib::Util::Cyclic
   include ::Pwnlib::Util::Fiddling
   include ::Pwnlib::Util::HexDump
+  include ::Pwnlib::Util::Lists
   include ::Pwnlib::Util::Packing
+
+  def shellcraft
+    ::Pwnlib::Shellcraft.instance
+  end
 end
