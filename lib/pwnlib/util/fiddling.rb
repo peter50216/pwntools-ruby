@@ -272,7 +272,7 @@ module Pwnlib
       # @param [String] avoid
       #   The list of disallowed characters. Defaults to nulls and newlines.
       #
-      # @return [String, String]
+      # @return [(String, String)?]
       #   Two strings which will xor to the given string. If no such two strings exist, then nil is returned.
       #
       # @example

@@ -13,6 +13,7 @@ class RegistersTest < MiniTest::Test
   end
 
   def test_regtsiter?
+    assert_equal(true, register?(:ax))
     assert_equal(true, register?('ax'))
     assert_equal(true, register?('r8'))
     assert_equal(true, register?('r15b'))
