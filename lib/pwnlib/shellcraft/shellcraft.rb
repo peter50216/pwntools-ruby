@@ -95,8 +95,7 @@ module Pwnlib
 
       def add_method(method)
         # If method not presents in current arch, ignore it.
-        filepath = glob(method)
-        return false unless filepath
+        return false unless glob(method)
 
         # find file path in +context.arch+, and call it.
         define_singleton_method(method) do |*args|
@@ -135,10 +134,10 @@ module Pwnlib
       #   The assembly codes.
       #
       # @example
-      #   AsmMethods.call('./amd64/linux', :syscall, ['SYS_read', 0, 'rsp', 10])
+      #   AsmMethods.call('./amd64/linux/syscalls', :syscall, 'SYS_read', 0, 'rsp', 10)
       #   => <assembly codes>
       def self.call(path, method, *args)
-        require File.join(Submodule::ROOT_DIR, path, method.to_s) # require 'templates/amd64/linux/syscall'
+        require File.join(Submodule::ROOT_DIR, path, method.to_s) # require 'templates/amd64/linux/syscalls/syscall'
         list = [*path.split('/')[1..-1].map(&:to_sym), method]
         runner = list.reduce(@methods) do |cur, key|
           raise ArgumentError, "Method `#{method}` has not been defined by #{path}/#{method}.rb!" unless cur.key?(key)

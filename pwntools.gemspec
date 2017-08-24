@@ -1,5 +1,8 @@
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+
+require 'date'
+
 require 'pwnlib/version'
 require 'date'
 
@@ -15,7 +18,7 @@ Gem::Specification.new do |s|
   Would still try to have similar name whenever possible.
   EOS
   s.license       = 'MIT'
-  s.authors       = ['peter50216@gmail.com', 'david942j@gmail.com']
+  s.authors       = ['peter50216@gmail.com', 'david942j@gmail.com', 'hanhan0912@gmail.com']
   s.files         = Dir['lib/**/*.rb'] + %w(README.md Rakefile)
   s.test_files    = Dir['test/**/*']
   s.require_paths = ['lib']
@@ -23,6 +26,7 @@ Gem::Specification.new do |s|
   s.required_ruby_version = '>= 2.1.0'
 
   s.add_runtime_dependency 'rainbow', '~> 2.2'
+  s.add_runtime_dependency 'elftools', '~> 0.2'
   s.add_runtime_dependency 'dentaku', '~> 2.0.11'
 
   s.add_development_dependency 'codeclimate-test-reporter', '~> 0.6'

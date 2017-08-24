@@ -15,8 +15,8 @@ module Pwnlib
       #   The desired size of each subsequences.
       # @param [String] str
       #   The sequence to be grouped.
-      # @param [Symbol] underfull_action
-      #   Available options are +:ignore+, +:drop+, and +:fill+.
+      # @param [:ignore, :drop, :fill] underfull_action
+      #   Action to take when size of +str+ is not a mulitple of +n+.
       # @param [String] fill_value
       #   The padding byte.
       #   Only meaningful when +str+ cannot be grouped equally and +underfull_action == :fill+.

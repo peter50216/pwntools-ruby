@@ -105,21 +105,23 @@ module Pwnlib
 
       # Get a {Register} object by name.
       #
-      # @param [String, Register] name
+      # @param [String, Symbol, Register] name
       #   The name of register.
       #   If +name+ is already a {Register} object, +name+ itself will be returned.
       #
-      # @return [Register, nil]
+      # @return [Register?]
       #   Get the register with name +name+.
       #
       # @example
       #   Registers.get_register('eax')
       #   #=> Register(eax)
+      #   Registers.get_register(:ebx)
+      #   #=> Register(ebx)
       #   Registers.get_register('xdd')
       #   #=> nil
       def get_register(name)
         return name if name.instance_of?(Register)
-        return INTEL[name] if name.instance_of?(String)
+        return INTEL[name.to_s] if name.instance_of?(String) || name.instance_of?(Symbol)
         nil
       end
 
