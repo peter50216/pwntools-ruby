@@ -6,42 +6,66 @@ require 'tty-platform'
 
 require 'test_helper'
 
+require 'pwnlib/context'
 require 'pwnlib/dynelf'
+require 'pwnlib/elf/elf'
 
 class DynELFTest < MiniTest::Test
-  def test_lookup
+  include ::Pwnlib
+  include ::Pwnlib::Context
+  include ::Pwnlib::ELF
+
+  def setup
     skip 'Only tested on linux' unless TTY::Platform.new.linux?
+  end
+
+  # popen victim with specific libc.so.6
+  def popen_victim(b)
+    lib_path = File.expand_path("data/lib#{b}/", __dir__)
+    libc_path = File.expand_path('libc.so.6', lib_path)
+    ld_path = File.expand_path('ld.so.2', lib_path)
+    victim_path = File.expand_path("data/victim#{b}", __dir__)
+
+    Open3.popen2("#{ld_path} --library-path #{lib_path} #{victim_path}") do |i, o, t|
+      main_ra = Integer(o.readline)
+      mem = open("/proc/#{t.pid}/mem", 'rb')
+      d = DynELF.new(main_ra) do |addr|
+        mem.seek(addr)
+        mem.getc
+      end
+
+      yield d, { libc: libc_path, main_ra: main_ra, pid: t.pid }
+
+      mem.close
+      i.write('bye')
+    end
+  end
+
+  def test_find_base
     [32, 64].each do |b|
-      # TODO(hh): Use process instead of popen2
-      Open3.popen2(File.expand_path("../data/victim#{b}", __FILE__)) do |i, o, t|
-        main_ra = Integer(o.readline)
-        libc_path = nil
-        IO.readlines("/proc/#{t.pid}/maps").map(&:split).each do |s|
+      popen_victim(b) do |d, options|
+        main_ra = options[:main_ra]
+        realbase = nil
+        IO.readlines("/proc/#{options[:pid]}/maps").map(&:split).each do |s|
           st, ed = s[0].split('-').map { |x| x.to_i(16) }
           next unless main_ra.between?(st, ed)
-          libc_path = s[-1]
+          realbase = st
           break
         end
-        refute_nil(libc_path)
+        refute_nil(realbase)
+        assert_equal(realbase, d.libbase)
+      end
+    end
+  end
 
-        # TODO(hh): Use ELF instead of objdump
-        # Methods in libc might have multi-versions, so we record and check if we can find one of them.
-        h = Hash.new { |hsh, key| hsh[key] = [] }
-        symbols = `objdump -T #{libc_path}`.lines.map(&:split).select { |a| a[2] == 'DF' }
-        symbols.map { |a| h[a[-1]] << a[0].to_i(16) }
-
-        mem = open("/proc/#{t.pid}/mem", 'rb')
-        d = ::Pwnlib::DynELF.new(main_ra) do |addr|
-          mem.seek(addr)
-          mem.getc
-        end
-
+  def test_lookup
+    [32, 64].each do |b|
+      popen_victim(b) do |d, options|
         assert_nil(d.lookup('pipi_hao_wei!'))
-        %w(system open read write execve printf puts sprintf mmap mprotect).each do |sym|
-          assert_includes(h[sym], d.lookup(sym) - d.libbase)
+        elf = ELF.new(options[:libc], checksec: false)
+        %i(system open read write execve printf puts sprintf mmap mprotect).each do |sym|
+          assert_equal(d.libbase + elf.symbols[sym], d.lookup(sym))
         end
-
-        i.write('bye')
       end
     end
   end
