@@ -151,9 +151,9 @@ module Pwnlib
       @symtab ||= find_dt(ELFTools::Constants::DT::DT_SYMTAB)
     end
 
-    # Given the corpus of almost all libc to have been released with RedHat, Fedora, Ubuntu, Debian, etc. over the past
-    # several years, pwntools said with 99% certainty that the GNU Build ID section will be at one of the specified
-    # addresses.
+    # Given the corpus of almost all libc to have been released on RedHat, Fedora, Ubuntu, Debian,
+    # etc. over the past several years, there is a strong possibility the GNU Build ID section will
+    # be at one of the specified addresses.
     def build_id_offsets
       {
         i386: [0x174],
