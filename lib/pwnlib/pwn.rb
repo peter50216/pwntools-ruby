@@ -2,6 +2,7 @@
 
 # require this file would also require all things in pwnlib, but would not pollute anything.
 
+require 'pwnlib/asm'
 require 'pwnlib/constants/constant'
 require 'pwnlib/constants/constants'
 require 'pwnlib/context'
@@ -21,6 +22,7 @@ require 'pwnlib/util/packing'
 module Pwn
   include ::Pwnlib::Context
 
+  include ::Pwnlib::Asm
   include ::Pwnlib::Util::Cyclic
   include ::Pwnlib::Util::Fiddling
   include ::Pwnlib::Util::HexDump
