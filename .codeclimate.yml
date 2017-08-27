@@ -10,6 +10,9 @@ engines:
       - javascript
       - python
       - php
+    exclude_paths:
+      - lib/pwnlib/shellcraft/templates/i386/mov.rb
+      - lib/pwnlib/shellcraft/templates/amd64/mov.rb
   fixme:
     enabled: false
   rubocop:

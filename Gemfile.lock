@@ -1,3 +1,10 @@
+GIT
+  remote: https://github.com/bnagy/crabstone
+  revision: e3e0a552fcc8d45b7d2e5840456a0d6826271353
+  specs:
+    crabstone (3.0.3)
+      ffi
+
 PATH
   remote: .
   specs:
@@ -18,6 +25,7 @@ GEM
     docile (1.1.5)
     elftools (0.2.1)
       bindata (~> 2)
+    ffi (1.9.18)
     json (2.1.0)
     method_source (0.8.2)
     minitest (5.10.1)
@@ -53,6 +61,7 @@ PLATFORMS
 
 DEPENDENCIES
   codeclimate-test-reporter (~> 0.6)
+  crabstone!
   minitest (~> 5.8)
   pry (~> 0.10)
   pwntools!

@@ -11,7 +11,9 @@ require 'pwnlib/dynelf'
 require 'pwnlib/elf/elf'
 
 class DynELFTest < MiniTest::Test
+  include ::Pwnlib
   include ::Pwnlib::Context
+  include ::Pwnlib::ELF
 
   def setup
     skip 'Only tested on linux' unless TTY::Platform.new.linux?
@@ -27,7 +29,7 @@ class DynELFTest < MiniTest::Test
     Open3.popen2("#{ld_path} --library-path #{lib_path} #{victim_path}") do |i, o, t|
       main_ra = Integer(o.readline)
       mem = open("/proc/#{t.pid}/mem", 'rb')
-      d = ::Pwnlib::DynELF.new(main_ra) do |addr|
+      d = DynELF.new(main_ra) do |addr|
         mem.seek(addr)
         mem.getc
       end
@@ -60,7 +62,7 @@ class DynELFTest < MiniTest::Test
     [32, 64].each do |b|
       popen_victim(b) do |d, options|
         assert_nil(d.lookup('pipi_hao_wei!'))
-        elf = ::Pwnlib::ELF::ELF.new(options[:libc], checksec: false)
+        elf = ELF.new(options[:libc], checksec: false)
         %i(system open read write execve printf puts sprintf mmap mprotect).each do |sym|
           assert_equal(d.libbase + elf.symbols[sym], d.lookup(sym))
         end
