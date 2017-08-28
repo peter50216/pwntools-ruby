@@ -1,8 +1,10 @@
 # encoding: ASCII-8BIT
 
 require 'pwnlib/context'
+require 'pwnlib/logger'
 require 'pwnlib/timer'
 require 'pwnlib/tubes/buffer'
+require 'pwnlib/util/hexdump'
 
 module Pwnlib
   module Tubes
@@ -11,7 +13,6 @@ module Pwnlib
     #   @param [Float] timeout
     #     Any positive floating number, indicates timeout in seconds.
     #     Using +context.timeout+ if +timeout+ equals to +nil+.
-    # TODO(hh): Using hexdump in send/recv.
     class Tube
       BUFSIZE = 4096
 
@@ -202,7 +203,10 @@ module Pwnlib
       # @param [String] data
       #   The +data+ string to send.
       def send(data)
-        send_raw(data.to_s)
+        data = data.to_s
+        logger.debug(format('Sent %#x bytes:', data.size))
+        logger.indented(hexdump(data), level: DEBUG)
+        send_raw(data)
       end
       alias write send
 
@@ -239,8 +243,11 @@ module Pwnlib
           self.timeout_raw = @timer.timeout
           recv_raw(BUFSIZE)
         end
-        # TODO(Darkpi): Logging.
-        @buffer << data if data
+        if data
+          @buffer << data
+          logger.debug(format('Received %#x bytes:', data.size))
+          logger.indented(hexdump(data), level: DEBUG)
+        end
         data
       end
 
@@ -253,7 +260,9 @@ module Pwnlib
       def timeout_raw=(_timeout); raise NotImplementedError, 'Not implemented'
       end
 
-      include Context
+      include ::Pwnlib::Context
+      include ::Pwnlib::Logger
+      include ::Pwnlib::Util::HexDump
     end
   end
 end

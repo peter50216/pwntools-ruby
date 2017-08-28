@@ -1,5 +1,6 @@
 # encoding: ASCII-8BIT
 
+# (XXX): Avoid circular require
 require 'logger'
 
 # TODO(Darkpi): Check if there should be special care for threading.
@@ -166,8 +167,8 @@ module Pwnlib
       def log_level=(value)
         log_level = nil
         case value
-        when String
-          value = value.upcase
+        when String, Symbol
+          value = value.to_s.upcase
           log_level = Logger.const_get(value) if LOG_LEVELS.include?(value)
         when Integer
           log_level = value
