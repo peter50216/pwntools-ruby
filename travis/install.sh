@@ -47,8 +47,8 @@ setup_osx()
 
   # install keystone
   install_keystone_from_source
-  cp keystone/build/llvm/lib/libkeystone.dylib . # hack, don't know why
-  export DYLD_LIBRARY_PATH=$TRAVIS_BUILD_DIR/keystone/build/llvm/lib:$DYLD_LIBRARY_PATH
+  ln -s keystone/build/llvm/lib/libkeystone.dylib libkeystone.dylib # hack, don't know why next line has no effect
+  # export DYLD_LIBRARY_PATH=$TRAVIS_BUILD_DIR/keystone/build/llvm/lib:$DYLD_LIBRARY_PATH
 }
 
 if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then

@@ -27,7 +27,7 @@ module Pwnlib
     #
     # @example
     #   context.arch = 'i386'
-    #   print disasm("\xb8\x5d\x00\x00")
+    #   print disasm("\xb8\x5d\x00\x00\x00")
     #   #   0:   b8 5d 00 00 00 mov     eax, 0x5d
     #
     #   context.arch = 'amd64'
