@@ -12,9 +12,6 @@ class LoggerTest < MiniTest::Test
   include ::Pwnlib::Logger
 
   def setup
-    # Default to disable coloring for easier testing.
-    Rainbow.enabled = false
-
     @logger = ::Pwnlib::Logger::LoggerType.new
     class << @logger
       def add(*args)

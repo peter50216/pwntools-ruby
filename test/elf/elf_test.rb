@@ -7,7 +7,6 @@ require 'pwnlib/elf/elf'
 class ELFTest < MiniTest::Test
   def setup
     @data = File.join(__dir__, '..', 'data')
-    Rainbow.enabled = false
     @elf = ::Pwnlib::ELF::ELF.new(File.join(@data, 'victim32'), checksec: false)
   end
 
