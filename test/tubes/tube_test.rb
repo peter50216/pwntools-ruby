@@ -15,9 +15,6 @@ class TubeTest < MiniTest::Test
   include ::Pwnlib::Tubes
 
   def setup
-    # Default to disable coloring for easier testing.
-    Rainbow.enabled = false
-
     @old_log = ::Pwnlib::Logger.log.dup
     @log = ::Pwnlib::Logger::LoggerType.new
 
@@ -106,7 +103,7 @@ class TubeTest < MiniTest::Test
       @log.clear
       t = hello_tube
       assert_equal('Hello, world', t.recv)
-      assert_equal(<<-'EOS', @log.string)
+      assert_equal(<<-'EOS', @log.string.force_encoding('UTF-8'))
 [DEBUG] Received 0xc bytes:
     00000000  48 65 6c 6c  6f 2c 20 77  6f 72 6c 64               │Hell│o, w│orld│
     0000000c
@@ -179,7 +176,7 @@ class TubeTest < MiniTest::Test
       t = hello_tube
       t.write(data)
       assert_equal(data, t.buf)
-      assert_equal(<<-'EOS', @log.string)
+      assert_equal(<<-'EOS', @log.string.force_encoding('UTF-8'))
 [DEBUG] Sent 0x29 bytes:
     00000000  00 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f  │····│····│····│····│
     00000010  10 11 12 13  14 15 16 17  18 19 1a 1b  1c 1d 1e 1f  │····│····│····│····│

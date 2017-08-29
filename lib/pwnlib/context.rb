@@ -1,6 +1,5 @@
 # encoding: ASCII-8BIT
 
-# (XXX): Avoid circular require
 require 'logger'
 
 # TODO(Darkpi): Check if there should be special care for threading.

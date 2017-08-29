@@ -6,12 +6,10 @@ require 'test_helper'
 
 require 'pwnlib/context'
 require 'pwnlib/logger'
-require 'pwnlib/util/hexdump'
 
 class LoggerTest < MiniTest::Test
   include ::Pwnlib::Context
   include ::Pwnlib::Logger
-  include ::Pwnlib::Util::HexDump
 
   def setup
     # Default to disable coloring for easier testing.
