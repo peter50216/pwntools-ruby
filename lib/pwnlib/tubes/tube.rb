@@ -222,6 +222,7 @@ module Pwnlib
       # Does simultaneous reading and writing to the tube. In principle this just connects the tube
       # to standard in and standard out.
       def interact
+        log.info('Switching to interactive mode')
         $stdout.write(@buffer.get)
         until io.closed?
           rs, = IO.select([$stdin, io])

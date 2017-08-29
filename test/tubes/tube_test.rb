@@ -198,6 +198,7 @@ class TubeTest < MiniTest::Test
   def test_interact_send
     save_stdin = $stdin.dup
     $stdin = File.new(FLAG_FILE, File::RDONLY)
+    @log.clear
     begin
       t = Tube.new
       def t.io
@@ -208,6 +209,7 @@ class TubeTest < MiniTest::Test
       t.io.rewind
       assert_equal(IO.binread(FLAG_FILE), t.io.read)
     end
+    assert_equal("[INFO] Switching to interactive mode\n", @log.string)
     $stdin.close
     t.io.close
     $stdin = save_stdin
@@ -218,6 +220,7 @@ class TubeTest < MiniTest::Test
     save_stdout = $stdout.dup
     $stdin = UDPSocket.new
     $stdout = Tempfile.new('pwntools_ruby_test')
+    @log.clear
     begin
       t = Tube.new
       def t.io
@@ -228,6 +231,7 @@ class TubeTest < MiniTest::Test
       $stdout.rewind
       assert_equal(IO.binread(FLAG_FILE), $stdout.read)
     end
+    assert_equal("[INFO] Switching to interactive mode\n", @log.string)
     $stdout.close
     t.io.close
     $stdin = save_stdin
