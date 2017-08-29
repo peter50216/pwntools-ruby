@@ -21,11 +21,6 @@ class LoggerTest < MiniTest::Test
 
     @logger = ::Pwnlib::Logger::LoggerType.new
     class << @logger
-      def initialize
-        super
-        clear
-      end
-
       def add(*args)
         clear
         super
@@ -49,6 +44,7 @@ class LoggerTest < MiniTest::Test
     context.local(log_level: DEBUG) do
       %w(DEBUG INFO WARN ERROR FATAL).each do |type|
         assert_equal("[#{type}] #{str}\n", @logger.public_send(type.downcase, str))
+        assert_equal("[#{type}] #{str}\n", @logger.public_send(type.downcase) { str })
       end
     end
 
@@ -61,7 +57,7 @@ class LoggerTest < MiniTest::Test
   end
 
   def test_indented
-    assert_silent { logger.indented(hexdump('darkhh'), level: DEBUG) }
+    assert_silent { log.indented(hexdump('darkhh'), level: DEBUG) }
 
     assert_empty(@logger.indented(hexdump('A'), level: DEBUG))
 

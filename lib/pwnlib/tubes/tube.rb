@@ -204,8 +204,8 @@ module Pwnlib
       #   The +data+ string to send.
       def send(data)
         data = data.to_s
-        logger.debug(format('Sent %#x bytes:', data.size))
-        logger.indented(hexdump(data), level: DEBUG)
+        log.debug(format('Sent %#x bytes:', data.size))
+        log.indented(hexdump(data), level: DEBUG)
         send_raw(data)
       end
       alias write send
@@ -245,8 +245,8 @@ module Pwnlib
         end
         if data
           @buffer << data
-          logger.debug(format('Received %#x bytes:', data.size))
-          logger.indented(hexdump(data), level: DEBUG)
+          log.debug(format('Received %#x bytes:', data.size))
+          log.indented(hexdump(data), level: DEBUG)
         end
         data
       end

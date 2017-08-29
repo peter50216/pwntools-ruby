@@ -1,12 +1,38 @@
-# encoding: ASCII-8BIT
+# encoding: UTF-8
+
+# This test use UTF-8 encoding for strings since the output for hexdump contains lots of UTF-8 characters.
+
+require 'rainbow'
 
 require 'test_helper'
 
+require 'pwnlib/context'
+require 'pwnlib/logger'
 require 'pwnlib/tubes/tube'
 
 class TubeTest < MiniTest::Test
-  include ::Pwnlib::Tubes
   include ::Pwnlib::Context
+  include ::Pwnlib::Tubes
+
+  def setup
+    # Default to disable coloring for easier testing.
+    Rainbow.enabled = false
+
+    @old_log = ::Pwnlib::Logger.log.dup
+    @log = ::Pwnlib::Logger::LoggerType.new
+
+    class << @log
+      def clear
+        @logdev = StringIO.new
+      end
+
+      def string
+        @logdev.string
+      end
+    end
+
+    ::Pwnlib::Logger.instance_variable_set(:@log, @log)
+  end
 
   def hello_tube
     t = Tube.new
@@ -75,6 +101,17 @@ class TubeTest < MiniTest::Test
     assert_equal('ello, w', t.recvn(7))
     assert_equal('orldH', t.recvn(5))
     assert_equal('ello, world', t.recv)
+
+    context.local(log_level: 'debug') do
+      @log.clear
+      t = hello_tube
+      assert_equal('Hello, world', t.recv)
+      assert_equal(<<-EOS, @log.string)
+[DEBUG] Received 0xc bytes:
+    00000000  48 65 6c 6c  6f 2c 20 77  6f 72 6c 64               │Hell│o, w│orld│
+    0000000c
+      EOS
+    end
   end
 
   def test_recvuntil
@@ -135,6 +172,21 @@ class TubeTest < MiniTest::Test
     assert_equal('DARKHH QQ', t.buf)
     t.write(333)
     assert_equal('DARKHH QQ333', t.buf)
+
+    context.local(log_level: 'debug') do
+      @log.clear
+      data = (0..40).map(&:chr).join
+      t = hello_tube
+      t.write(data)
+      assert_equal(data, t.buf)
+      assert_equal(<<-EOS, @log.string)
+[DEBUG] Sent 0x29 bytes:
+    00000000  00 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f  │····│····│····│····│
+    00000010  10 11 12 13  14 15 16 17  18 19 1a 1b  1c 1d 1e 1f  │····│····│····│····│
+    00000020  20 21 22 23  24 25 26 27  28                        │ !"#│$%&'│(│
+    00000029
+    EOS
+    end
   end
 
   def test_sendline
@@ -183,5 +235,9 @@ class TubeTest < MiniTest::Test
     t.io.close
     $stdin = save_stdin
     $stdout = save_stdout
+  end
+
+  def teardown
+    ::Pwnlib::Logger.instance_variable_set(:@log, @old_log)
   end
 end
