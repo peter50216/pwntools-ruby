@@ -182,7 +182,15 @@ class TubeTest < MiniTest::Test
     00000010  10 11 12 13  14 15 16 17  18 19 1a 1b  1c 1d 1e 1f  │····│····│····│····│
     00000020  20 21 22 23  24 25 26 27  28                        │ !"#│$%&'│(│
     00000029
-    EOS
+      EOS
+
+      @log.clear
+      t.puts('meow')
+      assert_equal(<<-'EOS', @log.string.encode('UTF-8'))
+[DEBUG] Sent 0x5 bytes:
+    00000000  6d 65 6f 77  0a                                     │meow│·│
+    00000005
+      EOS
     end
   end
 

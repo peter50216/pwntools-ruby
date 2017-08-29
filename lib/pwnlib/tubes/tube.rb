@@ -215,7 +215,8 @@ module Pwnlib
       # @param [String] data
       #   The +data+ string to send.
       def sendline(data)
-        send_raw(data.to_s + context.newline)
+        # Logged by +write+, not +send_raw+
+        write(data.to_s + context.newline)
       end
       alias puts sendline
 
