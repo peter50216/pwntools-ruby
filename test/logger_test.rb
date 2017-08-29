@@ -72,6 +72,12 @@ class LoggerTest < MiniTest::Test
     00000013
     EOS
 
+    context.local(log_level: :error) do
+      assert_empty(@logger.indented(hexdump('A'), level: DEBUG))
+      assert_empty(@logger.indented(hexdump('A'), level: INFO))
+      assert_empty(@logger.indented(hexdump('A'), level: WARN))
+    end
+
     assert_equal(<<-'EOS', @logger.indented(hexdump('ABCD' * 5), level: ERROR))
     00000000  41 42 43 44  41 42 43 44  41 42 43 44  41 42 43 44  │ABCD│ABCD│ABCD│ABCD│
     00000010  41 42 43 44                                         │ABCD│
@@ -97,11 +103,5 @@ class LoggerTest < MiniTest::Test
     000000f0  f0 f1 f2 f3  f4 f5 f6 f7  f8 f9 fa fb  fc fd fe ff  │····│····│····│····│
     00000100
     EOS
-
-    context.local(log_level: :error) do
-      assert_empty(@logger.indented(hexdump('A'), level: DEBUG))
-      assert_empty(@logger.indented(hexdump('A'), level: INFO))
-      assert_empty(@logger.indented(hexdump('A'), level: WARN))
-    end
   end
 end
