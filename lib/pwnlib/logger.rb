@@ -6,10 +6,12 @@ require 'rainbow'
 require 'pwnlib/context'
 
 module Pwnlib
-  # Logger module!
+  # Logging module for printing status during an exploit, and internally within {Pwnlib}.
+  #
+  # An exploit developer can use +log+ to print out status messages during an exploitation.
   module Logger
     # The type for logger which inherits Ruby builtin Logger.
-    # We use +context.log_level+ instead of +@level+.
+    # Main difference is using +context.log_level+ instead of +level+ in logging methods
     class LoggerType < ::Logger
       SEV_COLOR = {
         'DEBUG' => '#ff5f5f',
@@ -22,8 +24,6 @@ module Pwnlib
       # Instantiate a {Pwnlib::Logger::LoggerType} object.
       def initialize
         super(STDOUT)
-        # Set +@level+ to the lowest priority.
-        @level = DEBUG
         @formatter = proc do |severity, _datetime, _progname, msg|
           format("[%s] %s\n", Rainbow(severity).color(SEV_COLOR[severity]), msg)
         end
@@ -57,13 +57,13 @@ module Pwnlib
     @log = LoggerType.new
 
     # @!attribute [r] logger
-    #   @return [LoggerType] the singleton logger for all class.
+    #   @return [LoggerType] the singleton logger for all classes.
     class << self
       attr_reader :log
     end
 
-    # A module for include hook for logger.
-    # Including Pwnlib::Logger from module M would add +log+ as a private instance method and a private class
+    # Include this module to use logger.
+    # Including {Pwnlib::Logger} from module M would add +log+ as a private instance method and a private class
     # method for module M.
     # @!visibility private
     module IncludeLogger
