@@ -42,7 +42,7 @@ module Pwnlib
         load_plt
         load_symbols
         @address = base_address
-        @load_addr = @address.dup
+        @load_addr = @address
         show_info if checksec
       end
 
@@ -149,6 +149,7 @@ module Pwnlib
       #   # 0x11477
       #   # 0x1c84f
       #   # 0x1d5ee
+      #   #=> true
       def search(needle)
         return enum_for(:search, needle) unless block_given?
         load_address_fixup = @address - @load_addr
