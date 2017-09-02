@@ -56,7 +56,7 @@ PIE:      No PIE (0x8048000)
 
   def test_search
     elf = ::Pwnlib::ELF::ELF.new(File.join(@data, 'lib32', 'libc.so.6'), checksec: false)
-    assert_equal([1, 0x15e613], elf.search('ELF').to_a)
+    assert_equal([0x1, 0x15e613], elf.search('ELF').to_a)
     assert_equal(0x15900b, elf.find('/bin/sh').next)
 
     result = elf.find(/E.F/)
