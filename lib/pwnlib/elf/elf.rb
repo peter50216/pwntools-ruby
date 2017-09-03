@@ -138,7 +138,7 @@ module Pwnlib
       #   The specified string to search.
       #
       # @return [Enumerator<Integer>]
-      #   A enumerator for offsets in ELF's virtual address space.
+      #   An enumerator for offsets in ELF's virtual address space.
       #
       # @example
       #   ELF.new('/bin/sh', checksec: false).find('ELF')
