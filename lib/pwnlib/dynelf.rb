@@ -2,6 +2,7 @@
 
 require 'elftools'
 
+require 'pwnlib/context'
 require 'pwnlib/memleak'
 require 'pwnlib/util/packing'
 
@@ -72,6 +73,18 @@ module Pwnlib
       nil
     end
 
+    # Leak the BuildID of the remote libc.so.
+    #
+    # @return [String?]
+    #   Return BuildID in hex format or +nil+.
+    def build_id
+      build_id_offsets.each do |offset|
+        next unless @leak.n(@libbase + offset + 12, 4) == "GNU\x00"
+        return @leak.n(@libbase + offset + 16, 20).unpack('H*').first
+      end
+      nil
+    end
+
     private
 
     PAGE_SIZE = 0x1000
@@ -137,5 +150,24 @@ module Pwnlib
     def symtab
       @symtab ||= find_dt(ELFTools::Constants::DT::DT_SYMTAB)
     end
+
+    # Given the corpus of almost all libc to have been released on RedHat, Fedora, Ubuntu, Debian,
+    # etc. over the past several years, there is a strong possibility the GNU Build ID section will
+    # be at one of the specified addresses.
+    def build_id_offsets
+      {
+        i386: [0x174],
+        arm:  [0x174],
+        thumb:  [0x174],
+        aarch64: [0x238],
+        amd64: [0x270, 0x174],
+        powerpc: [0x174],
+        powerpc64: [0x238],
+        sparc: [0x174],
+        sparc64: [0x270]
+      }[context.arch.to_sym] || []
+    end
+
+    include Context
   end
 end
