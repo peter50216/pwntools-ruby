@@ -73,10 +73,10 @@ module Pwnlib
       nil
     end
 
-    # Leak the Build ID of the remote libc.so.
+    # Leak the BuildID of the remote libc.so.
     #
     # @return [String?]
-    #   Return build_id, or nil.
+    #   Return BuildID in hex format or +nil+.
     def build_id
       build_id_offsets.each do |offset|
         next unless @leak.n(@libbase + offset + 12, 4) == "GNU\x00"
