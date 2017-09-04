@@ -1,7 +1,5 @@
 # encoding: ASCII-8BIT
 
-require 'rainbow'
-
 require 'test_helper'
 
 require 'pwnlib/context'

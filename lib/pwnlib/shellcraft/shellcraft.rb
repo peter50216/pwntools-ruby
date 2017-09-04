@@ -3,6 +3,7 @@
 require 'singleton'
 
 require 'pwnlib/constants/constant'
+require 'pwnlib/constants/constants'
 require 'pwnlib/context'
 require 'pwnlib/shellcraft/registers'
 require 'pwnlib/util/fiddling'

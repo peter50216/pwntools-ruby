@@ -2,8 +2,6 @@
 
 # This test use UTF-8 encoding for strings since the output for hexdump contains lots of UTF-8 characters.
 
-require 'rainbow'
-
 require 'test_helper'
 
 require 'pwnlib/util/hexdump'

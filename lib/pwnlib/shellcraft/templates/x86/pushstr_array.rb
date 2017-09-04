@@ -1,5 +1,7 @@
 # encoding: ASCII-8BIT
 
+require 'pwnlib/abi'
+
 # Push an array of pointers onto the stack.
 #
 # @param [String] reg
