@@ -229,10 +229,10 @@ module Pwnlib
           rs, = IO.select([$stdin, io])
           if rs.include?($stdin)
             s = $stdin.readpartial(BUFSIZE)
-            io.write(s)
+            write(s)
           end
           if rs.include?(io)
-            s = io.readpartial(BUFSIZE)
+            s = recv
             $stdout.write(s)
           end
         end

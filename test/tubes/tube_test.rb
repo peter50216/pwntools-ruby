@@ -57,31 +57,26 @@ class TubeTest < MiniTest::Test
     t
   end
 
-  def hello_once_tube
+  def basic_tube
     t = Tube.new
 
-    t.unrecv('Hello, world')
     class << t
-      def recv_raw
-        raise EOFError
+      def recv_raw(_n)
+        raise EOFError if io.eof?
+        io.read
+      end
+
+      def send_raw(data)
+        io.write(data)
       end
 
       def timeout_raw=(timeout)
         @timeout = timeout == :forever ? nil : timeout
       end
-    end
 
-    t
-  end
-
-  def eof_tube
-    t = Tube.new
-    class << t
-      def recv_raw(_size)
-        raise EOFError
+      def io
+        @fakeio ||= Tempfile.new('pwntools_ruby_test')
       end
-
-      def timeout_raw=(_timeout); end
     end
 
     t
@@ -119,7 +114,7 @@ class TubeTest < MiniTest::Test
     assert_equal('Hello,', t.recvuntil(' wor', drop: true))
     assert_equal('', t.recvuntil('DARKHH', drop: true, timeout: 0.1))
 
-    t = eof_tube
+    t = basic_tube
     t.unrecv('meow')
     assert_equal('', t.recvuntil('DARKHH'))
     assert_equal('meow', t.recv)
@@ -137,7 +132,8 @@ class TubeTest < MiniTest::Test
       assert_equal("Foo\nBar", t.recvline(drop: true))
     end
 
-    t = hello_once_tube
+    t = basic_tube
+    t.unrecv('Hello, world')
     assert_equal('', t.recvline)
     assert_equal('Hello, world', t.recv)
   end
@@ -148,7 +144,7 @@ class TubeTest < MiniTest::Test
     10.times { assert_match(r, t.recvpred { |data| data =~ r }) }
     r = /H.*W/
     assert_match('', t.recvpred(timeout: 0.01) { |data| data =~ r })
-    t = eof_tube
+    t = basic_tube
     t.unrecv('darkhh')
     assert_match('', t.recvpred { |data| data =~ r })
   end
@@ -208,10 +204,7 @@ class TubeTest < MiniTest::Test
     $stdin = File.new(FLAG_FILE, File::RDONLY)
     @log.clear
     begin
-      t = Tube.new
-      def t.io
-        @fakeio ||= Tempfile.new('pwntools_ruby_test')
-      end
+      t = basic_tube
       t.interact
     rescue EOFError
       t.io.rewind
@@ -230,10 +223,8 @@ class TubeTest < MiniTest::Test
     $stdout = Tempfile.new('pwntools_ruby_test')
     @log.clear
     begin
-      t = Tube.new
-      def t.io
-        @fakeio ||= File.new(FLAG_FILE, File::RDONLY)
-      end
+      t = basic_tube
+      t.instance_variable_set(:@fakeio, File.new(FLAG_FILE, File::RDONLY))
       t.interact
     rescue EOFError
       $stdout.rewind
