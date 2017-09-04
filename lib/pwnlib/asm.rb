@@ -71,7 +71,8 @@ module Pwnlib
     #   The result.
     #
     # @example
-    #   asm(shellcraft.amd64.linux.sh)
+    #   assembly = shellcraft.amd64.linux.sh
+    #   context.local(arch: 'amd64') { asm(assembly) }
     #   #=> "jhH\xB8/bin///sPj;XH\x89\xE71\xF6\x99\x0F\x05"
     #
     #   context.local(arch: 'i386') { asm(shellcraft.sh) }
