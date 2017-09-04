@@ -69,4 +69,15 @@ class DynELFTest < MiniTest::Test
       end
     end
   end
+
+  def test_build_id
+    [
+      [32, 'ac333186c6b532511a68d16aca4c61422eb772da', 'i386'],
+      [64, '088a6e00a1814622219f346b41e775b8dd46c518', 'amd64']
+    ].each do |b, answer, arch|
+      context.local(arch: arch) do
+        popen_victim(b) { |d| assert_equal(answer, d.build_id) }
+      end
+    end
+  end
 end
