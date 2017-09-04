@@ -1,5 +1,5 @@
 # encoding: ASCII-8BIT
 
 ::Pwnlib::Shellcraft.define(__FILE__) do
-  cat 'jmp $'
+  cat shellcraft.x86.infloop
 end

@@ -1,5 +1,7 @@
 # encoding: ASCII-8BIT
 
+require 'keystone/keystone_const' # https://github.com/sashs/ruby-keystone/
+
 require 'pwnlib/context'
 require 'pwnlib/util/ruby'
 
@@ -60,6 +62,29 @@ module Pwnlib
       end
     end
 
+    # Convert assembly code to machine code.
+    #
+    # @param [String] code
+    #   The assembly code to be converted.
+    #
+    # @return [String]
+    #   The result.
+    #
+    # @example
+    #   assembly = shellcraft.amd64.linux.sh
+    #   context.local(arch: 'amd64') { asm(assembly) }
+    #   #=> "jhH\xB8/bin///sPj;XH\x89\xE71\xF6\x99\x0F\x05"
+    #
+    #   context.local(arch: 'i386') { asm(shellcraft.sh) }
+    #   #=> "jhh///sh/binj\vX\x89\xE31\xC9\x99\xCD\x80"
+    #
+    # @diff
+    #   Not support +asm('mov eax, SYS_execve')+.
+    def asm(code)
+      require_message('keystone', install_keystone_guide)
+      Keystone::Ks.new(ks_arch, ks_mode).asm(code)[0]
+    end
+
     ::Pwnlib::Util::Ruby.private_class_method_block do
       def cap_arch
         {
@@ -75,6 +100,20 @@ module Pwnlib
         }[context.bits]
       end
 
+      def ks_arch
+        {
+          'i386' => Keystone::KS_ARCH_X86,
+          'amd64' => Keystone::KS_ARCH_X86
+        }[context.arch]
+      end
+
+      def ks_mode
+        {
+          32 => Keystone::KS_MODE_32,
+          64 => Keystone::KS_MODE_64
+        }[context.bits]
+      end
+
       # FFI is used in keystone and capstone binding gems, this method handles when libraries not installed yet.
       def require_message(lib, msg)
         require lib
@@ -84,10 +123,20 @@ module Pwnlib
 
       def install_crabstone_guide
         <<-EOS
-  #disasm dependes on capstone, which is detected not installed yet.
-  Checkout the following link for installation guide:
+#disasm dependes on capstone, which is detected not installed yet.
+Checkout the following link for installation guide:
 
-  http://www.capstone-engine.org/documentation.html
+http://www.capstone-engine.org/documentation.html
+
+        EOS
+      end
+
+      def install_keystone_guide
+        <<-EOS
+#asm dependes on keystone, which is detected not installed yet.
+Checkout the following link for installation guide:
+
+https://github.com/keystone-engine/keystone/tree/master/docs
 
         EOS
       end

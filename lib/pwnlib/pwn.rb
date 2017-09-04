@@ -21,10 +21,9 @@ require 'pwnlib/util/packing'
 
 # include this module in a class to use all pwnlib functions in that class instance.
 module Pwn
+  include ::Pwnlib::Asm
   include ::Pwnlib::Context
   include ::Pwnlib::Logger
-
-  include ::Pwnlib::Asm
   include ::Pwnlib::Util::Cyclic
   include ::Pwnlib::Util::Fiddling
   include ::Pwnlib::Util::HexDump

@@ -5,6 +5,13 @@ GIT
     crabstone (3.0.3)
       ffi
 
+GIT
+  remote: https://github.com/sashs/ruby-keystone
+  revision: 2183b5a5d015789b36e51f102fc2d915722cad71
+  specs:
+    keystone (0.9.0)
+      ffi (~> 1.9)
+
 PATH
   remote: .
   specs:
@@ -62,6 +69,7 @@ PLATFORMS
 DEPENDENCIES
   codeclimate-test-reporter (~> 0.6)
   crabstone!
+  keystone!
   minitest (~> 5.8)
   pry (~> 0.10)
   pwntools!

@@ -14,13 +14,13 @@ class InfloopTest < MiniTest::Test
 
   def test_amd64
     context.local(arch: 'amd64') do
-      assert_equal("  jmp $\n", @shellcraft.infloop)
+      assert_match(/\Ainfloop_\d+:\n  jmp infloop_\d+\n\Z/, @shellcraft.infloop)
     end
   end
 
   def test_i386
     context.local(arch: 'i386') do
-      assert_equal("  jmp $\n", @shellcraft.infloop)
+      assert_match(/\Ainfloop_\d+:\n  jmp infloop_\d+\n\Z/, @shellcraft.infloop)
     end
   end
 end

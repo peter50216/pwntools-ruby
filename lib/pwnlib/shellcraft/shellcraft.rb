@@ -167,6 +167,14 @@ module Pwnlib
       #
       # @note This class should never be used externally, only {AsmMethods} can use it.
       class Runner
+        class << self
+          # static class variable, increase 1 whenver used.
+          def label_num
+            @label_num ||= 0
+            @label_num += 1
+            @label_num
+          end
+        end
         def call(*args)
           @_output = StringIO.new
           inner(*args)
@@ -175,10 +183,17 @@ module Pwnlib
 
         private
 
+        def label_str?(str)
+          str.match(/\A\w+_\d+:\Z/) != nil
+        end
+
         # Indent each line 2 space.
-        # TODO(david942j): consider labels
         def typesetting
-          @_output.string.lines.map { |line| line == "\n" ? line : ' ' * 2 + line.lstrip }.join
+          indent = @_output.string.lines.map do |line|
+            next line.strip + "\n" if label_str?(line.strip)
+            line == "\n" ? line : ' ' * 2 + line.lstrip
+          end
+          indent.join
         end
 
         # For templates/*.rb use.
@@ -207,6 +222,12 @@ module Pwnlib
           else
             n.inspect
           end
+        end
+
+        # @example
+        #   get_label('infloop') #=> 'infloop_1'
+        def get_label(str)
+          "#{str}_#{self.class.label_num}"
         end
 
         def shellcraft
