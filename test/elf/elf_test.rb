@@ -52,4 +52,21 @@ PIE:      No PIE (0x8048000)
     @elf.address = new_address
     assert_equal(old_main - old_address + new_address, @elf.symbols.main)
   end
+
+  def test_search
+    elf = ::Pwnlib::ELF::ELF.new(File.join(@data, 'lib32', 'libc.so.6'), checksec: false)
+    assert_equal([0x1, 0x15e613], elf.search('ELF').to_a)
+    assert_equal(0x15900b, elf.find('/bin/sh').next)
+
+    result = elf.find(/E.F/)
+    assert_equal(0x1, result.next)
+    assert_equal(0xc8efa, result.next)
+    assert_equal(0xc9118, result.next)
+    assert_equal(0x158284, result.next)
+    assert_equal(0x158285, result.next)
+
+    elf.address = 0x1234000
+    assert_equal([0x1234001, 0x1392613], elf.search('ELF').to_a)
+    assert_equal(0x138d00b, elf.find('/bin/sh').next)
+  end
 end
