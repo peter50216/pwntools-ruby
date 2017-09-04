@@ -8,6 +8,7 @@ require 'pwnlib/constants/constants'
 require 'pwnlib/context'
 require 'pwnlib/dynelf'
 require 'pwnlib/elf/elf'
+require 'pwnlib/logger'
 require 'pwnlib/reg_sort'
 require 'pwnlib/shellcraft/shellcraft'
 require 'pwnlib/tubes/sock'
@@ -21,6 +22,7 @@ require 'pwnlib/util/packing'
 # include this module in a class to use all pwnlib functions in that class instance.
 module Pwn
   include ::Pwnlib::Context
+  include ::Pwnlib::Logger
 
   include ::Pwnlib::Asm
   include ::Pwnlib::Util::Cyclic

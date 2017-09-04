@@ -1,12 +1,35 @@
-# encoding: ASCII-8BIT
+# encoding: UTF-8
+
+# This test use UTF-8 encoding for strings since the output for hexdump contains lots of UTF-8 characters.
+
+require 'rainbow'
 
 require 'test_helper'
 
+require 'pwnlib/context'
+require 'pwnlib/logger'
 require 'pwnlib/tubes/tube'
 
 class TubeTest < MiniTest::Test
-  include ::Pwnlib::Tubes
   include ::Pwnlib::Context
+  include ::Pwnlib::Tubes
+
+  def setup
+    @old_log = ::Pwnlib::Logger.log.dup
+    @log = ::Pwnlib::Logger::LoggerType.new
+
+    class << @log
+      def clear
+        @logdev = StringIO.new
+      end
+
+      def string
+        @logdev.string
+      end
+    end
+
+    ::Pwnlib::Logger.instance_variable_set(:@log, @log)
+  end
 
   def hello_tube
     t = Tube.new
@@ -34,31 +57,26 @@ class TubeTest < MiniTest::Test
     t
   end
 
-  def hello_once_tube
+  def basic_tube
     t = Tube.new
 
-    t.unrecv('Hello, world')
     class << t
-      def recv_raw
-        raise EOFError
+      def recv_raw(_n)
+        raise EOFError if io.eof?
+        io.read
+      end
+
+      def send_raw(data)
+        io.write(data)
       end
 
       def timeout_raw=(timeout)
         @timeout = timeout == :forever ? nil : timeout
       end
-    end
 
-    t
-  end
-
-  def eof_tube
-    t = Tube.new
-    class << t
-      def recv_raw(_size)
-        raise EOFError
+      def io
+        @fakeio ||= Tempfile.new('pwntools_ruby_test')
       end
-
-      def timeout_raw=(_timeout); end
     end
 
     t
@@ -75,6 +93,17 @@ class TubeTest < MiniTest::Test
     assert_equal('ello, w', t.recvn(7))
     assert_equal('orldH', t.recvn(5))
     assert_equal('ello, world', t.recv)
+
+    context.local(log_level: 'debug') do
+      @log.clear
+      t = hello_tube
+      assert_equal('Hello, world', t.recv)
+      assert_equal(<<-'EOS', @log.string.encode('UTF-8'))
+[DEBUG] Received 0xc bytes:
+    00000000  48 65 6c 6c  6f 2c 20 77  6f 72 6c 64               │Hell│o, w│orld│
+    0000000c
+      EOS
+    end
   end
 
   def test_recvuntil
@@ -85,7 +114,7 @@ class TubeTest < MiniTest::Test
     assert_equal('Hello,', t.recvuntil(' wor', drop: true))
     assert_equal('', t.recvuntil('DARKHH', drop: true, timeout: 0.1))
 
-    t = eof_tube
+    t = basic_tube
     t.unrecv('meow')
     assert_equal('', t.recvuntil('DARKHH'))
     assert_equal('meow', t.recv)
@@ -103,7 +132,8 @@ class TubeTest < MiniTest::Test
       assert_equal("Foo\nBar", t.recvline(drop: true))
     end
 
-    t = hello_once_tube
+    t = basic_tube
+    t.unrecv('Hello, world')
     assert_equal('', t.recvline)
     assert_equal('Hello, world', t.recv)
   end
@@ -114,7 +144,7 @@ class TubeTest < MiniTest::Test
     10.times { assert_match(r, t.recvpred { |data| data =~ r }) }
     r = /H.*W/
     assert_match('', t.recvpred(timeout: 0.01) { |data| data =~ r })
-    t = eof_tube
+    t = basic_tube
     t.unrecv('darkhh')
     assert_match('', t.recvpred { |data| data =~ r })
   end
@@ -135,6 +165,29 @@ class TubeTest < MiniTest::Test
     assert_equal('DARKHH QQ', t.buf)
     t.write(333)
     assert_equal('DARKHH QQ333', t.buf)
+
+    context.local(log_level: 'debug') do
+      @log.clear
+      data = (0..40).map(&:chr).join
+      t = hello_tube
+      t.write(data)
+      assert_equal(data, t.buf)
+      assert_equal(<<-'EOS', @log.string.encode('UTF-8'))
+[DEBUG] Sent 0x29 bytes:
+    00000000  00 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f  │····│····│····│····│
+    00000010  10 11 12 13  14 15 16 17  18 19 1a 1b  1c 1d 1e 1f  │····│····│····│····│
+    00000020  20 21 22 23  24 25 26 27  28                        │ !"#│$%&'│(│
+    00000029
+      EOS
+
+      @log.clear
+      t.puts('meow')
+      assert_equal(<<-'EOS', @log.string.encode('UTF-8'))
+[DEBUG] Sent 0x5 bytes:
+    00000000  6d 65 6f 77  0a                                     │meow│·│
+    00000005
+      EOS
+    end
   end
 
   def test_sendline
@@ -149,16 +202,15 @@ class TubeTest < MiniTest::Test
   def test_interact_send
     save_stdin = $stdin.dup
     $stdin = File.new(FLAG_FILE, File::RDONLY)
+    @log.clear
     begin
-      t = Tube.new
-      def t.io
-        @fakeio ||= Tempfile.new('pwntools_ruby_test')
-      end
+      t = basic_tube
       t.interact
     rescue EOFError
       t.io.rewind
       assert_equal(IO.binread(FLAG_FILE), t.io.read)
     end
+    assert_equal("[INFO] Switching to interactive mode\n", @log.string)
     $stdin.close
     t.io.close
     $stdin = save_stdin
@@ -169,19 +221,23 @@ class TubeTest < MiniTest::Test
     save_stdout = $stdout.dup
     $stdin = UDPSocket.new
     $stdout = Tempfile.new('pwntools_ruby_test')
+    @log.clear
     begin
-      t = Tube.new
-      def t.io
-        @fakeio ||= File.new(FLAG_FILE, File::RDONLY)
-      end
+      t = basic_tube
+      t.instance_variable_set(:@fakeio, File.new(FLAG_FILE, File::RDONLY))
       t.interact
     rescue EOFError
       $stdout.rewind
       assert_equal(IO.binread(FLAG_FILE), $stdout.read)
     end
+    assert_equal("[INFO] Switching to interactive mode\n", @log.string)
     $stdout.close
     t.io.close
     $stdin = save_stdin
     $stdout = save_stdout
+  end
+
+  def teardown
+    ::Pwnlib::Logger.instance_variable_set(:@log, @old_log)
   end
 end

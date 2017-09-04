@@ -77,9 +77,7 @@ module Pwnlib
 
       VALID_SIGNED = SIGNEDNESSES.keys
 
-      # XXX(Darkpi):
-      #   Should we just hard-coded all levels here, or should we use Logger#const_defined?
-      #   (This would include constant SEV_LEVEL, and exclude UNKNOWN)?
+      # We use Logger#const_defined for pwnlib logger.
       LOG_LEVELS = %w(DEBUG INFO WARN ERROR FATAL UNKNOWN).freeze
 
       def initialize(**kwargs)
@@ -166,8 +164,8 @@ module Pwnlib
       def log_level=(value)
         log_level = nil
         case value
-        when String
-          value = value.upcase
+        when String, Symbol
+          value = value.to_s.upcase
           log_level = Logger.const_get(value) if LOG_LEVELS.include?(value)
         when Integer
           log_level = value

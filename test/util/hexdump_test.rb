@@ -11,11 +11,6 @@ require 'pwnlib/util/hexdump'
 class HexDumpTest < MiniTest::Test
   include ::Pwnlib::Util::HexDump
 
-  def setup
-    # Default to disable coloring for easier testing.
-    Rainbow.enabled = false
-  end
-
   def assert_lines_equal(s1, s2)
     s1l = s1.chomp.lines
     s2l = s2.chomp.lines
