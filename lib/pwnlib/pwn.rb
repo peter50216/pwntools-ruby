@@ -8,6 +8,7 @@ require 'pwnlib/constants/constants'
 require 'pwnlib/context'
 require 'pwnlib/dynelf'
 require 'pwnlib/elf/elf'
+require 'pwnlib/logger'
 require 'pwnlib/reg_sort'
 require 'pwnlib/shellcraft/shellcraft'
 require 'pwnlib/tubes/sock'
@@ -22,6 +23,7 @@ require 'pwnlib/util/packing'
 module Pwn
   include ::Pwnlib::Asm
   include ::Pwnlib::Context
+  include ::Pwnlib::Logger
   include ::Pwnlib::Util::Cyclic
   include ::Pwnlib::Util::Fiddling
   include ::Pwnlib::Util::HexDump

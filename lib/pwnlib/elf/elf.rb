@@ -17,7 +17,7 @@ module Pwnlib
       attr_reader :symbols
 
       # @return [Integer] Base address.
-      attr_accessor :address
+      attr_reader :address
 
       # Instantiate an {Pwnlib::ELF::ELF} object.
       #
@@ -42,6 +42,7 @@ module Pwnlib
         load_plt
         load_symbols
         @address = base_address
+        @load_addr = @address
         show_info if checksec
       end
 
@@ -129,6 +130,49 @@ module Pwnlib
       def inspect
         nil
       end
+
+      # Yields the ELF's virtual address space for the specified string or regexp.
+      # Returns an Enumerator if no block given.
+      #
+      # @param [String, Regexp] needle
+      #   The specified string to search.
+      #
+      # @return [Enumerator<Integer>]
+      #   An enumerator for offsets in ELF's virtual address space.
+      #
+      # @example
+      #   ELF.new('/bin/sh', checksec: false).find('ELF')
+      #   #=> #<Enumerator: ...>
+      #
+      #   ELF.new('/bin/sh', checksec: false).find(/E.F/).each { |i| puts i.hex }
+      #   # 0x1
+      #   # 0x11477
+      #   # 0x1c84f
+      #   # 0x1d5ee
+      #   #=> true
+      def search(needle)
+        return enum_for(:search, needle) unless block_given?
+        load_address_fixup = @address - @load_addr
+        stream = @elf_file.stream
+        @elf_file.each_segments do |seg|
+          addr = seg.header.p_vaddr
+          memsz = seg.header.p_memsz
+          offset = seg.header.p_offset
+
+          stream.pos = offset
+          data = stream.read(memsz).ljust(seg.header.p_filesz, "\x00")
+
+          offset = 0
+          loop do
+            offset = data.index(needle, offset)
+            break if offset.nil?
+            yield (addr + offset + load_address_fixup)
+            offset += 1
+          end
+        end
+        true
+      end
+      alias find search
 
       private
 
