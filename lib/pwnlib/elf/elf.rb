@@ -258,7 +258,5 @@ module Pwnlib
 
       include ::Pwnlib::Logger
     end
-
-    include ::Pwnlib::Logger
   end
 end
