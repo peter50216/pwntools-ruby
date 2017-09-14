@@ -3,8 +3,11 @@
 require 'test_helper'
 
 require 'pwnlib/elf/elf'
+require 'pwnlib/logger'
 
 class ELFTest < MiniTest::Test
+  include ::Pwnlib::Logger
+
   def setup
     @data = File.join(__dir__, '..', 'data')
     @elf = ::Pwnlib::ELF::ELF.new(File.join(@data, 'victim32'), checksec: false)
@@ -12,11 +15,12 @@ class ELFTest < MiniTest::Test
 
   def test_load
     victim64 = File.join(@data, 'victim64')
-    assert_output(<<-EOS) { ::Pwnlib::ELF::ELF.new(victim64) }
-RELRO:    No RELRO
-Stack:    No canary found
-NX:       NX enabled
-PIE:      No PIE (0x400000)
+    assert_output(<<-EOS) { log_stdout { ::Pwnlib::ELF::ELF.new(victim64) } }
+[INFO] #{File.realpath(victim64).inspect}
+    RELRO:    No RELRO
+    Stack:    No canary found
+    NX:       NX enabled
+    PIE:      No PIE (0x400000)
     EOS
   end
 
@@ -68,5 +72,12 @@ PIE:      No PIE (0x8048000)
     elf.address = 0x1234000
     assert_equal([0x1234001, 0x1392613], elf.search('ELF').to_a)
     assert_equal(0x138d00b, elf.find('/bin/sh').next)
+  end
+
+  def log_stdout
+    old = log.instance_variable_get(:@logdev)
+    log.instance_variable_set(:@logdev, $stdout)
+    yield
+    log.instance_variable_set(:@logdev, old)
   end
 end

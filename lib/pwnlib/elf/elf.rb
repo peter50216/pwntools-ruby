@@ -39,13 +39,14 @@ module Pwnlib
       #   # PIE:      PIE enabled
       #   #=> #<Pwnlib::ELF::ELF:0x00559bd670dcb8>
       def initialize(path, checksec: true)
+        path = File.realpath(path)
         @elf_file = ELFTools::ELFFile.new(File.open(path, 'rb')) # rubocop:disable Style/AutoResourceCleanup
         load_got
         load_plt
         load_symbols
         @address = base_address
         @load_addr = @address
-        show_info if checksec
+        show_info(path) if checksec
       end
 
       # Set the base address.
@@ -178,9 +179,9 @@ module Pwnlib
 
       private
 
-      def show_info
-        # TODO: Use logger?
-        puts checksec
+      def show_info(path)
+        log.info(path.inspect)
+        log.indented(checksec, level: ::Pwnlib::Logger::INFO)
       end
 
       # Get the dynamic tag with +type+.
@@ -254,8 +255,8 @@ module Pwnlib
                  .map { |seg| seg.header.p_vaddr }
                  .min
       end
-    end
 
-    include ::Pwnlib::Logger
+      include ::Pwnlib::Logger
+    end
   end
 end
