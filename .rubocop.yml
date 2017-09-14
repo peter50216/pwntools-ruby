@@ -52,8 +52,8 @@ Style/Encoding:
   Enabled: false
 
 # TODO(david942j):
-# `yield` cannot be ignored (didn't track why).
-# Enable this cop whenever its related bugs are fixed.
+#   `yield` cannot be ignored (didn't track why).
+#   Enable this cop whenever its related bugs are fixed.
 # Style/MethodCallWithArgsParentheses:
 #   Enabled: true
 #   IgnoredMethods:
