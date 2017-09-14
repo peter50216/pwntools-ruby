@@ -3,11 +3,11 @@
 require 'test_helper'
 
 require 'pwnlib/context'
-require 'pwnlib/util/getendent'
+require 'pwnlib/util/getdents'
 
-class GetendentTest < MiniTest::Test
+class GetdentsTest < MiniTest::Test
   include ::Pwnlib::Context
-  include ::Pwnlib::Util::Getendent
+  include ::Pwnlib::Util::Getdents
 
   def test_parse
     context.local(arch: 'i386') do

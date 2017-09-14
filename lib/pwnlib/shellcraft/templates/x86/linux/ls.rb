@@ -7,8 +7,8 @@ require 'pwnlib/abi'
 #   The relative path to be listed.
 #
 # @note
-#   This shellcode will output the binary data returns by syscall +getendent+.
-#   Use {Pwnlib::Util::Getendent.parse} to parse the output.
+#   This shellcode will output the binary data returns by syscall +getdents+.
+#   Use {Pwnlib::Util::Getdents.parse} to parse the output.
 ::Pwnlib::Shellcraft.define(__FILE__) do |dir = '.'|
   abi = ::Pwnlib::ABI::ABI.syscall
   cat shellcraft.pushstr(dir)

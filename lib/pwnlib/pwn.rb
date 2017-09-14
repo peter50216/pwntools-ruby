@@ -15,7 +15,7 @@ require 'pwnlib/tubes/sock'
 
 require 'pwnlib/util/cyclic'
 require 'pwnlib/util/fiddling'
-require 'pwnlib/util/getendent'
+require 'pwnlib/util/getdents'
 require 'pwnlib/util/hexdump'
 require 'pwnlib/util/lists'
 require 'pwnlib/util/packing'
