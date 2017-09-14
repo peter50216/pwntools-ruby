@@ -2,7 +2,8 @@
 
 require 'pwnlib/abi'
 
-# List file.
+# List files.
+#
 # @param [String] dir
 #   The relative path to be listed.
 #
@@ -13,9 +14,9 @@ require 'pwnlib/abi'
   abi = ::Pwnlib::ABI::ABI.syscall
   cat shellcraft.pushstr(dir)
   cat shellcraft.x86.linux.syscalls.syscall('SYS_open', abi.stack_pointer, 0, 0)
-  # Return value register same as sysnr register in x86.
+  # In x86, return value register is same as sysnr register.
   ret = abi.register_arguments.first
-  # Will fixed size 0x1000 be an issue..?
+  # XXX(david942j): Will fixed size 0x1000 be an issue?
   cat shellcraft.x86.linux.syscalls.syscall('SYS_getdents', ret, abi.stack_pointer, 0x1000) # getdents(fd, buf, sz)
 
   # Just write all the shits out
