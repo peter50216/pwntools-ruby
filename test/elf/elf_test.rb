@@ -30,18 +30,18 @@ PIE:      No PIE (0x8048000)
   end
 
   def test_got
-    assert_equal(6, @elf.got.to_h.size)
-    assert_equal(0x8049774, @elf.got['__gmon_start__'])
-    assert_equal(0x8049774, @elf.got[:__gmon_start__])
-    assert_equal(0x8049778, @elf.symbols['_GLOBAL_OFFSET_TABLE_'])
-    assert_equal(0x804849b, @elf.symbols['main'])
-    assert_equal(@elf.symbols.main, @elf.symbols[:main])
+    assert_same(6, @elf.got.to_h.size)
+    assert_same(0x8049774, @elf.got['__gmon_start__'])
+    assert_same(0x8049774, @elf.got[:__gmon_start__])
+    assert_same(0x8049778, @elf.symbols['_GLOBAL_OFFSET_TABLE_'])
+    assert_same(0x804849b, @elf.symbols['main'])
+    assert_same(@elf.symbols.main, @elf.symbols[:main])
   end
 
   def test_plt
-    assert_equal(4, @elf.plt.to_h.size)
-    assert_equal(0x8048350, @elf.plt.printf)
-    assert_equal(0x8048370, @elf.plt[:setvbuf])
+    assert_same(4, @elf.plt.to_h.size)
+    assert_same(0x8048350, @elf.plt.printf)
+    assert_same(0x8048370, @elf.plt[:setvbuf])
   end
 
   def test_address

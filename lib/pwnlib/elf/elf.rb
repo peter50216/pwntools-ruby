@@ -2,6 +2,8 @@ require 'elftools'
 require 'ostruct'
 require 'rainbow'
 
+require 'pwnlib/logger'
+
 module Pwnlib
   # ELF module includes classes for parsing an ELF file.
   module ELF
@@ -198,7 +200,7 @@ module Pwnlib
           rel_sec.relocations.each do |rel|
             symbol = symtab.symbol_at(rel.symbol_index)
             next if symbol.nil? # Unusual case.
-            @got[symbol.name] = rel.header.r_offset
+            @got[symbol.name] = rel.header.r_offset.to_i
           end
         end
       end
@@ -210,14 +212,14 @@ module Pwnlib
         # Here only use section information, which won't find any plt(s) when compile option '-Wl' is enabled.
         #
         # The implementation here same as python-pwntools 3.5, and supports i386 and amd64 only.
-        @plt = OpenStruct.new
         plt_sec = @elf_file.section_by_name('.plt')
-        return if plt_sec.nil? # TODO(david942j): log.warn
+        return log.warn('No PLT section found') if plt_sec.nil?
         rel_sec = @elf_file.section_by_name('.rel.plt') || @elf_file.section_by_name('.rela.plt')
-        return if rel_sec.nil? # -Wl enabled
+        return log.warn('No REL.PLT section found') if rel_sec.nil? # -Wl enabled
         symtab = @elf_file.section_at(rel_sec.header.sh_link)
         return unless symtab.respond_to?(:symbol_at)
-        address = plt_sec.header.sh_addr + PLT_OFFSET
+        @plt = OpenStruct.new
+        address = plt_sec.header.sh_addr.to_i + PLT_OFFSET
         rel_sec.relocations.each do |rel|
           symbol = symtab.symbol_at(rel.symbol_index)
           next if symbol.nil? # Unusual case.
@@ -236,7 +238,7 @@ module Pwnlib
             next if symbol.name.empty?
             next if symbol.header.st_value.zero?
             # TODO(david942j): handle symbols with same name.
-            @symbols[symbol.name] = symbol.header.st_value
+            @symbols[symbol.name] = symbol.header.st_value.to_i
           end
         end
       end
@@ -253,5 +255,7 @@ module Pwnlib
                  .min
       end
     end
+
+    include ::Pwnlib::Logger
   end
 end
