@@ -2,6 +2,12 @@ AllCops:
   DisplayCopNames: true
   DisplayStyleGuide: true
 
+Layout/EndOfLine:
+  EnforcedStyle: lf
+
+Layout/IndentHeredoc:
+  Enabled: false
+
 Metrics/AbcSize:
   Enabled: false
 
@@ -45,17 +51,16 @@ Style/CollectionMethods:
 Style/Encoding:
   Enabled: false
 
-Style/EndOfLine:
-  EnforcedStyle: lf
-
-Style/IndentHeredoc:
-  Enabled: false
-
-# TODO(Darkpi):
-#   Enable this when rubocop fix the setter methods being reported.
-#   (https://github.com/bbatsov/rubocop/issues/4152)
+# TODO(david942j):
+# `yield` cannot be ignored (didn't track why).
+# Enable this cop whenever its related bugs are fixed.
 # Style/MethodCallWithArgsParentheses:
 #   Enabled: true
+#   IgnoredMethods:
+#     - require
+#     - yield
+#     - skip
+#     - raise
 
 Style/MethodCalledOnDoEndBlock:
   Enabled: true
@@ -77,3 +82,6 @@ Style/SymbolArray:
 
 Style/SingleLineBlockParams:
   Enabled: true
+
+Style/YodaCondition:
+  Enabled: false

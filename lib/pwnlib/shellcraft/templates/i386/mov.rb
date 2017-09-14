@@ -12,10 +12,10 @@ require 'pwnlib/util/packing'
 
   raise ArgumentError, "#{dest} is not a register" unless register?(dest)
   dest = get_register(dest)
-  raise ArgumentError "cannot use #{dest} on i386" if dest.size > 32 || dest.is64bit
+  raise ArgumentError, "cannot use #{dest} on i386" if dest.size > 32 || dest.is64bit
   if register?(src)
     src = get_register(src)
-    raise ArgumentError "cannot use #{src} on i386" if src.size > 32 || src.is64bit
+    raise ArgumentError, "cannot use #{src} on i386" if src.size > 32 || src.is64bit
     if dest.size < src.size && !dest.bigger.include?(src.name)
       raise ArgumentError, "cannot mov #{dest}, #{src}: dest is smaller than src"
     end
