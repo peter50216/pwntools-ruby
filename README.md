@@ -12,9 +12,6 @@ Always sad when playing CTF that there's nothing equivalent to pwntools in Pytho
 While pwntools is awesome, I always love Ruby far more than Python...
 So this is an attempt to create such library.
 
-There's almost NOTHING here now.
-(Edit: there's something here now, but not much :wink:)
-Going to implement important things (socket, tubes, asm/disasm, pack/unpack utilities) first.
 Would try to have consistent naming with original pwntools, and do things in Ruby style.
 
 # Example Usage
@@ -32,6 +29,54 @@ p pack(0x41424344)  # 'ABCD'
 context.local(bits: 16) do
   p pack(0x4142)  # 'AB'
 end
+
+context.log_level = :debug
+s = Sock.new('exploitme.example.com', 31337)
+# EXPLOIT CODE GOES HERE
+s.send(0xdeadbeef.p32)
+s.send(asm(shellcraft.sh))
+s.interact
+```
+
+More features and details can be found in TBA.
+
+# Installation
+
+Since there are two gems, which `pwntools-ruby` depends on, didn't be published to rubygems,
+you should install them by self. :disappointed:
+
+```sh
+gem install pwntools
+
+git clone https://github.com/bnagy/crabstone.git /tmp/crabstone
+cd /tmp/crabstone
+gem build crabstone.gemspec
+gem install crabstone
+
+git clone https://github.com/sashs/ruby-keystone.git /tmp/ruby-keystone
+cd /tmp/ruby-keystone/keystone_gem
+gem build keystone.gemspec
+gem install keystone
+```
+
+Some of the features (assembling/disassembling) require non-Ruby dependencies. Checkout the
+installation guide for
+[keystone-engine](https://github.com/keystone-engine/keystone/tree/master/docs) and
+[capstone-engine](http://www.capstone-engine.org/documentation.html).
+
+Or you can be able to get running quickly with
+```sh
+# Install capstone
+sudo apt-get install libcapstone3
+
+# Compile and install Keystone from source.
+sudo apt-get install cmake
+git clone https://github.com/keystone-engine/keystone.git /tmp/keystone
+cd /tmp/keystone
+mkdir build
+cd build
+../make-share.sh
+sudo make install
 ```
 
 # Development
