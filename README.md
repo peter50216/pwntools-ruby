@@ -14,8 +14,10 @@ So this is an attempt to create such library.
 
 Would try to have consistent naming with original pwntools, and do things in Ruby style.
 
-Here's an exploitation for `start` which is a challenge on `pwnable.tw`.
 # Example Usage
+
+Here's an exploitation for `start` which is a challenge on `pwnable.tw`.
+
 ```ruby
 # encoding: ASCII-8BIT
 # The encoding line is important most time, or you'll get "\u0000" when using "\x00" in code,
@@ -67,7 +69,8 @@ installation guide for
 [keystone-engine](https://github.com/keystone-engine/keystone/tree/master/docs) and
 [capstone-engine](http://www.capstone-engine.org/documentation.html).
 
-Or you can be able to get running quickly with
+Or you are able to get running quickly with
+
 ```sh
 # Install capstone
 sudo apt-get install libcapstone3
