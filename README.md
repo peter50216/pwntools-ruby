@@ -72,10 +72,10 @@ installation guide for
 Or you are able to get running quickly with
 
 ```sh
-# Install capstone
+# Install Capstone
 sudo apt-get install libcapstone3
 
-# Compile and install Keystone from source.
+# Compile and install Keystone from source
 sudo apt-get install cmake
 git clone https://github.com/keystone-engine/keystone.git /tmp/keystone
 cd /tmp/keystone
