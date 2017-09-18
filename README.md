@@ -25,6 +25,7 @@ Here's an exploitation for `start` which is a challenge on `pwnable.tw`.
 
 require 'pwn'
 
+context.arch = 'i386'
 context.log_level = :debug
 z = Sock.new 'chall.pwnable.tw', 10000
 
@@ -84,6 +85,42 @@ cd build
 ../make-share.sh
 sudo make install
 ```
+
+# Supported Features
+
+## Architectures
+
+- [x] i386
+- [x] amd64
+- [ ] aarch64
+- [ ] alpha
+- [ ] arm
+- [ ] avr
+- [ ] ia64
+- [ ] mips
+- [ ] powerpc
+- [ ] sparc
+- [ ] thumb
+- [ ] vax
+
+## Modules
+
+- [ ] adb
+- [x] asm
+- [x] constants
+- [x] context
+- [x] disasm
+- [x] dynelf
+- [ ] encoders
+- [x] elf
+- [ ] flag
+- [ ] fmtstr
+- [x] logger
+- [x] shellcraft
+- [ ] rop
+- [x] tube
+- [x] timeout
+- [x] utils
 
 # Development
 ```sh
