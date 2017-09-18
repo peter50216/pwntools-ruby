@@ -16,7 +16,7 @@ Would try to have consistent naming with original pwntools, and do things in Rub
 
 # Example Usage
 
-Here's an exploitation for `start` which is a challenge on `pwnable.tw`.
+Here's an exploitation for `start` which is a challenge on [pwnable.tw](https://pwnable.tw).
 
 ```ruby
 # encoding: ASCII-8BIT
@@ -92,35 +92,26 @@ sudo make install
 
 - [x] i386
 - [x] amd64
-- [ ] aarch64
-- [ ] alpha
 - [ ] arm
-- [ ] avr
-- [ ] ia64
-- [ ] mips
-- [ ] powerpc
-- [ ] sparc
 - [ ] thumb
-- [ ] vax
 
 ## Modules
 
-- [ ] adb
-- [x] asm
-- [x] constants
 - [x] context
+- [x] asm
 - [x] disasm
-- [x] dynelf
-- [ ] encoders
-- [x] elf
-- [ ] flag
-- [ ] fmtstr
-- [x] logger
 - [x] shellcraft
-- [ ] rop
-- [x] tube
-- [x] timeout
-- [x] utils
+- [x] elf
+- [x] dynelf
+- [x] logger
+- [ ] tube
+  - [x] sock
+  - [ ] process
+- [ ] fmtstr
+- [x] util
+  - [x] pack
+  - [x] cyclic
+  - [x] fiddling
 
 # Development
 ```sh
