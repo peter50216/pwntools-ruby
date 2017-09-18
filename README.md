@@ -43,7 +43,7 @@ z.interact
 ```
 
 More features and details can be found in the
-![documentation](http://www.rubydoc.info/github/peter50216/pwntools-ruby/master/frames).
+[documentation](http://www.rubydoc.info/github/peter50216/pwntools-ruby/master/frames).
 
 # Installation
 
