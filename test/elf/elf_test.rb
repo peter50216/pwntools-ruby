@@ -9,16 +9,17 @@ class ELFTest < MiniTest::Test
   include ::Pwnlib::Logger
 
   def setup
-    @data = File.join(__dir__, '..', 'data')
-    @elf = ::Pwnlib::ELF::ELF.new(File.join(@data, 'victim32'), checksec: false)
+    @path_of = ->(file) { File.join(__dir__, '..', 'data', 'elfs', file) }
+    @elf = ::Pwnlib::ELF::ELF.new(@path_of.call('i386.prelro.elf'), checksec: false)
   end
 
+  # check stdout when loaded
   def test_load
-    victim64 = File.join(@data, 'victim64')
-    assert_output(<<-EOS) { log_stdout { ::Pwnlib::ELF::ELF.new(victim64) } }
-[INFO] #{File.realpath(victim64).inspect}
-    RELRO:    No RELRO
-    Stack:    No canary found
+    file = @path_of.call('amd64.prelro.elf')
+    assert_output(<<-EOS) { log_stdout { ::Pwnlib::ELF::ELF.new(file) } }
+[INFO] #{File.realpath(file).inspect}
+    RELRO:    Partial RELRO
+    Stack:    Canary found
     NX:       NX enabled
     PIE:      No PIE (0x400000)
     EOS
@@ -26,26 +27,37 @@ class ELFTest < MiniTest::Test
 
   def test_checksec
     assert_equal(<<-EOS.strip, @elf.checksec)
-RELRO:    No RELRO
-Stack:    No canary found
+RELRO:    Partial RELRO
+Stack:    Canary found
 NX:       NX enabled
 PIE:      No PIE (0x8048000)
+    EOS
+
+    nrelro_elf = ::Pwnlib::ELF::ELF.new(@path_of.call('amd64.nrelro.elf'), checksec: false)
+    assert_equal(<<-EOS.strip, nrelro_elf.checksec)
+RELRO:    No RELRO
+Stack:    Canary found
+NX:       NX enabled
+PIE:      No PIE (0x400000)
     EOS
   end
 
   def test_got
-    assert_same(6, @elf.got.to_h.size)
-    assert_same(0x8049774, @elf.got['__gmon_start__'])
-    assert_same(0x8049774, @elf.got[:__gmon_start__])
-    assert_same(0x8049778, @elf.symbols['_GLOBAL_OFFSET_TABLE_'])
-    assert_same(0x804849b, @elf.symbols['main'])
+    assert_same(8, @elf.got.to_h.size)
+    assert_same(0x8049ff8, @elf.got['__gmon_start__'])
+    assert_same(0x8049ff8, @elf.got[:__gmon_start__])
+    assert_same(0x804a000, @elf.symbols['_GLOBAL_OFFSET_TABLE_'])
+    assert_same(0x804856d, @elf.symbols['main'])
     assert_same(@elf.symbols.main, @elf.symbols[:main])
   end
 
   def test_plt
-    assert_same(4, @elf.plt.to_h.size)
-    assert_same(0x8048350, @elf.plt.printf)
-    assert_same(0x8048370, @elf.plt[:setvbuf])
+    assert_same(6, @elf.plt.to_h.size)
+    assert_same(0x80483b0, @elf.plt.printf)
+    assert_same(0x80483f0, @elf.plt[:scanf])
+
+    elf = ::Pwnlib::ELF::ELF.new(@path_of.call('amd64.frelro.pie.elf'), checksec: false)
+    assert_nil(elf.plt)
   end
 
   def test_address
@@ -55,10 +67,16 @@ PIE:      No PIE (0x8048000)
     new_address = 0x12340000
     @elf.address = new_address
     assert_equal(old_main - old_address + new_address, @elf.symbols.main)
+
+    elf = ::Pwnlib::ELF::ELF.new(@path_of.call('i386.frelro.pie.elf'), checksec: false)
+    assert_equal(0, elf.address)
+    assert_same(0x6c2, elf.symbols.main)
+    elf.address = 0xdeadbeef0000
+    assert_same(0xdeadbeef06c2, elf.symbols.main)
   end
 
   def test_search
-    elf = ::Pwnlib::ELF::ELF.new(File.join(@data, 'lib32', 'libc.so.6'), checksec: false)
+    elf = ::Pwnlib::ELF::ELF.new(File.join(__dir__, '..', 'data', 'lib32', 'libc.so.6'), checksec: false)
     assert_equal([0x1, 0x15e613], elf.search('ELF').to_a)
     assert_equal(0x15900b, elf.find('/bin/sh').next)
 

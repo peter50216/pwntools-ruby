@@ -64,7 +64,7 @@ module Pwnlib
       def address=(val)
         old = @address
         @address = val
-        [@got, @plt, @symbols].each do |tbl|
+        [@got, @plt, @symbols].compact.each do |tbl|
           tbl.each_pair { |k, _| tbl[k] += val - old }
         end
         val
@@ -213,6 +213,7 @@ module Pwnlib
         # Here only use section information, which won't find any plt(s) when compile option '-Wl' is enabled.
         #
         # The implementation here same as python-pwntools 3.5, and supports i386 and amd64 only.
+        @plt = nil
         plt_sec = @elf_file.section_by_name('.plt')
         return log.warn('No PLT section found') if plt_sec.nil?
         rel_sec = @elf_file.section_by_name('.rel.plt') || @elf_file.section_by_name('.rela.plt')
