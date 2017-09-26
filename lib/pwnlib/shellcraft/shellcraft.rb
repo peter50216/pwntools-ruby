@@ -184,53 +184,6 @@ module Pwnlib
 
         private
 
-        def label_str?(str)
-          str.match(/\A\w+_\d+:\Z/) != nil
-        end
-
-        # Indent each line 2 space.
-        def typesetting
-          indent = @_output.string.lines.map do |line|
-            next line.strip + "\n" if label_str?(line.strip)
-            line == "\n" ? line : ' ' * 2 + line.lstrip
-          end
-          indent.join
-        end
-
-        # For templates/*.rb use.
-
-        def cat(str)
-          @_output.puts str
-        end
-
-        def okay(s, *a, **kw)
-          s = Util::Packing.pack(s, *a, **kw) if s.is_a?(Integer)
-          !(s.include?("\x00") || s.include?("\n"))
-        end
-
-        def evaluate(item)
-          return item if ::Pwnlib::Shellcraft::Registers.register?(item)
-          Constants.eval(item)
-        end
-
-        # @param [Constants::Constant, String, Integer] n
-        def pretty(n)
-          case n
-          when Constants::Constant
-            format('%s /* %s */', pretty(n.to_i), n)
-          when Integer
-            n.abs < 10 ? n.to_s : Util::Fiddling.hex(n)
-          else
-            n.inspect
-          end
-        end
-
-        # @example
-        #   get_label('infloop') #=> 'infloop_1'
-        def get_label(str)
-          "#{str}_#{self.class.label_num}"
-        end
-
         def shellcraft
           ::Pwnlib::Shellcraft.instance
         end
