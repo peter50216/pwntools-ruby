@@ -9,7 +9,7 @@ module Pwnlib
       module Amd64
         module Common
           def ret(return_value = nil)
-            Common.mov('rax', return_value) if return_value
+            cat Common.mov('rax', return_value) if return_value
             cat 'ret'
           end
         end

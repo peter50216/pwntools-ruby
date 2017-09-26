@@ -1,6 +1,8 @@
 # encoding: ASCII-8BIT
 
 require 'pwnlib/shellcraft/generators/x86/common/common'
+require 'pwnlib/shellcraft/generators/x86/common/mov'
+require 'pwnlib/shellcraft/generators/x86/common/pushstr'
 
 module Pwnlib
   module Shellcraft
@@ -21,16 +23,16 @@ module Pwnlib
             word_size = abi.arg_alignment
             offset = array_str.size + word_size
             cat "/* push argument array #{array.inspect} */"
-            cat pushstr(array_str)
-            cat mov(reg, 0)
+            cat Common.pushstr(array_str)
+            cat Common.mov(reg, 0)
             cat "push #{reg} /* null terminate */"
             array.reverse.each_with_index do |arg, i|
-              cat mov(reg, offset + word_size * i - arg.size)
+              cat Common.mov(reg, offset + word_size * i - arg.size)
               cat "add #{reg}, #{abi.stack_pointer}"
               cat "push #{reg} /* #{arg.inspect} */"
               offset -= arg.size
             end
-            cat mov(reg, abi.stack_pointer)
+            cat Common.mov(reg, abi.stack_pointer)
           end
         end
       end

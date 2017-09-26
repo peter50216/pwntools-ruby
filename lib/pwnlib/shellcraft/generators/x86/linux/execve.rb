@@ -1,5 +1,7 @@
 # encoding: ASCII-8BIT
 
+require 'pwnlib/shellcraft/generators/x86/common/common'
+require 'pwnlib/shellcraft/generators/x86/common/pushstr_array'
 require 'pwnlib/shellcraft/generators/x86/linux/linux'
 
 module Pwnlib
@@ -34,7 +36,7 @@ module Pwnlib
                      raise ArgumentError, "#{argv.inspect} is not a valid register name" unless register?(argv)
                      argv
                    when Array
-                     cat pushstr_array(abi.register_arguments[2], argv)
+                     cat Common.pushstr_array(abi.register_arguments[2], argv)
                      cat ''
                      abi.register_arguments[2]
                    when Integer, nil
@@ -46,7 +48,7 @@ module Pwnlib
                      raise ArgumentError, "#{envp.inspect} is not a valid register name" unless register?(envp)
                      envp
                    when Hash
-                     cat pushstr_array(abi.register_arguments[3], envp.map { |k, v| "#{k}=#{v}" })
+                     cat Common.pushstr_array(abi.register_arguments[3], envp.map { |k, v| "#{k}=#{v}" })
                      cat ''
                      abi.register_arguments[3]
                    when Integer, nil
@@ -54,11 +56,11 @@ module Pwnlib
                    end
 
             unless register?(path)
-              cat pushstr(path)
+              cat Common.pushstr(path)
               cat ''
               path = abi.stack_pointer
             end
-            cat syscall('SYS_execve', path, argv, envp)
+            cat Linux.syscall('SYS_execve', path, argv, envp)
           end
         end
       end

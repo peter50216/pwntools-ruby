@@ -1,6 +1,7 @@
 # encoding: ASCII-8BIT
 
 require 'pwnlib/shellcraft/generators/x86/linux/linux'
+require 'pwnlib/shellcraft/generators/x86/common/setregs'
 
 module Pwnlib
   module Shellcraft
@@ -40,7 +41,7 @@ module Pwnlib
             arguments = [syscall, arg0, arg1, arg2, arg3, arg4, arg5]
             reg_ctx = registers.zip(arguments).to_h
             cat "/* call #{syscall_repr} */"
-            cat setregs(reg_ctx) if arguments.any? { |v| !v.nil? }
+            cat Common.setregs(reg_ctx) if arguments.any? { |v| !v.nil? }
             cat abi.syscall_str
           end
         end

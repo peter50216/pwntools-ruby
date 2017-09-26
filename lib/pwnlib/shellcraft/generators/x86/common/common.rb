@@ -1,8 +1,4 @@
-require 'pwnlib/shellcraft/generators/amd64/common/mov'
-require 'pwnlib/shellcraft/generators/amd64/common/pushstr'
 require 'pwnlib/shellcraft/generators/helper'
-require 'pwnlib/shellcraft/generators/i386/common/mov'
-require 'pwnlib/shellcraft/generators/i386/common/pushstr'
 
 module Pwnlib
   module Shellcraft
@@ -10,12 +6,14 @@ module Pwnlib
       module X86
         # For non os-related methods.
         module Common
-          %i[mov pushstr].each do |m|
-            define_method(m) do |*args|
-              if context.arch == 'amd64'
-                Generators::Amd64::Common.public_send(m, *args)
-              elsif context.arch == 'i386'
-                Generators::I386::Common.public_send(m, *args)
+          class << self
+            def define_arch_dependent_method(method)
+              define_method(method) do |*args|
+                if context.arch == 'amd64'
+                  cat Generators::Amd64::Common.public_send(method, *args)
+                elsif context.arch == 'i386'
+                  cat Generators::I386::Common.public_send(method, *args)
+                end
               end
             end
           end

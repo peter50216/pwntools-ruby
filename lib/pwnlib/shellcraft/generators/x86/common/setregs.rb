@@ -51,7 +51,7 @@ module Pwnlib
               cdq = true
               reg_context.delete(dx_str)
             end
-            sorted_regs = ::Pwnlib::RegSort.regsort(reg_context, ::Pwnlib::Shellcraft::Registers.registers)
+            sorted_regs = regsort(reg_context, registers)
             if sorted_regs.empty?
               cat '/* setregs noop */'
             else
@@ -61,7 +61,7 @@ module Pwnlib
                 else
                   # Bug in python-pwntools, which is missing `stack_allowed`.
                   # Proof of bug: pwnlib.shellcraft.setregs({'rax': 1}, stack_allowed=False)
-                  cat mov(src, dst, stack_allowed: stack_allowed)
+                  cat Common.mov(src, dst, stack_allowed: stack_allowed)
                 end
               end
             end

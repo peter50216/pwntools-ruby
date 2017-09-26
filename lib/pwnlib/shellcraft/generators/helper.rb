@@ -3,6 +3,7 @@ require 'pwnlib/context'
 require 'pwnlib/reg_sort'
 require 'pwnlib/shellcraft/registers'
 require 'pwnlib/util/fiddling'
+require 'pwnlib/util/lists'
 require 'pwnlib/util/packing'
 
 module Pwnlib
@@ -73,6 +74,7 @@ module Pwnlib
           include ::Pwnlib::Context
           include ::Pwnlib::Shellcraft::Registers
           include ::Pwnlib::Util::Fiddling
+          include ::Pwnlib::Util::Lists
           include ::Pwnlib::Util::Packing
           include ::Pwnlib::RegSort
         end

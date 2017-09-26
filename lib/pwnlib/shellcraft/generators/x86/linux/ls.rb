@@ -1,5 +1,6 @@
 # encoding: ASCII-8BIT
 
+require 'pwnlib/shellcraft/generators/x86/common/pushstr'
 require 'pwnlib/shellcraft/generators/x86/linux/linux'
 require 'pwnlib/shellcraft/generators/x86/linux/syscall'
 
@@ -18,15 +19,15 @@ module Pwnlib
           #   Use {Pwnlib::Util::Getdents.parse} to parse the output.
           def ls(dir = '.')
             abi = ::Pwnlib::ABI::ABI.syscall
-            cat pushstr(dir)
-            cat syscall('SYS_open', abi.stack_pointer, 0, 0)
+            cat Common.pushstr(dir)
+            cat Linux.syscall('SYS_open', abi.stack_pointer, 0, 0)
             # In x86, return value register is same as sysnr register.
             ret = abi.register_arguments.first
             # XXX(david942j): Will fixed size 0x1000 be an issue?
-            cat syscall('SYS_getdents', ret, abi.stack_pointer, 0x1000) # getdents(fd, buf, sz)
+            cat Linux.syscall('SYS_getdents', ret, abi.stack_pointer, 0x1000) # getdents(fd, buf, sz)
 
             # Just write all the shits out
-            cat syscall('SYS_write', 1, abi.stack_pointer, ret)
+            cat Linux.syscall('SYS_write', 1, abi.stack_pointer, ret)
           end
         end
       end

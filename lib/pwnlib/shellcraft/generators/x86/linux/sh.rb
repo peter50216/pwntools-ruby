@@ -26,7 +26,7 @@ module Pwnlib
                    when false then 0
                    else argv
                    end
-            cat execve('/bin///sh', argv, 0)
+            cat Linux.execve('/bin///sh', argv, 0)
           end
         end
       end
