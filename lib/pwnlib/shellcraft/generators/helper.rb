@@ -85,7 +85,7 @@ module Pwnlib
           def extended(mod)
             class << mod
               define_method(:method_added) do |m|
-                # Define singleton methods, so we can invoke +Generators::X86::Common.pushstr+.
+                # Define singleton methods, so we can invoke +Generators::X86::Common.pushstr_array+.
                 # Each method runs in an independent 'runner', so methods would not effect each other.
                 runner = Runner.new
                 method = instance_method(m).bind(runner)

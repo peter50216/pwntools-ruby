@@ -11,7 +11,7 @@ module Pwnlib
           # See {Generators::X86::Linux#syscall}.
           def syscall(*arguments)
             context.local(arch: 'amd64') do
-              cat Generators::X86::Linux.syscall(*arguments)
+              cat X86::Linux.syscall(*arguments)
             end
           end
         end

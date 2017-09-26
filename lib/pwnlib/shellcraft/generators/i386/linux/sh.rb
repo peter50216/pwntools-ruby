@@ -9,7 +9,7 @@ module Pwnlib
           # See #{Generators::X86::Linux#sh}.
           def sh(*args)
             context.local(arch: 'i386') do
-              cat Generators::X86::Linux.sh(*args)
+              cat X86::Linux.sh(*args)
             end
           end
         end

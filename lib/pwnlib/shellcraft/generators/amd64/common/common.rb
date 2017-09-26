@@ -6,7 +6,6 @@ module Pwnlib
       module Amd64
         # For non os-related methods.
         module Common
-          # There's method hook in Helper module, so extend in the last line.
           extend ::Pwnlib::Shellcraft::Generators::Helper
         end
       end

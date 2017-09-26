@@ -2,13 +2,8 @@
 
 require 'singleton'
 
-require 'pwnlib/constants/constant'
-require 'pwnlib/constants/constants'
-require 'pwnlib/logger'
 require 'pwnlib/context'
-require 'pwnlib/shellcraft/registers'
-require 'pwnlib/util/fiddling'
-require 'pwnlib/util/packing'
+require 'pwnlib/logger'
 
 module Pwnlib
   # Implement shellcraft!

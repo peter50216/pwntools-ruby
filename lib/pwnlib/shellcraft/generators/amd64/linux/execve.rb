@@ -11,7 +11,7 @@ module Pwnlib
           # See {Generators::X86::Linux#execve}.
           def execve(*arguments)
             context.local(arch: 'amd64') do
-              cat Generators::X86::Linux.execve(*arguments)
+              cat X86::Linux.execve(*arguments)
             end
           end
         end

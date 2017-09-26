@@ -9,7 +9,7 @@ module Pwnlib
           # See #{Generators::X86::Linux#ls}.
           def ls(*args)
             context.local(arch: 'amd64') do
-              cat Generators::X86::Linux.ls(*args)
+              cat X86::Linux.ls(*args)
             end
           end
         end

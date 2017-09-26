@@ -1,7 +1,7 @@
 # encoding: ASCII-8BIT
 
-require 'pwnlib/shellcraft/generators/x86/linux/linux'
 require 'pwnlib/shellcraft/generators/x86/common/setregs'
+require 'pwnlib/shellcraft/generators/x86/linux/linux'
 
 module Pwnlib
   module Shellcraft

@@ -1,5 +1,3 @@
-# encoding: ASCII-8BIT
-
 require 'pwnlib/shellcraft/generators/i386/linux/linux'
 require 'pwnlib/shellcraft/generators/x86/linux/syscall'
 
@@ -11,7 +9,7 @@ module Pwnlib
           # See {Generators::X86::Linux#syscall}.
           def syscall(*arguments)
             context.local(arch: 'i386') do
-              cat Generators::X86::Linux.syscall(*arguments)
+              cat X86::Linux.syscall(*arguments)
             end
           end
         end
