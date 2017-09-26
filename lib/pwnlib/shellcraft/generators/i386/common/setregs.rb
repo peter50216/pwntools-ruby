@@ -1,7 +1,21 @@
-# encoding: ASCII-8BIT
+require 'pwnlib/shellcraft/generators/i386/common/common'
+require 'pwnlib/shellcraft/generators/x86/common/setregs'
 
-::Pwnlib::Shellcraft.define(__FILE__) do |reg_context, stack_allowed: true|
-  context.local(arch: 'i386') do
-    cat shellcraft.x86.setregs(reg_context, stack_allowed: stack_allowed)
+module Pwnlib
+  module Shellcraft
+    module Generators
+      module I386
+        module Common
+          module_function
+
+          # See {Generators::X86::Common.setregs}.
+          def setregs(*args)
+            context.local(arch: 'i386') do
+              cat Generators::X86::Common.setregs(*args)
+            end
+          end
+        end
+      end
+    end
   end
 end

@@ -1,5 +1,18 @@
-# encoding: ASCII-8BIT
+require 'pwnlib/shellcraft/generators/i386/common/common'
+require 'pwnlib/shellcraft/generators/x86/common/infloop'
 
-::Pwnlib::Shellcraft.define(__FILE__) do
-  cat shellcraft.x86.infloop
+module Pwnlib
+  module Shellcraft
+    module Generators
+      module I386
+        module Common
+          module_function
+
+          def infloop
+            cat Generators::X86::Common.infloop
+          end
+        end
+      end
+    end
+  end
 end
