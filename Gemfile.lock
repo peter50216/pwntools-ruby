@@ -17,20 +17,20 @@ PATH
   specs:
     pwntools (0.1.0)
       dentaku (~> 2.0.11)
-      elftools (~> 0.2.1)
+      elftools (~> 0.2.2)
       rainbow (~> 2.2)
 
 GEM
   remote: https://www.rubygems.org/
   specs:
     ast (2.3.0)
-    bindata (2.3.5)
+    bindata (2.4.0)
     codeclimate-test-reporter (0.6.0)
       simplecov (>= 0.7.1, < 1.0.0)
     coderay (1.1.1)
     dentaku (2.0.11)
     docile (1.1.5)
-    elftools (0.2.1)
+    elftools (0.2.2)
       bindata (~> 2)
     ffi (1.9.18)
     json (2.1.0)

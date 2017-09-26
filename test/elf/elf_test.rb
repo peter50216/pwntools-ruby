@@ -23,6 +23,16 @@ class ELFTest < MiniTest::Test
     NX:       NX enabled
     PIE:      No PIE (0x400000)
     EOS
+
+    file = @path_of.call('amd64.frelro.elf')
+    assert_output(<<-EOS) { log_stdout { ::Pwnlib::ELF::ELF.new(file) } }
+[WARN] No REL.PLT section found, PLT not loaded
+[INFO] #{File.realpath(file).inspect}
+    RELRO:    Full RELRO
+    Stack:    Canary found
+    NX:       NX enabled
+    PIE:      No PIE (0x400000)
+    EOS
   end
 
   def test_checksec
@@ -36,6 +46,14 @@ PIE:      No PIE (0x8048000)
     nrelro_elf = ::Pwnlib::ELF::ELF.new(@path_of.call('amd64.nrelro.elf'), checksec: false)
     assert_equal(<<-EOS.strip, nrelro_elf.checksec)
 RELRO:    No RELRO
+Stack:    Canary found
+NX:       NX enabled
+PIE:      No PIE (0x400000)
+    EOS
+
+    frelro_elf = ::Pwnlib::ELF::ELF.new(@path_of.call('amd64.frelro.elf'), checksec: false)
+    assert_equal(<<-EOS.strip, frelro_elf.checksec)
+RELRO:    Full RELRO
 Stack:    Canary found
 NX:       NX enabled
 PIE:      No PIE (0x400000)

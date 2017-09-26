@@ -100,9 +100,13 @@ module Pwnlib
       #
       # @return [:full, :partial, :none]
       def relro
+        return :none unless @elf_file.segment_by_type(:gnu_relro)
         return :full if dynamic_tag(:bind_now)
-        return :partial if @elf_file.segment_by_type(:gnu_relro)
-        :none
+        flags = dynamic_tag(:flags)
+        return :full if flags && (flags.value & ::ELFTools::Constants::DF_BIND_NOW) != 0
+        flags1 = dynamic_tag(:flags_1)
+        return :full if flags1 && (flags1.value & ::ELFTools::Constants::DF_1_NOW) != 0
+        :partial
       end
 
       # Is this ELF file has canary?
@@ -212,19 +216,19 @@ module Pwnlib
         # Unlike pwntools-python, which use unicorn emulating instructions to find plt(s).
         # Here only use section information, which won't find any plt(s) when compile option '-Wl' is enabled.
         #
-        # The implementation here same as python-pwntools 3.5, and supports i386 and amd64 only.
+        # The implementation here same as pwntools-python 3.5, and supports i386 and amd64 only.
         @plt = nil
         plt_sec = @elf_file.section_by_name('.plt')
-        return log.warn('No PLT section found') if plt_sec.nil?
+        return log.warn('No PLT section found, PLT not loaded') if plt_sec.nil?
         rel_sec = @elf_file.section_by_name('.rel.plt') || @elf_file.section_by_name('.rela.plt')
-        return log.warn('No REL.PLT section found') if rel_sec.nil? # -Wl enabled
+        return log.warn('No REL.PLT section found, PLT not loaded') if rel_sec.nil?
         symtab = @elf_file.section_at(rel_sec.header.sh_link)
-        return unless symtab.respond_to?(:symbol_at)
+        return unless symtab.respond_to?(:symbol_at) # unusual case
         @plt = OpenStruct.new
         address = plt_sec.header.sh_addr.to_i + PLT_OFFSET
         rel_sec.relocations.each do |rel|
           symbol = symtab.symbol_at(rel.symbol_index)
-          next if symbol.nil? # Unusual case.
+          next if symbol.nil? # unusual case
           @plt[symbol.name] = address
           address += PLT_OFFSET
         end
