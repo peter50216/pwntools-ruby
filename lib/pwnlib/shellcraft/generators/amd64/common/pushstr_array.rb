@@ -6,7 +6,7 @@ module Pwnlib
     module Generators
       module Amd64
         module Common
-          # See {Pwnlib::Shellcraft::Generators::X86::Common.pushstr_array}.
+          # See {Pwnlib::Shellcraft::Generators::X86::Common#pushstr_array}.
           def pushstr_array(*args)
             context.local(arch: 'amd64') do
               cat X86::Common.pushstr_array(*args)

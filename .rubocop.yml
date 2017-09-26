@@ -49,10 +49,10 @@ Style/CollectionMethods:
   Enabled: true
 
 Style/Documentation:
-  Enabled: false
+  Enabled: true
   Exclude:
     - 'lib/pwnlib/shellcraft/generators/**/*.rb'
-    - 'test/*.rb'
+    - 'test/**/*.rb'
 
 Style/Encoding:
   Enabled: false

@@ -10,12 +10,13 @@ module Pwnlib
   #
   # All shellcode generators are defined under generators/*.
   # While typing +Shellcraft::Generators::I386::Linux.sh+ is too annoying, we define an instance +shellcraft+ in this
-  # module, which let user can invoke +shellcraft.sh+ directly.
+  # module, which let user invoke +shellcraft.sh+ directly.
   module Shellcraft
+    # Singleton class.
     class Shellcraft
       include ::Singleton
 
-      # Require all files under shellcraft/generators/.
+      # Requires all files under generators/.
       def initialize
         Dir[File.join(__dir__, 'generators', '**', '*.rb')].each do |f|
           require f

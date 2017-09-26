@@ -15,6 +15,22 @@ module Pwnlib
           #   If +true+ is given, use +['sh']+.
           #   If +Array<String>+ is given, use it as arguments array.
           #
+          # @example
+          #   puts sh
+          #   # /* push "/bin///sh\x00" */
+          #   # push 0x68
+          #   # push 0x732f2f2f
+          #   # push 0x6e69622f
+          #   #
+          #   # /* call execve("esp", 0, 0) */
+          #   # push 0xb /* (SYS_execve) */
+          #   # pop eax
+          #   # mov ebx, esp
+          #   # xor ecx, ecx /* 0 */
+          #   # cdq /* edx=0 */
+          #   # int 0x80
+          #   #=> nil
+          #
           # @note Null pointer is always used as +envp+.
           #
           # @diff

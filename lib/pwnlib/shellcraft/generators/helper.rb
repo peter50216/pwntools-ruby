@@ -1,4 +1,5 @@
 require 'pwnlib/abi'
+require 'pwnlib/constants/constants'
 require 'pwnlib/context'
 require 'pwnlib/reg_sort'
 require 'pwnlib/shellcraft/registers'
@@ -10,6 +11,8 @@ module Pwnlib
   module Shellcraft
     module Generators
       # Define methods for generator modules.
+      #
+      # This module must and can only be extended by Common or Linux module under {Generators}.
       module Helper
         # Provide a 'sandbox' for generators.
         class Runner
@@ -46,12 +49,12 @@ module Pwnlib
           end
 
           def okay(s, *a, **kw)
-            s = Util::Packing.pack(s, *a, **kw) if s.is_a?(Integer)
+            s = pack(s, *a, **kw) if s.is_a?(Integer)
             !(s.include?("\x00") || s.include?("\n"))
           end
 
           def evaluate(item)
-            return item if ::Pwnlib::Shellcraft::Registers.register?(item)
+            return item if register?(item)
             Constants.eval(item)
           end
 
@@ -61,7 +64,7 @@ module Pwnlib
             when Constants::Constant
               format('%s /* %s */', pretty(n.to_i), n)
             when Integer
-              n.abs < 10 ? n.to_s : Util::Fiddling.hex(n)
+              n.abs < 10 ? n.to_s : hex(n)
             else
               n.inspect
             end
@@ -80,8 +83,7 @@ module Pwnlib
         end
 
         class << self
-          # Hook the return value of all singleton methods in the extendee module.
-          # With this we don't need to take care of the typesetting of generated assembly codes.
+          # Define a corresponding singleton method whenever a instance method is defined.
           def extended(mod)
             class << mod
               define_method(:method_added) do |m|

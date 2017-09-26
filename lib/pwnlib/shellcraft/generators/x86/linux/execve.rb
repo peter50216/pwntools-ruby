@@ -1,6 +1,6 @@
 # encoding: ASCII-8BIT
 
-require 'pwnlib/shellcraft/generators/x86/common/common'
+require 'pwnlib/shellcraft/generators/x86/common/pushstr'
 require 'pwnlib/shellcraft/generators/x86/common/pushstr_array'
 require 'pwnlib/shellcraft/generators/x86/linux/linux'
 

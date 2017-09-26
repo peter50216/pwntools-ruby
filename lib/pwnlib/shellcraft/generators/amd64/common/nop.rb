@@ -5,7 +5,7 @@ module Pwnlib
     module Generators
       module Amd64
         module Common
-          # A No-op instruction.
+          # A no-op instruction.
           def nop
             cat 'nop'
           end

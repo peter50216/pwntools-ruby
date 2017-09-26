@@ -7,6 +7,7 @@ module Pwnlib
     module Generators
       module Amd64
         module Common
+          # Pop all of the registers onto the stack which i386 popad does.
           def popad
             cat <<-EOS
 pop rdi
