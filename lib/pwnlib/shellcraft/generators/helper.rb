@@ -1,8 +1,13 @@
+require 'pwnlib/context'
+
 module Pwnlib
   module Shellcraft
     module Generators
+      # Define methods for generator modules.
       module Helper
         class << self
+          # Hook the return value of all singleton methods in the extendee module.
+          # With this we don't need to take care of the typesetting of generated assemblies.
           def extended(mod)
             hooked = {}
             # Hook all methods' return value
@@ -66,6 +71,8 @@ module Pwnlib
             n.inspect
           end
         end
+
+        include ::Pwnlib::Context
       end
     end
   end

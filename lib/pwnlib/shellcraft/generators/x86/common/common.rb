@@ -1,4 +1,3 @@
-require 'pwnlib/context'
 require 'pwnlib/shellcraft/generators/amd64/common/mov'
 require 'pwnlib/shellcraft/generators/amd64/common/pushstr'
 require 'pwnlib/shellcraft/generators/helper'
@@ -24,7 +23,6 @@ module Pwnlib
           end
 
           extend Helper
-          include ::Pwnlib::Context
         end
       end
     end
