@@ -1,5 +1,18 @@
-# encoding: ASCII-8BIT
+require 'pwnlib/shellcraft/generators/amd64/common/common'
 
-::Pwnlib::Shellcraft.define(__FILE__) do
-  cat 'nop'
+module Pwnlib
+  module Shellcraft
+    module Generators
+      module Amd64
+        module Common
+          module_function
+
+          # A No-op instruction.
+          def nop
+            cat 'nop'
+          end
+        end
+      end
+    end
+  end
 end
