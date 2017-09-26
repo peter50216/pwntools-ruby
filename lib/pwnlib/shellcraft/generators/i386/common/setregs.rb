@@ -6,8 +6,6 @@ module Pwnlib
     module Generators
       module I386
         module Common
-          module_function
-
           # See {Generators::X86::Common.setregs}.
           def setregs(*args)
             context.local(arch: 'i386') do

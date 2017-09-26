@@ -7,8 +7,6 @@ module Pwnlib
     module Generators
       module Amd64
         module Common
-          module_function
-
           # Move src into dst without newlines and null bytes.
           def mov(dst, src, stack_allowed: true)
             raise ArgumentError, "#{dst} is not a register" unless register?(dst)

@@ -7,8 +7,6 @@ module Pwnlib
     module Generators
       module X86
         module Linux
-          module_function
-
           # Execute a different process.
           #
           # @param [String] path

@@ -1,5 +1,7 @@
 # encoding: ASCII-8BIT
 
+require 'pwnlib/shellcraft/generators/x86/linux/linux'
+
 module Pwnlib
   module Shellcraft
     module Generators

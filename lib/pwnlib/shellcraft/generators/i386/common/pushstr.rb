@@ -1,12 +1,12 @@
 # encoding: ASCII-8BIT
 
+require 'pwnlib/shellcraft/generators/i386/common/common'
+
 module Pwnlib
   module Shellcraft
     module Generators
       module I386
         module Common
-          module_function
-
           # Push a string to stack
           def pushstr(str, append_null: true)
             # This will not affect callee's +str+.

@@ -8,8 +8,6 @@ module Pwnlib
     module Generators
       module X86
         module Linux
-          module_function
-
           # Get shell!
           #
           # @param [Boolean, Array<String>] argv

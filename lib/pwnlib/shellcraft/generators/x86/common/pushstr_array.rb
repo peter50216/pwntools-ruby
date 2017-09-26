@@ -1,6 +1,5 @@
 # encoding: ASCII-8BIT
 
-require 'pwnlib/abi'
 require 'pwnlib/shellcraft/generators/x86/common/common'
 
 module Pwnlib
@@ -8,8 +7,6 @@ module Pwnlib
     module Generators
       module X86
         module Common
-          module_function
-
           # Push an array of pointers onto the stack.
           #
           # @param [String] reg

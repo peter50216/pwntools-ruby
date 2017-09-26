@@ -1,15 +1,13 @@
 # encoding: ASCII-8BIT
 
-require 'pwnlib/shellcraft/generators/x86/linux/syscall'
 require 'pwnlib/shellcraft/generators/x86/linux/linux'
+require 'pwnlib/shellcraft/generators/x86/linux/syscall'
 
 module Pwnlib
   module Shellcraft
     module Generators
       module X86
         module Linux
-          module_function
-
           # List files.
           #
           # @param [String] dir

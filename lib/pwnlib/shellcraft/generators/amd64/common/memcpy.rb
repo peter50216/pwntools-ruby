@@ -8,8 +8,6 @@ module Pwnlib
     module Generators
       module Amd64
         module Common
-          module_function
-
           def memcpy(dst, src, n)
             cat "/* memcpy(#{pretty(dst)}, #{pretty(src)}, #{pretty(n)}) */"
             cat 'cld'

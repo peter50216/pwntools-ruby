@@ -5,8 +5,6 @@ module Pwnlib
     module Generators
       module X86
         module Common
-          module_function
-
           # Infinite loop.
           #
           # @example

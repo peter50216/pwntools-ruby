@@ -6,8 +6,6 @@ module Pwnlib
     module Generators
       module Amd64
         module Linux
-          module_function
-
           # See #{Generators::X86::Linux.ls}.
           def ls(*args)
             context.local(arch: 'amd64') do

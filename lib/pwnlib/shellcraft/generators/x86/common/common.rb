@@ -10,8 +10,6 @@ module Pwnlib
       module X86
         # For non os-related methods.
         module Common
-          module_function
-
           %i[mov pushstr].each do |m|
             define_method(m) do |*args|
               if context.arch == 'amd64'

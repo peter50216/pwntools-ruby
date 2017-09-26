@@ -7,8 +7,6 @@ module Pwnlib
     module Generators
       module Amd64
         module Common
-          module_function
-
           def popad
             cat <<-EOS
 pop rdi

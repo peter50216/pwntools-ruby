@@ -1,8 +1,5 @@
 # encoding: ASCII-8BIT
 
-require 'pwnlib/abi'
-require 'pwnlib/reg_sort'
-require 'pwnlib/shellcraft/registers'
 require 'pwnlib/shellcraft/generators/x86/common/common'
 
 module Pwnlib
@@ -10,8 +7,6 @@ module Pwnlib
     module Generators
       module X86
         module Common
-          module_function
-
           # Set registers to given values. See example for clearly usage.
           #
           # @param [Hash{Symbol => String, Numeric}] reg_context

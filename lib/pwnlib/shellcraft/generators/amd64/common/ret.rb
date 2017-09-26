@@ -8,10 +8,8 @@ module Pwnlib
     module Generators
       module Amd64
         module Common
-          module_function
-
           def ret(return_value = nil)
-            mov('rax', return_value) if return_value
+            Common.mov('rax', return_value) if return_value
             cat 'ret'
           end
         end

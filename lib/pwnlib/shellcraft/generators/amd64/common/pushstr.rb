@@ -7,8 +7,6 @@ module Pwnlib
     module Generators
       module Amd64
         module Common
-          module_function
-
           # Push a string to stack.
           def pushstr(str, append_null: true)
             # This will not affect callee's +str+.

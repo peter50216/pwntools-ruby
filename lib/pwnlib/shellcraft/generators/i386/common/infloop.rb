@@ -6,8 +6,6 @@ module Pwnlib
     module Generators
       module I386
         module Common
-          module_function
-
           def infloop
             cat Generators::X86::Common.infloop
           end
