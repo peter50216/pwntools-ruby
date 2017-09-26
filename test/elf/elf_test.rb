@@ -90,7 +90,8 @@ PIE:      No PIE (0x400000)
     assert_equal(0, elf.address)
     assert_same(0x6c2, elf.symbols.main)
     elf.address = 0xdeadbeef0000
-    assert_same(0xdeadbeef06c2, elf.symbols.main)
+    # use 'equal' instead of 'same' because their +object_id+ are different on Windows.
+    assert_equal(0xdeadbeef06c2, elf.symbols.main)
   end
 
   def test_search
