@@ -11,7 +11,7 @@ class AsmTest < MiniTest::Test
 
   def setup
     skip 'Not test asm/disasm on Windows' if TTY::Platform.new.windows?
-    @shellcraft = ::Pwnlib::Shellcraft.instance
+    @shellcraft = ::Pwnlib::Shellcraft::Shellcraft.instance
   end
 
   def test_i386_asm

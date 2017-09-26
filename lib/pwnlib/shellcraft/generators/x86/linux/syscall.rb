@@ -20,7 +20,7 @@ module Pwnlib
           def syscall(*arguments)
             abi = ::Pwnlib::ABI::ABI.syscall
             syscall, arg0, arg1, arg2, arg3, arg4, arg5 = arguments
-            if (syscall.is_a?(String) || syscall.is_a?(::Pwnlib::Constants::Constant)) && syscall.to_s.start_with?('SYS_')
+            if syscall.respond_to?(:to_s) && syscall.to_s.start_with?('SYS_')
               syscall_repr = syscall.to_s[4..-1] + '(%s)'
               args = []
             else

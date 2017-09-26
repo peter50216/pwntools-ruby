@@ -30,18 +30,35 @@ module Pwnlib
       # Search module/methods under {Shellcraft::Generators} according to current arch and os.
       # i.e. +Shellcraft::Generators::${arch}::<Common|${os}>.${method}+.
       def method_missing(method, *args, &block)
-        begin
-          arch_module = ::Pwnlib::Shellcraft::Generators.const_get(context.arch.capitalize)
-        rescue NameError # No proper module found
+        mod = find_module_for(method)
+        if mod.nil?
           log.error("Can't use shellcraft under architecture #{context.arch.inspect}.")
           return super
         end
+        mod.public_send(method, *args, &block)
+      end
+
+      def respond_to_missing?(method, include_private = false)
+        return true if find_module_for(method)
+        super
+      end
+
+      private
+
+      # Returns nil if cannot find.
+      def find_module_for(method)
+        begin
+          arch_module = ::Pwnlib::Shellcraft::Generators.const_get(context.arch.capitalize)
+        rescue NameError
+          return nil
+        end
         # try search in Common module
         common_module = arch_module.const_get(:Common)
-        return common_module.public_send(method, *args, &block) if common_module.singleton_methods.include?(method)
+        return common_module if common_module.singleton_methods.include?(method)
+        # search in ${os} module
         os_module = arch_module.const_get(context.os.capitalize)
-        return os_module.public_send(method, *args, &block) if os_module.singleton_methods.include?(method)
-        super
+        return os_module if os_module.singleton_methods.include?(method)
+        nil
       end
 
       include ::Pwnlib::Context

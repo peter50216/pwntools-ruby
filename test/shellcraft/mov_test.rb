@@ -42,7 +42,7 @@ class MovTest < MiniTest::Test
       EOS
       # raises
       err = assert_raises(ArgumentError) { @shellcraft.mov('eax', 'rdx') }
-      assert_equal('cannot mov eax, rdx: dest is smaller than src', err.message)
+      assert_equal('cannot mov eax, rdx: dst is smaller than src', err.message)
       err = assert_raises(ArgumentError) { @shellcraft.mov('rcx', 0x7f00000000, stack_allowed: false) }
       assert_equal('Cannot put 0x7f00000000 into \'rcx\' without using stack.', err.message)
     end
@@ -92,7 +92,7 @@ class MovTest < MiniTest::Test
       EOS
       # raises
       err = assert_raises(ArgumentError) { @shellcraft.mov('ax', 'ebx') }
-      assert_equal('cannot mov ax, ebx: dest is smaller than src', err.message)
+      assert_equal('cannot mov ax, ebx: dst is smaller than src', err.message)
     end
   end
 end

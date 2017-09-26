@@ -66,7 +66,7 @@ module Pwnlib
                 else
                   # Bug in python-pwntools, which is missing `stack_allowed`.
                   # Proof of bug: pwnlib.shellcraft.setregs({'rax': 1}, stack_allowed=False)
-                  cat ::Pwnlib::Shellcraft.instance.mov(src, dst, stack_allowed: stack_allowed)
+                  cat mov(src, dst, stack_allowed: stack_allowed)
                 end
               end
             end

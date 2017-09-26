@@ -14,9 +14,9 @@ module Pwnlib
           %i[setregs].each do |m|
             define_method(m) do |*args|
               if context.arch == 'amd64'
-                Generators::Amd64::Common.send(m, *args)
+                Generators::Amd64::Common.public_send(m, *args)
               elsif context.arch == 'i386'
-                Generators::I386::Common.send(m, *args)
+                Generators::I386::Common.public_send(m, *args)
               end
             end
           end

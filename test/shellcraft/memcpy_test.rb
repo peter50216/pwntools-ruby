@@ -9,7 +9,7 @@ class MemcpyTest < MiniTest::Test
   include ::Pwnlib::Context
 
   def setup
-    @shellcraft = ::Pwnlib::Shellcraft.instance
+    @shellcraft = ::Pwnlib::Shellcraft::Shellcraft.instance
   end
 
   def test_amd64
