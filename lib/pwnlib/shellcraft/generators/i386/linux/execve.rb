@@ -8,7 +8,7 @@ module Pwnlib
     module Generators
       module I386
         module Linux
-          # See {Generators::X86::Linux.execve}.
+          # See {Generators::X86::Linux#execve}.
           def execve(*arguments)
             context.local(arch: 'i386') do
               cat Generators::X86::Linux.execve(*arguments)

@@ -6,7 +6,7 @@ module Pwnlib
     module Generators
       module I386
         module Linux
-          # See #{Generators::X86::Linux.ls}.
+          # See #{Generators::X86::Linux#ls}.
           def ls(*args)
             context.local(arch: 'i386') do
               cat Generators::X86::Linux.ls(*args)

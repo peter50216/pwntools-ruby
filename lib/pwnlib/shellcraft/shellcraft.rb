@@ -31,10 +31,7 @@ module Pwnlib
       # i.e. +Shellcraft::Generators::${arch}::<Common|${os}>.${method}+.
       def method_missing(method, *args, &block)
         mod = find_module_for(method)
-        if mod.nil?
-          log.error("Can't use shellcraft under architecture #{context.arch.inspect}.")
-          return super
-        end
+        return super if mod.nil?
         mod.public_send(method, *args, &block)
       end
 
@@ -50,6 +47,7 @@ module Pwnlib
         begin
           arch_module = ::Pwnlib::Shellcraft::Generators.const_get(context.arch.capitalize)
         rescue NameError
+          log.error("Can't use shellcraft under architecture #{context.arch.inspect}.")
           return nil
         end
         # try search in Common module

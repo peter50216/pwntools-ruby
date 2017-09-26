@@ -20,5 +20,9 @@ class ShellcraftTest < MiniTest::Test
     end
     refute @shellcraft.respond_to?(:linux)
     assert_raises(NoMethodError) { @shellcraft.meow }
+
+    context.local(arch: 'arm') do
+      refute @shellcraft.respond_to?(:mov)
+    end
   end
 end

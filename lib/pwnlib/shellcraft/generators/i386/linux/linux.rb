@@ -6,7 +6,6 @@ module Pwnlib
       module I386
         # For os-related methods.
         module Linux
-          # There's method hook in Helper module, so extend in the last line.
           extend ::Pwnlib::Shellcraft::Generators::Helper
         end
       end

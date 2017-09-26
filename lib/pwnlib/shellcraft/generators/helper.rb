@@ -72,16 +72,16 @@ module Pwnlib
           end
 
           include ::Pwnlib::Context
+          include ::Pwnlib::RegSort
           include ::Pwnlib::Shellcraft::Registers
           include ::Pwnlib::Util::Fiddling
           include ::Pwnlib::Util::Lists
           include ::Pwnlib::Util::Packing
-          include ::Pwnlib::RegSort
         end
 
         class << self
           # Hook the return value of all singleton methods in the extendee module.
-          # With this we don't need to take care of the typesetting of generated assemblies.
+          # With this we don't need to take care of the typesetting of generated assembly codes.
           def extended(mod)
             class << mod
               define_method(:method_added) do |m|

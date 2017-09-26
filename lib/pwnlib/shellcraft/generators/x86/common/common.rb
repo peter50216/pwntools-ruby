@@ -18,7 +18,7 @@ module Pwnlib
             end
           end
 
-          extend Helper
+          extend ::Pwnlib::Shellcraft::Generators::Helper
         end
       end
     end

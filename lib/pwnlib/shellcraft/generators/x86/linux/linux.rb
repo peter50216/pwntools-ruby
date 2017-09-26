@@ -6,7 +6,7 @@ module Pwnlib
       module X86
         # For os-related methods.
         module Linux
-          extend Helper
+          extend ::Pwnlib::Shellcraft::Generators::Helper
         end
       end
     end
