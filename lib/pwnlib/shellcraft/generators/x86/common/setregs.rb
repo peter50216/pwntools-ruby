@@ -9,7 +9,7 @@ module Pwnlib
         module Common
           # Set registers to given values. See example for clearly usage.
           #
-          # @param [Hash{Symbol => String, Numeric}] reg_context
+          # @param [Hash{Symbol => String, Symbol, Numeric}] reg_context
           #   The values of each registers to be set, see examples.
           # @param [Boolean] stack_allowed
           #   If we can use stack for setting values.
@@ -33,7 +33,13 @@ module Pwnlib
           #   #  mov rax, -1
           def setregs(reg_context, stack_allowed: true)
             abi = ::Pwnlib::ABI::ABI.default
-            reg_context = reg_context.reject { |_, v| v.nil? }.map { |k, v| [k.to_s, v] }.to_h
+            reg_context = reg_context.reject { |_, v| v.nil? }
+            # convert all registers to string
+            reg_context = reg_context.map do |k, v|
+              v = register?(v) ? v.to_s : v
+              [k.to_s, v]
+            end
+            reg_context = reg_context.to_h
             ax_str, dx_str = abi.cdq_pair
             eax = reg_context[ax_str]
             edx = reg_context[dx_str]

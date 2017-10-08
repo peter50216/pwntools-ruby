@@ -33,6 +33,11 @@ class SetregsTest < MiniTest::Test
   pop rax
   cdq /* rdx=0 */
       EOS
+      # issue #50
+      assert_equal(<<-'EOS', @shellcraft.setregs(rdi: :rax, rsi: :rdi))
+  mov rsi, rdi
+  mov rdi, rax
+      EOS
     end
   end
 
