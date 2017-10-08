@@ -7,7 +7,30 @@ module Pwnlib
     module Generators
       module Amd64
         module Common
-          # Move src into dst without newlines and null bytes.
+          # Move +src+ into +dst+ without newlines and null bytes.
+          #
+          # @param [String, Symbol] dst
+          #   Register name.
+          # @param [String, Symbol, Integer] src
+          #   Register name or immediate value.
+          # @param [Boolean] stack_allowed
+          #   If equals to +false+, generated assembly code would not use stack-related operations.
+          #   But beware of without stack-related operations the generated code length is longer.
+          #
+          # @example
+          #   mov('rdi', 'ax')
+          #   #=> "  movzx edi, ax\n"
+          # @example
+          #   puts mov('rax', 10)
+          #   #   push 9 /* mov eax, '\n' */
+          #   #   pop rax
+          #   #   inc eax
+          #   #=> nil
+          # @example
+          #   puts mov('rax', 10, stack_allowed: false)
+          #   #   mov eax, 0x1010101
+          #   #   xor eax, 0x101010b /* 0xa == 0x1010101 ^ 0x101010b */
+          #   #=> nil
           def mov(dst, src, stack_allowed: true)
             raise ArgumentError, "#{dst} is not a register" unless register?(dst)
             dst = get_register(dst)

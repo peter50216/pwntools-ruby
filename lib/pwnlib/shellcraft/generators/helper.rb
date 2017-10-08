@@ -27,7 +27,7 @@ module Pwnlib
             @_output = StringIO.new
           end
 
-          # Indent each line 2 space.
+          # Indent each line 2 spaces.
           def typesetting
             indent = @_output.string.lines.map do |line|
               next line.strip + "\n" if label_str?(line.strip)
@@ -83,7 +83,7 @@ module Pwnlib
         end
 
         class << self
-          # Define a corresponding singleton method whenever a instance method is defined.
+          # Define a corresponding singleton method whenever an instance method is defined.
           def extended(mod)
             class << mod
               define_method(:method_added) do |m|

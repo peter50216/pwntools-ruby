@@ -8,6 +8,20 @@ module Pwnlib
       module Amd64
         module Common
           # Push a string to stack.
+          #
+          # @param [String] str
+          #   String to be pushed.
+          # @param [Boolean] append_null
+          #   If need to append a null byte in the end of +str+.
+          #
+          # @example
+          #   puts pushstr('pusheen')
+          #   #   /* push "pusheen\x00" */
+          #   #   mov rax, 0x101010101010101
+          #   #   push rax
+          #   #   mov rax, 0x101010101010101 ^ 0x6e656568737570
+          #   #   xor [rsp], rax
+          #   #=> nil
           def pushstr(str, append_null: true)
             # This will not affect callee's +str+.
             str += "\x00" if append_null && !str.end_with?("\x00")

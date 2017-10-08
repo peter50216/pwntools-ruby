@@ -48,7 +48,7 @@ module Pwnlib
       module_function
 
       # Parse the output of getdents syscall.
-      # For users to handle the shit-like output by +shellcraft.ls+.
+      # For users to handle the shit-like output by +shellcraft.ls+ (e.g. {Shellcraft::Generators::X86::Linux#ls}).
       #
       # @param [String] binstr
       #   The content returns by getdents syscall.

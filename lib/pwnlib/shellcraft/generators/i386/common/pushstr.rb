@@ -7,7 +7,9 @@ module Pwnlib
     module Generators
       module I386
         module Common
-          # Push a string to stack
+          # Push a string to stack.
+          #
+          # See {Amd64::Common#pushstr} for parameters' details.
           def pushstr(str, append_null: true)
             # This will not affect callee's +str+.
             str += "\x00" if append_null && !str.end_with?("\x00")

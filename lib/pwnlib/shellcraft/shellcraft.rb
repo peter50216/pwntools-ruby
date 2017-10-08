@@ -16,21 +16,25 @@ module Pwnlib
     class Shellcraft
       include ::Singleton
 
-      # Requires all files under generators/.
+      # All files under generators/ will be required.
       def initialize
         Dir[File.join(__dir__, 'generators', '**', '*.rb')].each do |f|
           require f
         end
       end
 
-      # Search module/methods under {Shellcraft::Generators} according to current arch and os.
+      # Will search modules/methods under {Shellcraft::Generators} according to current arch and os.
       # i.e. +Shellcraft::Generators::${arch}::<Common|${os}>.${method}+.
+      #
+      # With this method, +context.local(arch: 'amd64') { shellcraft.sh }+ will invoke
+      # {Shellcraft::Generators::Amd64::Linux#sh}.
       def method_missing(method, *args, &block)
         mod = find_module_for(method)
         return super if mod.nil?
         mod.public_send(method, *args, &block)
       end
 
+      # For +respond_to?+.
       def respond_to_missing?(method, include_private = false)
         return true if find_module_for(method)
         super
@@ -38,7 +42,7 @@ module Pwnlib
 
       private
 
-      # Returns nil if cannot find.
+      # Returns nil if not find.
       def find_module_for(method)
         begin
           arch_module = ::Pwnlib::Shellcraft::Generators.const_get(context.arch.capitalize)

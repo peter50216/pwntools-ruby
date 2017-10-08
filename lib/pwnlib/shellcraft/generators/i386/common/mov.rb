@@ -8,6 +8,8 @@ module Pwnlib
       module I386
         module Common
           # Move +src+ into +dst+ without newlines and null bytes.
+          #
+          # See {Amd64::Common#mov} for parameters' details.
           def mov(dst, src, stack_allowed: true)
             raise ArgumentError, "#{dst} is not a register" unless register?(dst)
             dst = get_register(dst)

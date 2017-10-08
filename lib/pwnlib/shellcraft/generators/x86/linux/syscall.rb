@@ -9,6 +9,7 @@ module Pwnlib
       module X86
         module Linux
           # Assembly of +syscall+.
+          #
           # @example
           #   context.arch = 'i386'
           #   puts syscall('SYS_open', 'esp', 0, 0)

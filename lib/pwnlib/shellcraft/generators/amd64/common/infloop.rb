@@ -6,6 +6,7 @@ module Pwnlib
     module Generators
       module Amd64
         module Common
+          # See {X86::Common#infloop}.
           def infloop
             cat Generators::X86::Common.infloop
           end
