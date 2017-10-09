@@ -62,7 +62,7 @@ class ShTest < MiniTest::Test
   push rax
   mov rax, 0x101010101010101
   push rax
-  mov rax, 0x101010101010101 ^ 0x636500632d006873
+  mov rax, 0x626401622c016972 /* 0x101010101010101 ^ 0x636500632d006873 */
   xor [rsp], rax
   xor esi, esi /* 0 */
   push rsi /* null terminate */

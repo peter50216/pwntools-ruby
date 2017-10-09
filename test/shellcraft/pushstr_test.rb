@@ -48,14 +48,14 @@ class PushstrTest < MiniTest::Test
   /* push "/bin/sh\x00" */
   mov rax, 0x101010101010101
   push rax
-  mov rax, 0x101010101010101 ^ 0x68732f6e69622f
+  mov rax, 0x169722e6f68632e /* 0x101010101010101 ^ 0x68732f6e69622f */
   xor [rsp], rax
       EOS
       assert_equal(<<-'EOS', @shellcraft.pushstr("\x00\xff\xff\xff\xff\xff\xff\xff", append_null: false))
   /* push "\x00\xFF\xFF\xFF\xFF\xFF\xFF\xFF" */
   mov rax, 0x101010101010101
   push rax
-  mov rax, 0x101010101010101 ^ -0x100
+  mov rax, -0x1010101010101ff /* 0x101010101010101 ^ -0x100 */
   xor [rsp], rax
       EOS
     end
@@ -95,12 +95,12 @@ class PushstrTest < MiniTest::Test
   push 1
   dec byte ptr [esp]
   push 0x1010101
-  xor dword ptr [esp], 0x1010101 ^ 0xa0a0a0a
+  xor dword ptr [esp], 0xb0b0b0b /* 0x1010101 ^ 0xa0a0a0a */
       EOS
       assert_equal(<<-'EOS', @shellcraft.pushstr('/bin/sh'))
   /* push "/bin/sh\x00" */
   push 0x1010101
-  xor dword ptr [esp], 0x1010101 ^ 0x68732f
+  xor dword ptr [esp], 0x169722e /* 0x1010101 ^ 0x68732f */
   push 0x6e69622f
       EOS
     end

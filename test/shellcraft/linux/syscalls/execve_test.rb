@@ -45,7 +45,7 @@ class ExecveTest < MiniTest::Test
   /* push "PWD=.\x00" */
   mov rax, 0x101010101010101
   push rax
-  mov rax, 0x101010101010101 ^ 0x2e3d445750
+  mov rax, 0x101012f3c455651 /* 0x101010101010101 ^ 0x2e3d445750 */
   xor [rsp], rax
   xor edx, edx /* 0 */
   push rdx /* null terminate */
@@ -94,7 +94,7 @@ class ExecveTest < MiniTest::Test
   /* push argument array ["sh\x00"] */
   /* push "sh\x00" */
   push 0x1010101
-  xor dword ptr [esp], 0x1010101 ^ 0x6873
+  xor dword ptr [esp], 0x1016972 /* 0x1010101 ^ 0x6873 */
   xor ecx, ecx /* 0 */
   push ecx /* null terminate */
   push 4

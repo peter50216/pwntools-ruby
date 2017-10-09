@@ -51,7 +51,7 @@ module Pwnlib
                 a = u64(xor_pair(word).first, endian: 'little', signed: false)
                 cat "mov rax, #{pretty(a)}"
                 cat 'push rax'
-                cat "mov rax, #{pretty(a)} ^ #{pretty(sign)}"
+                cat "mov rax, #{pretty(a ^ sign)} /* #{pretty(a)} ^ #{pretty(sign)} */"
                 cat 'xor [rsp], rax'
               end
             end

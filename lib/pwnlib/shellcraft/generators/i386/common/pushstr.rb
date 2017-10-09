@@ -28,7 +28,7 @@ module Pwnlib
               else
                 a = u32(xor_pair(word).first, endian: 'little', signed: false)
                 cat "push #{pretty(a)}"
-                cat "xor dword ptr [esp], #{pretty(a)} ^ #{pretty(sign)}"
+                cat "xor dword ptr [esp], #{pretty(a ^ sign)} /* #{pretty(a)} ^ #{pretty(sign)} */"
               end
             end
           end
