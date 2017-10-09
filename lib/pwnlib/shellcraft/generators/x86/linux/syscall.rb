@@ -12,7 +12,7 @@ module Pwnlib
           #
           # @example
           #   context.arch = 'i386'
-          #   puts syscall('SYS_open', 'esp', 0, 0)
+          #   puts shellcraft.syscall('SYS_open', 'esp', 0, 0)
           #   # /* call open("esp", 0, 0) */
           #   # push 5 /* (SYS_open) */
           #   # pop eax

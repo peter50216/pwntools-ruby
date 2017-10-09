@@ -18,7 +18,8 @@ module Pwnlib
           #   NULL termination is normalized so that each argument ends with exactly one NULL byte.
           #
           # @example
-          #   puts pushstr_array('eax', ['push', 'een'])
+          #   context.arch = 'i386'
+          #   puts shellcraft.pushstr_array('eax', ['push', 'een'])
           #   # /* push argument array ["push\x00", "een\x00"] */
           #   # /* push "push\x00een\x00" */
           #   # push 1
@@ -37,6 +38,27 @@ module Pwnlib
           #   # add eax, esp
           #   # push eax /* "push\x00" */
           #   # mov eax, esp
+          #   #=> nil
+          # @example
+          #   context.arch = 'amd64'
+          #   puts shellcraft.pushstr_array('rax', ['meow', 'oh'])
+          #   #   /* push argument array ["meow\x00", "oh\x00"] */
+          #   #   /* push "meow\x00oh\x00" */
+          #   #   mov rax, 0x101010101010101
+          #   #   push rax
+          #   #   mov rax, 0x101010101010101 ^ 0x686f00776f656d
+          #   #   xor [rsp], rax
+          #   #   xor eax, eax /* 0 */
+          #   #   push rax /* null terminate */
+          #   #   push 0xd
+          #   #   pop rax
+          #   #   add rax, rsp
+          #   #   push rax /* "oh\x00" */
+          #   #   push 0x10
+          #   #   pop rax
+          #   #   add rax, rsp
+          #   #   push rax /* "meow\x00" */
+          #   #   mov rax, rsp
           #   #=> nil
           def pushstr_array(reg, array)
             abi = ::Pwnlib::ABI::ABI.default

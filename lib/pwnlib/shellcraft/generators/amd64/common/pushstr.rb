@@ -15,7 +15,8 @@ module Pwnlib
           #   If need to append a null byte in the end of +str+.
           #
           # @example
-          #   puts pushstr('pusheen')
+          #   context.arch = 'amd64'
+          #   puts shellcraft.pushstr('pusheen')
           #   #   /* push "pusheen\x00" */
           #   #   mov rax, 0x101010101010101
           #   #   push rax

@@ -16,7 +16,8 @@ module Pwnlib
           #   If +Array<String>+ is given, use it as arguments array.
           #
           # @example
-          #   puts sh
+          #   context.arch = 'i386'
+          #   puts shellcraft.sh
           #   # /* push "/bin///sh\x00" */
           #   # push 0x68
           #   # push 0x732f2f2f

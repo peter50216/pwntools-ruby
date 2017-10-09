@@ -8,7 +8,7 @@ module Pwnlib
           # Infinite loop.
           #
           # @example
-          #   infloop
+          #   shellcraft.infloop
           #   #=> "infloop_1:\n  jmp infloop_1"
           def infloop
             label = get_label('infloop')

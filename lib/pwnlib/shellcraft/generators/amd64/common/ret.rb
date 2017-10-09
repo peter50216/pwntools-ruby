@@ -14,6 +14,13 @@ module Pwnlib
           #   Set the return value.
           #   Can be name of a register or an immediate value.
           #   +nil+ for not set return value.
+          #
+          # @example
+          #   context.arch = 'amd64'
+          #   shellcraft.ret
+          #   #=> "  ret"
+          #   shellcraft.ret(:rdi)
+          #   #=> "  mov rax, rdi\n  ret\n"
           def ret(return_value = nil)
             cat Common.mov('rax', return_value) if return_value
             cat 'ret'

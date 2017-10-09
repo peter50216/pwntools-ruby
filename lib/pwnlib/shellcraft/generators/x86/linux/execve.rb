@@ -25,7 +25,7 @@ module Pwnlib
           #   If +nil+ is given, use NULL pointer.
           #
           # @example
-          #   execve('/bin/sh', ['sh'], {PWD: '.'})
+          #   shellcraft.execve('/bin/sh', ['sh'], {PWD: '.'})
           #
           # @diff
           #   Parameters have no default values since this is a basic function.

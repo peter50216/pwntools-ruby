@@ -16,20 +16,22 @@ module Pwnlib
           #   With +stack_allowd+ equals +true+, shellcode would be shorter.
           #
           # @example
-          #   puts setregs(rax: 'ebx', ebx: 'ecx', ecx: 0x123)
+          #   context.arch = 'i386'
+          #   puts shellcraft.setregs(rax: 'ebx', ebx: 'ecx', ecx: 0x123)
           #   #  mov rax, rbx
           #   #  mov ebx, ecx
           #   #  xor ecx, ecx
           #   #  mov cx, 0x123
-          #
-          #   puts setregs(rdi: 'rsi', rsi: 'rdi')
+          # @example
+          #   context.arch = 'amd64'
+          #   puts shellcraft.setregs(rdi: 'rsi', rsi: 'rdi')
           #   #  xchg rdi, rsi
           #
-          #   puts setregs(rax: -1)
+          #   puts shellcraft.setregs(rax: -1)
           #   #  push -1
           #   #  pop rax
           #
-          #   puts setregs({rax: -1}, stack_allowed: false)
+          #   puts shellcraft.setregs({rax: -1}, stack_allowed: false)
           #   #  mov rax, -1
           def setregs(reg_context, stack_allowed: true)
             abi = ::Pwnlib::ABI::ABI.default
