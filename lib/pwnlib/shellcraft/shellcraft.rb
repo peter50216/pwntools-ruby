@@ -42,7 +42,8 @@ module Pwnlib
 
       private
 
-      # Returns nil if not find.
+      # @return [Module?]
+      #   +nil+ for not found.
       def find_module_for(method)
         begin
           arch_module = ::Pwnlib::Shellcraft::Generators.const_get(context.arch.capitalize)
