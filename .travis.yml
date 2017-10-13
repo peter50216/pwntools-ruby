@@ -18,7 +18,7 @@ matrix:
   allow_failures:
     - rvm: ruby-head
 before_install:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install jq; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; brew install jq; fi
   - travis/travis_fastfail.sh || exit 1
   - gem update --system
   - gem install bundler
