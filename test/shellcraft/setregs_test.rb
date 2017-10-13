@@ -9,7 +9,7 @@ class SetregsTest < MiniTest::Test
   include ::Pwnlib::Context
 
   def setup
-    @shellcraft = ::Pwnlib::Shellcraft.instance
+    @shellcraft = ::Pwnlib::Shellcraft::Shellcraft.instance
   end
 
   def test_amd64
@@ -32,6 +32,11 @@ class SetregsTest < MiniTest::Test
   push 1
   pop rax
   cdq /* rdx=0 */
+      EOS
+      # issue #50
+      assert_equal(<<-'EOS', @shellcraft.setregs(rdi: :rax, rsi: :rdi))
+  mov rsi, rdi
+  mov rdi, rax
       EOS
     end
   end

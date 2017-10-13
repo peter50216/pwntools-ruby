@@ -9,14 +9,20 @@ class ShellcraftTest < MiniTest::Test
   include ::Pwnlib::Context
 
   def setup
-    @shellcraft = ::Pwnlib::Shellcraft.instance
+    @shellcraft = ::Pwnlib::Shellcraft::Shellcraft.instance
   end
 
   def test_respond
-    assert @shellcraft.respond_to?(:amd64)
-    context.local(arch: 'amd64') { assert @shellcraft.respond_to?(:mov) }
+    context.local(arch: 'amd64') do
+      # Check respond_to_missing? is well defined
+      assert @shellcraft.respond_to?(:mov)
+      assert @shellcraft.method(:sh)
+    end
     refute @shellcraft.respond_to?(:linux)
-
     assert_raises(NoMethodError) { @shellcraft.meow }
+
+    context.local(arch: 'arm') do
+      refute @shellcraft.respond_to?(:mov)
+    end
   end
 end

@@ -32,6 +32,6 @@ module Pwn
   include ::Pwnlib::Util::Packing
 
   def shellcraft
-    ::Pwnlib::Shellcraft.instance
+    ::Pwnlib::Shellcraft::Shellcraft.instance
   end
 end

@@ -11,8 +11,7 @@ engines:
       - python
       - php
     exclude_paths:
-      - lib/pwnlib/shellcraft/templates/i386/mov.rb
-      - lib/pwnlib/shellcraft/templates/amd64/mov.rb
+      - lib/pwnlib/shellcraft/generators/
   fixme:
     enabled: false
   rubocop:

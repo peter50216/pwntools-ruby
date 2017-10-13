@@ -11,7 +11,7 @@ class AsmTest < MiniTest::Test
 
   def setup
     skip 'Not test asm/disasm on Windows' if TTY::Platform.new.windows?
-    @shellcraft = ::Pwnlib::Shellcraft.instance
+    @shellcraft = ::Pwnlib::Shellcraft::Shellcraft.instance
   end
 
   def test_i386_asm
@@ -19,6 +19,9 @@ class AsmTest < MiniTest::Test
       assert_equal("\x90", Asm.asm('nop'))
       assert_equal("\xeb\xfe", Asm.asm(@shellcraft.infloop))
       assert_equal("jhh///sh/binj\x0bX\x89\xe31\xc9\x99\xcd\x80", Asm.asm(@shellcraft.sh))
+      # issue #51
+      assert_equal("j\x01\xfe\x0c$h\x01\x01\x01\x01\x814$\xf2\xf3\x0b\xfe",
+                   Asm.asm(@shellcraft.pushstr("\xf3\xf2\x0a\xff")))
     end
   end
 
@@ -27,6 +30,8 @@ class AsmTest < MiniTest::Test
       assert_equal("\x90", Asm.asm('nop'))
       assert_equal("\xeb\xfe", Asm.asm(@shellcraft.infloop))
       assert_equal("jhH\xb8/bin///sPj;XH\x89\xe71\xf6\x99\x0f\x05", Asm.asm(@shellcraft.sh))
+      assert_equal("j\x01\xfe\x0c$H\xb8\x01\x01\x01\x01\x01\x01\x01\x01PH\xb8\xfe\xfe\xfe\xfe\xfe\xfe\x0b\xfeH1\x04$",
+                   Asm.asm(@shellcraft.pushstr("\xff\xff\xff\xff\xff\xff\x0a\xff")))
     end
   end
 

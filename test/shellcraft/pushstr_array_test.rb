@@ -9,7 +9,7 @@ class PushstrArrayTest < MiniTest::Test
   include ::Pwnlib::Context
 
   def setup
-    @shellcraft = ::Pwnlib::Shellcraft.instance
+    @shellcraft = ::Pwnlib::Shellcraft::Shellcraft.instance
   end
 
   def test_amd64
@@ -35,7 +35,7 @@ class PushstrArrayTest < MiniTest::Test
   push rax
   mov rax, 0x101010101010101
   push rax
-  mov rax, 0x101010101010101 ^ 0x636500632d006873
+  mov rax, 0x626401622c016972 /* 0x101010101010101 ^ 0x636500632d006873 */
   xor [rsp], rax
   xor esp, esp /* 0 */
   push rsp /* null terminate */
@@ -62,13 +62,13 @@ class PushstrArrayTest < MiniTest::Test
   /* push argument array ["sh\x00", "-c\x00", "echo pusheen\x00"] */
   /* push "sh\x00-c\x00echo pusheen\x00" */
   push 0x1010101
-  xor dword ptr [esp], 0x1010101 ^ 0x6e65
+  xor dword ptr [esp], 0x1016f64 /* 0x1010101 ^ 0x6e65 */
   push 0x65687375
   push 0x70206f68
   push 0x1010101
-  xor dword ptr [esp], 0x1010101 ^ 0x63650063
+  xor dword ptr [esp], 0x62640162 /* 0x1010101 ^ 0x63650063 */
   push 0x1010101
-  xor dword ptr [esp], 0x1010101 ^ 0x2d006873
+  xor dword ptr [esp], 0x2c016972 /* 0x1010101 ^ 0x2d006873 */
   xor esp, esp /* 0 */
   push esp /* null terminate */
   push 9 /* mov esp, '\n' */
