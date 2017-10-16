@@ -48,22 +48,19 @@ More features and details can be found in the
 
 # Installation
 
-Since there are two gems, which `pwntools-ruby` depends on, didn't be published to rubygems,
-you should install them by self. :disappointed:
-
+### Install the latest release:
 ```sh
 gem install pwntools
-
-git clone https://github.com/bnagy/crabstone.git /tmp/crabstone
-cd /tmp/crabstone
-gem build crabstone.gemspec
-gem install crabstone
-
-git clone https://github.com/sashs/ruby-keystone.git /tmp/ruby-keystone
-cd /tmp/ruby-keystone/keystone_gem
-gem build keystone.gemspec
-gem install keystone
 ```
+
+### Install from master branch:
+```sh
+git clone https://github.com/peter50216/pwntools-ruby
+cd pwntools-ruby
+gem build pwntools.gemspec && gem install pwntools-*.gem
+```
+
+### optional
 
 Some of the features (assembling/disassembling) require non-Ruby dependencies. Checkout the
 installation guide for
@@ -115,9 +112,10 @@ sudo make install
 
 # Development
 ```sh
-git clone git@github.com:peter50216/pwntools-ruby.git
+git clone https://github.com/peter50216/pwntools-ruby
 cd pwntools-ruby
-rake
+bundle
+bundle exec rake
 ```
 
 # Note to irb users
