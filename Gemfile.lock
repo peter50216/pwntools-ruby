@@ -1,39 +1,31 @@
-GIT
-  remote: https://github.com/bnagy/crabstone
-  revision: e3e0a552fcc8d45b7d2e5840456a0d6826271353
-  specs:
-    crabstone (3.0.3)
-      ffi
-
-GIT
-  remote: https://github.com/sashs/ruby-keystone
-  revision: 2183b5a5d015789b36e51f102fc2d915722cad71
-  specs:
-    keystone (0.9.0)
-      ffi (~> 1.9)
-
 PATH
   remote: .
   specs:
     pwntools (0.1.0)
+      crabstone (~> 3)
       dentaku (~> 2.0.11)
       elftools (~> 1.0.1)
+      keystone-engine (~> 0.9)
       rainbow (~> 2.2)
 
 GEM
   remote: https://www.rubygems.org/
   specs:
     ast (2.3.0)
-    bindata (2.4.0)
+    bindata (2.4.1)
     codeclimate-test-reporter (0.6.0)
       simplecov (>= 0.7.1, < 1.0.0)
     coderay (1.1.1)
+    crabstone (3.0.3)
+      ffi
     dentaku (2.0.11)
     docile (1.1.5)
     elftools (1.0.1)
       bindata (~> 2)
     ffi (1.9.18)
     json (2.1.0)
+    keystone-engine (0.9.0)
+      ffi (~> 1.9)
     method_source (0.8.2)
     minitest (5.10.1)
     parallel (1.11.2)
@@ -70,8 +62,6 @@ PLATFORMS
 
 DEPENDENCIES
   codeclimate-test-reporter (~> 0.6)
-  crabstone!
-  keystone!
   minitest (= 5.10.1)
   pry (~> 0.10)
   pwntools!

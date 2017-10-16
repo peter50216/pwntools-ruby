@@ -1,6 +1,6 @@
 # encoding: ASCII-8BIT
 
-require 'keystone/keystone_const' # https://github.com/sashs/ruby-keystone/
+require 'keystone_engine/keystone_const'
 
 require 'pwnlib/context'
 require 'pwnlib/util/ruby'
@@ -81,8 +81,8 @@ module Pwnlib
     # @diff
     #   Not support +asm('mov eax, SYS_execve')+.
     def asm(code)
-      require_message('keystone', install_keystone_guide)
-      Keystone::Ks.new(ks_arch, ks_mode).asm(code)[0]
+      require_message('keystone_engine', install_keystone_guide)
+      KeystoneEngine::Ks.new(ks_arch, ks_mode).asm(code)[0]
     end
 
     ::Pwnlib::Util::Ruby.private_class_method_block do
@@ -102,15 +102,15 @@ module Pwnlib
 
       def ks_arch
         {
-          'i386' => Keystone::KS_ARCH_X86,
-          'amd64' => Keystone::KS_ARCH_X86
+          'i386' => KeystoneEngine::KS_ARCH_X86,
+          'amd64' => KeystoneEngine::KS_ARCH_X86
         }[context.arch]
       end
 
       def ks_mode
         {
-          32 => Keystone::KS_MODE_32,
-          64 => Keystone::KS_MODE_64
+          32 => KeystoneEngine::KS_MODE_32,
+          64 => KeystoneEngine::KS_MODE_64
         }[context.bits]
       end
 
