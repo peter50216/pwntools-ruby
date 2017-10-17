@@ -18,6 +18,8 @@ Gem::Specification.new do |s|
   EOS
   s.license       = 'MIT'
   s.authors       = ['peter50216@gmail.com', 'david942j@gmail.com', 'hanhan0912@gmail.com']
+  s.email         = ['peter50216@gmail.com', 'david942j@gmail.com', 'hanhan0912@gmail.com']
+  s.homepage      = 'https://github.com/peter50216/pwntools-ruby'
   s.files         = Dir['lib/**/*.rb'] + %w(README.md Rakefile)
   s.test_files    = Dir['test/**/*']
   s.require_paths = ['lib']
