@@ -115,7 +115,7 @@ module Pwnlib
       #
       # @return [Boolean] Yes or not.
       def canary?
-        @got.respond_to?('__stack_chk_fail')
+        @got.respond_to?('__stack_chk_fail') || @symbols.respond_to?('__stack_chk_fail')
       end
 
       # Is stack executable?
@@ -133,9 +133,9 @@ module Pwnlib
       end
 
       # There's too many objects inside, let pry not so verbose.
-      # @return [nil]
+      # @return [String]
       def inspect
-        nil
+        "#<Pwnlib::ELF::ELF:#{::Pwnlib::Util::Fiddling.hex(__id__)}>"
       end
 
       # Yields the ELF's virtual address space for the specified string or regexp.
@@ -191,7 +191,7 @@ module Pwnlib
       # Get the dynamic tag with +type+.
       # @return [ELFTools::Dynamic::Tag, nil]
       def dynamic_tag(type)
-        dynamic = @elf_file.segment_by_type(:dynamic) || @elf.section_by_name('.dynamic')
+        dynamic = @elf_file.segment_by_type(:dynamic) || @elf_file.section_by_name('.dynamic')
         return nil if dynamic.nil? # No dynamic present, might be static-linked.
         dynamic.tag_by_type(type)
       end
