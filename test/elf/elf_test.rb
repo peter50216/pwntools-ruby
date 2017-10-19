@@ -60,6 +60,10 @@ PIE:      No PIE (0x400000)
     EOS
   end
 
+  def test_inspect
+    assert_match(/#<Pwnlib::ELF::ELF:0x[0-9a-f]+>/, @elf.inspect)
+  end
+
   def test_got
     assert_same(8, @elf.got.to_h.size)
     assert_same(0x8049ff8, @elf.got['__gmon_start__'])
@@ -92,6 +96,16 @@ PIE:      No PIE (0x400000)
     elf.address = 0xdeadbeef0000
     # use 'equal' instead of 'same' because their +object_id+ are different on Windows.
     assert_equal(0xdeadbeef06c2, elf.symbols.main)
+  end
+
+  def test_static
+    elf = ::Pwnlib::ELF::ELF.new(@path_of.call('amd64.static.elf'), checksec: false)
+    assert_equal(<<-EOS.strip, elf.checksec)
+RELRO:    Partial RELRO
+Stack:    Canary found
+NX:       NX enabled
+PIE:      No PIE (0x400000)
+    EOS
   end
 
   def test_search
