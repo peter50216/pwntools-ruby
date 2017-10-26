@@ -104,6 +104,7 @@ module Pwnlib
       alias [] update
       alias call update
 
+      # Create a string representation of self.
       def to_s
         vals = @attrs.map { |k, v| "#{k} = #{v.inspect}" }
         "#{self.class}(#{vals.join(', ')})"
@@ -115,7 +116,7 @@ module Pwnlib
       #   Variables to be assigned in the environment.
       #
       # @return
-      #   This would return what the block return.
+      #   This would return what the block returned.
       #
       # @example
       #   context.local(arch: 'amd64') { puts context.endian }
@@ -175,7 +176,7 @@ module Pwnlib
       # Set the architecture of the target binary.
       #
       # @param [String, Symbol] arch
-      #   The architecture.
+      #   The architecture. Only values in {Pwnlib::Context::ContextType::ARCHS} are available.
       #
       # @diff We always change +bits+ and +endian+ field whether user have already changed them.
       def arch=(arch)
@@ -211,7 +212,7 @@ module Pwnlib
       # The endianness of the target machine.
       #
       # @param [String, Symbol] endian
-      #   The endianness.
+      #   The endianness. Only values in {Pwnlib::Context::ContextType::ENDIANNESSES} are available.
       #
       # @example
       #   context.endian = :big
@@ -224,7 +225,7 @@ module Pwnlib
       # Set the verbosity of the logger in +Pwnlib+.
       #
       # @param [String, Symbol] value
-      #   The verbosity.
+      #   The verbosity. Only values in {Pwnlib::Context::ContextType::LOG_LEVELS} are available.
       #
       # @example
       #   context.log_level = :debug
@@ -244,7 +245,7 @@ module Pwnlib
       # Set the operating system of the target machine.
       #
       # @param [String, Symbol] os
-      #   The name of the os.
+      #   The name of the os. Only values in {Pwnlib::Context::ContextType::OSES} are available.
       #
       # @example
       #   context.os = :windows
@@ -257,7 +258,7 @@ module Pwnlib
       # Set the signedness for packing opreation.
       #
       # @param [String, Symbol, true, false] value
-      #   The signedness.
+      #   The signedness. Only values in {Pwnlib::Context::ContextType::SIGNEDNESSES} are available.
       #
       # @example
       #   context.signed == false
