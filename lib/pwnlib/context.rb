@@ -80,11 +80,19 @@ module Pwnlib
       # We use Logger#const_defined for pwnlib logger.
       LOG_LEVELS = %w(DEBUG INFO WARN ERROR FATAL UNKNOWN).freeze
 
+      # Instantiate a {Pwnlib::Context::ContextType} object.
       def initialize(**kwargs)
         @attrs = DEFAULT.dup
         update(**kwargs)
       end
 
+      # Convenience function, which is shorthand for setting multiple variables at once.
+      #
+      # @param [Hash] kwargs
+      #   Variables to be assigned in the environment.
+      #
+      # @example
+      #   context.update(arch: 'amd64', os: :linux)
       def update(**kwargs)
         kwargs.each do |k, v|
           next if v.nil?
@@ -96,12 +104,23 @@ module Pwnlib
       alias [] update
       alias call update
 
+      # Create a string representation of self.
       def to_s
         vals = @attrs.map { |k, v| "#{k} = #{v.inspect}" }
         "#{self.class}(#{vals.join(', ')})"
       end
 
-      # This would return what the block return.
+      # Create a context manager for a block.
+      #
+      # @param [Hash] kwargs
+      #   Variables to be assigned in the environment.
+      #
+      # @return
+      #   This would return what the block returned.
+      #
+      # @example
+      #   context.local(arch: 'amd64') { puts context.endian }
+      #   # little
       def local(**kwargs)
         raise ArgumentError, "Need a block for #{self.class}##{__callee__}" unless block_given?
         # XXX(Darkpi):
@@ -116,6 +135,13 @@ module Pwnlib
         end
       end
 
+      # Clear the contents of the context, which will set all values to their defaults.
+      #
+      # @example
+      #   context.arch = 'amd64'
+      #   context.clear
+      #   context.bits == 32
+      #   #=> true
       def clear
         @attrs = DEFAULT.dup
       end
@@ -125,42 +151,84 @@ module Pwnlib
         define_method(k) { @attrs[k] }
       end
 
+      # Set the newline.
+      #
+      # @param [String] newline
+      #   The newline.
+      #
+      # @example
+      #   context.newline = "\r\n"
       def newline=(newline)
         @attrs[:newline] = newline
       end
 
+      # Set the default amount of time to wait for a blocking operation before it times out.
+      #
+      # @param [Float, :forever] timeout
+      #   Any positive floating number, indicates timeout in seconds.
+      #
+      # @example
+      #   context.timeout = 5.14
       def timeout=(timeout)
         @attrs[:timeout] = timeout
       end
 
+      # Set the architecture of the target binary.
+      #
+      # @param [String, Symbol] arch
+      #   The architecture. Only values in {Pwnlib::Context::ContextType::ARCHS} are available.
+      #
       # @diff We always change +bits+ and +endian+ field whether user have already changed them.
       def arch=(arch)
-        arch = arch.downcase.gsub(/[[:punct:]]/, '')
+        arch = arch.to_s.downcase.gsub(/[[:punct:]]/, '')
         defaults = ARCHS[arch]
         raise ArgumentError, "arch must be one of #{ARCHS.keys.sort.inspect}" unless defaults
         defaults.each { |k, v| @attrs[k] = v }
         @attrs[:arch] = arch
       end
 
+      # Set the word size of the target machine in bits (i.e. the size of general purpose registers).
+      #
+      # @param [Integer] bits
+      #   The word size.
       def bits=(bits)
         raise ArgumentError, "bits must be > 0 (#{bits} given)" unless bits > 0
         @attrs[:bits] = bits
       end
 
+      # The word size of the target machine.
       def bytes
         bits / 8
       end
 
+      # Set the word size of the target machine in bytes (i.e. the size of general purpose registers).
+      #
+      # @param [Integer] bytes
+      #   The word size.
       def bytes=(bytes)
         self.bits = bytes * 8
       end
 
+      # The endianness of the target machine.
+      #
+      # @param [String, Symbol] endian
+      #   The endianness. Only values in {Pwnlib::Context::ContextType::ENDIANNESSES} are available.
+      #
+      # @example
+      #   context.endian = :big
       def endian=(endian)
-        endian = ENDIANNESSES[endian.downcase]
+        endian = ENDIANNESSES[endian.to_s.downcase]
         raise ArgumentError, "endian must be one of #{ENDIANNESSES.sort.inspect}" if endian.nil?
         @attrs[:endian] = endian
       end
 
+      # Set the verbosity of the logger in +Pwnlib+.
+      #
+      # @param [String, Symbol] value
+      #   The verbosity. Only values in {Pwnlib::Context::ContextType::LOG_LEVELS} are available.
+      #
+      # @example
+      #   context.log_level = :debug
       def log_level=(value)
         log_level = nil
         case value
@@ -174,17 +242,35 @@ module Pwnlib
         @attrs[:log_level] = log_level
       end
 
+      # Set the operating system of the target machine.
+      #
+      # @param [String, Symbol] os
+      #   The name of the os. Only values in {Pwnlib::Context::ContextType::OSES} are available.
+      #
+      # @example
+      #   context.os = :windows
       def os=(os)
-        os = os.downcase
+        os = os.to_s.downcase
         raise ArgumentError, "os must be one of #{OSES.sort.inspect}" unless OSES.include?(os)
         @attrs[:os] = os
       end
 
+      # Set the signedness for packing opreation.
+      #
+      # @param [String, Symbol, true, false] value
+      #   The signedness. Only values in {Pwnlib::Context::ContextType::SIGNEDNESSES} are available.
+      #
+      # @example
+      #   context.signed == false
+      #   #=> true
+      #   context.signed = 'signed'
+      #   context.signed == true
+      #   #=> true
       def signed=(value)
         signed = nil
         case value
-        when String
-          signed = SIGNEDNESSES[value.downcase]
+        when String, Symbol
+          signed = SIGNEDNESSES[value.to_s.downcase]
         when true, false
           signed = value
         end

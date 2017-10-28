@@ -8,7 +8,7 @@ class ContextTest < MiniTest::Test
   include ::Pwnlib::Context
 
   def test_update
-    context.update(arch: 'arm', os: 'windows')
+    context.update(arch: :arm, os: 'windows')
     assert_equal('arm', context.arch)
     assert_equal('windows', context.os)
   end
@@ -49,7 +49,7 @@ class ContextTest < MiniTest::Test
 
     context.clear
     assert_equal(32, context.bits)
-    context.arch = 'powerpc64'
+    context.arch = :powerpc64
     assert_equal(64, context.bits)
     assert_equal('big', context.endian)
   end
@@ -75,7 +75,7 @@ class ContextTest < MiniTest::Test
     context.endian = 'le'
     assert_equal('little', context.endian)
 
-    context.endian = 'big'
+    context.endian = :big
     assert_equal('big', context.endian)
 
     err = assert_raises(ArgumentError) { context.endian = 'SUPERBIG' }
@@ -85,6 +85,9 @@ class ContextTest < MiniTest::Test
   def test_log_level
     context.log_level = 'error'
     assert_equal(Logger::ERROR, context.log_level)
+
+    context.log_level = :fatal
+    assert_equal(Logger::FATAL, context.log_level)
 
     context.log_level = 514
     assert_equal(514, context.log_level)
@@ -97,6 +100,9 @@ class ContextTest < MiniTest::Test
     context.os = 'windows'
     assert_equal('windows', context.os)
 
+    context.os = :freebsd
+    assert_equal('freebsd', context.os)
+
     err = assert_raises(ArgumentError) { context.os = 'deepblue' }
     assert_match(/os must be one of/, err.message)
   end
@@ -107,6 +113,9 @@ class ContextTest < MiniTest::Test
 
     context.signed = 'unsigned'
     assert_equal(false, context.signed)
+
+    context.signed = :yes
+    assert_equal(true, context.signed)
 
     err = assert_raises(ArgumentError) { context.signed = 'partial' }
     assert_match(/signed must be boolean or one of/, err.message)
