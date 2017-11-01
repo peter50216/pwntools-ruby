@@ -9,10 +9,18 @@ require 'pwnlib/util/hexdump'
 module Pwnlib
   module Tubes
     # Things common to all tubes (sockets, tty, ...)
+    # @!macro [new] drop_definition
+    #   @param [Boalean] drop
+    #     Whether drop the ending.
+    #
     # @!macro [new] timeout_definition
     #   @param [Float] timeout
     #     Any positive floating number, indicates timeout in seconds.
     #     Using +context.timeout+ if +timeout+ equals to +nil+.
+    #
+    # @!macro [new] send_return_definition
+    #   @return [Integer]
+    #     Returns the number of bytes had been sent.
     class Tube
       BUFSIZE = 4096
 
@@ -44,8 +52,12 @@ module Pwnlib
       #
       # @param [String] data
       #   A string to put back.
+      #
+      # @return [Integer]
+      #   The length of the put back data.
       def unrecv(data)
         @buffer.unget(data)
+        data.size
       end
 
       # Receives one byte at a time from the tube, until the predicate evaluates to +true+.
@@ -110,13 +122,12 @@ module Pwnlib
         end
       end
 
-      # Receive data until one of +delims+ is encountered. If the request is not satisfied before
+      # Receives data until one of +delims+ is encountered. If the request is not satisfied before
       # +timeout+ seconds pass, all data is buffered and an empty string is returned.
       #
       # @param [Array<String>] delims
       #   String of delimiters characters, or list of delimiter strings.
-      # @param [Boalean] drop
-      #   Whether drop the ending.
+      # @!macro drop_definition
       # @!macro timeout_definition
       #
       # @return [String]
@@ -169,12 +180,11 @@ module Pwnlib
         end
       end
 
-      # Receive a single line from the tube.
+      # Receives a single line from the tube.
       # A "line" is any sequence of bytes terminated by the byte sequence set in +context.newline+,
       # which defaults to +"\n"+.
       #
-      # @param [Boolean] drop
-      #   Whether drop the line ending.
+      # @!macro drop_definition
       # @!macro timeout_definition
       #
       # @return [String]
@@ -183,7 +193,20 @@ module Pwnlib
       def recvline(drop: false, timeout: nil)
         recvuntil(context.newline, drop: drop, timeout: timeout)
       end
-      alias gets recvline
+
+      # Receives the next "line" from the tube; lines are separated by +sep+.
+      # The difference with IO#gets is using +context.newline+ as default newline.
+      #
+      # @param [String] sep
+      #   The separator.
+      # @!macro drop_definition
+      # @!macro timeout_definition
+      #
+      # @return [String]
+      #   The next "line".
+      def gets(sep = context.newline, drop: false, timeout: nil)
+        recvuntil(sep, drop: drop, timeout: timeout)
+      end
 
       # Wrapper around +recvpred+, which will return when a regex matches the string in the buffer.
       #
@@ -198,27 +221,49 @@ module Pwnlib
         recvpred(timeout: timeout) { |data| data =~ regex }
       end
 
-      # Sends data
+      # Sends data.
       #
       # @param [String] data
       #   The +data+ string to send.
+      #
+      # @!macro send_return_definition
       def send(data)
         data = data.to_s
         log.debug(format('Sent %#x bytes:', data.size))
         log.indented(hexdump(data), level: DEBUG)
         send_raw(data)
+        data.size
       end
       alias write send
 
-      # Sends data with +context.newline+.
+      # Sends the given object with +context.newline+.
       #
-      # @param [String] data
-      #   The +data+ string to send.
-      def sendline(data)
-        # Logged by +write+, not +send_raw+
-        write(data.to_s + context.newline)
+      # @param [Object] obj
+      #   The object to send.
+      #
+      # @!macro send_return_definition
+      def sendline(obj)
+        s = obj.to_s + context.newline
+        write(s)
       end
-      alias puts sendline
+
+      # Sends the given object(s) to the tube.
+      # The difference with IO#puts is using +context.newline+ as default newline.
+      #
+      # @param [Array<Object>] objs
+      #   The objects to send.
+      #
+      # @!macro send_return_definition
+      def puts(*objs)
+        return write(context.newline) if objs.empty?
+        objs = *objs.flatten
+        s = ''
+        objs.map(&:to_s).each do |elem|
+          s << elem
+          s << context.newline if elem.empty? || !elem.end_with?(context.newline)
+        end
+        write(s)
+      end
 
       # Does simultaneous reading and writing to the tube. In principle this just connects the tube
       # to standard in and standard out.
@@ -236,6 +281,8 @@ module Pwnlib
             $stdout.write(s)
           end
         end
+      rescue
+        log.info('Got EOF in interactive mode')
       end
 
       private

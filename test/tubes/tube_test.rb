@@ -136,6 +136,18 @@ class TubeTest < MiniTest::Test
     assert_equal('Hello, world', t.recv)
   end
 
+  def test_gets
+    t = Tube.new
+    t.unrecv("Foo\nBar\r\nBaz\n")
+    assert_equal("Foo\n", t.gets)
+    assert_equal("Bar\r\n", t.gets)
+    assert_equal('Baz', t.gets(drop: true))
+
+    t = hello_tube
+    assert_equal('Hello,', t.gets(','))
+    assert_equal(' world', t.gets('H', drop: true))
+  end
+
   def test_recvpred
     t = hello_tube
     r = /H.*w/
@@ -157,11 +169,11 @@ class TubeTest < MiniTest::Test
 
   def test_send
     t = hello_tube
-    t.write('DARKHH')
+    assert_equal(6, t.write('DARKHH'))
     assert_equal('DARKHH', t.buf)
-    t.write(' QQ')
+    assert_equal(3, t.write(' QQ'))
     assert_equal('DARKHH QQ', t.buf)
-    t.write(333)
+    assert_equal(3, t.write(333))
     assert_equal('DARKHH QQ333', t.buf)
 
     context.local(log_level: 'debug') do
@@ -192,8 +204,34 @@ class TubeTest < MiniTest::Test
     t = hello_tube
     t.write('DARKHH')
     assert_equal('DARKHH', t.buf)
-    t.puts(' QQ')
+    assert_equal(4, t.sendline(' QQ'))
     assert_equal("DARKHH QQ\n", t.buf)
+    assert_equal(1, t.sendline(''))
+    assert_equal("DARKHH QQ\n\n", t.buf)
+  end
+
+  def test_puts
+    t = hello_tube
+    assert_equal(1, t.puts)
+    assert_equal("\n", t.buf)
+    assert_equal(17, t.puts("darkhh i4 so sad\n"))
+    assert_equal("\ndarkhh i4 so sad\n", t.buf)
+
+    t = hello_tube
+    assert_equal(14, t.puts('shik', 'hao', '', 'wei'))
+    assert_equal("shik\nhao\n\nwei\n", t.buf)
+
+    t = hello_tube
+    assert_equal(15, t.puts(['shik', '', "\n", 'hao', 123]))
+    assert_equal("shik\n\n\nhao\n123\n", t.buf)
+    assert_equal(0, t.puts([]))
+    assert_equal("shik\n\n\nhao\n123\n", t.buf)
+
+    context.local(newline: '!!!') do
+      t = hello_tube
+      assert_equal(5, t.puts('hi'))
+      assert_equal('hi!!!', t.buf)
+    end
   end
 
   FLAG_FILE = File.expand_path('../data/flag', __dir__)
@@ -208,7 +246,7 @@ class TubeTest < MiniTest::Test
       t.io.rewind
       assert_equal(IO.binread(FLAG_FILE), t.io.read)
     end
-    assert_equal("[INFO] Switching to interactive mode\n", @log.string)
+    assert_equal("[INFO] Switching to interactive mode\n[INFO] Got EOF in interactive mode\n", @log.string)
     $stdin.close
     t.io.close
     $stdin = save_stdin
@@ -228,7 +266,7 @@ class TubeTest < MiniTest::Test
       $stdout.rewind
       assert_equal(IO.binread(FLAG_FILE), $stdout.read)
     end
-    assert_equal("[INFO] Switching to interactive mode\n", @log.string)
+    assert_equal("[INFO] Switching to interactive mode\n[INFO] Got EOF in interactive mode\n", @log.string)
     $stdout.close
     t.io.close
     $stdin = save_stdin
