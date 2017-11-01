@@ -10,7 +10,7 @@ module Pwnlib
   module Tubes
     # Things common to all tubes (sockets, tty, ...)
     # @!macro [new] drop_definition
-    #   @param [Boalean] drop
+    #   @param [Boolean] drop
     #     Whether drop the ending.
     #
     # @!macro [new] timeout_definition
@@ -197,15 +197,38 @@ module Pwnlib
       # Receives the next "line" from the tube; lines are separated by +sep+.
       # The difference with IO#gets is using +context.newline+ as default newline.
       #
-      # @param [String] sep
+      # @param [Integer, String] sep
       #   The separator.
       # @!macro drop_definition
       # @!macro timeout_definition
       #
       # @return [String]
       #   The next "line".
+      #
+      # @example
+      #   Sock.new('127.0.0.1', 1337).gets
+      #   #=> "This is line one\n"
+      #
+      #   Sock.new('127.0.0.1', 1337).gets(drop: true)
+      #   #=> "This is line one"
+      #
+      #   Sock.new('127.0.0.1', 1337).gets 'line'
+      #   #=> "This is line"
+      #
+      #   Sock.new('127.0.0.1', 1337).gets ''
+      #   #=> "This is line"
+      #
+      #   Sock.new('127.0.0.1', 1337).gets(4)
+      #   #=> "This"
       def gets(sep = context.newline, drop: false, timeout: nil)
-        recvuntil(sep, drop: drop, timeout: timeout)
+        case sep
+        when Integer
+          recvn(sep, timeout: timeout)
+        when String
+          recvuntil(sep, drop: drop, timeout: timeout)
+        else
+          raise ArgumentError, 'only Integer and String are supported'
+        end
       end
 
       # Wrapper around +recvpred+, which will return when a regex matches the string in the buffer.
@@ -260,7 +283,7 @@ module Pwnlib
         s = ''
         objs.map(&:to_s).each do |elem|
           s << elem
-          s << context.newline if elem.empty? || !elem.end_with?(context.newline)
+          s << context.newline unless elem.end_with?(context.newline)
         end
         write(s)
       end
@@ -281,7 +304,8 @@ module Pwnlib
             $stdout.write(s)
           end
         end
-      rescue
+      # TODO(darkhh): Use our own Exception class.
+      rescue EOFError
         log.info('Got EOF in interactive mode')
       end
 

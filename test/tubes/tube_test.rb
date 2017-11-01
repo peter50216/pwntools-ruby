@@ -146,6 +146,8 @@ class TubeTest < MiniTest::Test
     t = hello_tube
     assert_equal('Hello,', t.gets(','))
     assert_equal(' world', t.gets('H', drop: true))
+    assert_equal('ello', t.gets(4))
+    assert_raises(ArgumentError) { t.gets(t) }
   end
 
   def test_recvpred
@@ -218,8 +220,8 @@ class TubeTest < MiniTest::Test
     assert_equal("\ndarkhh i4 so sad\n", t.buf)
 
     t = hello_tube
-    assert_equal(14, t.puts('shik', 'hao', '', 'wei'))
-    assert_equal("shik\nhao\n\nwei\n", t.buf)
+    assert_equal(14, t.puts('shik', 'hao', '', 123))
+    assert_equal("shik\nhao\n\n123\n", t.buf)
 
     t = hello_tube
     assert_equal(15, t.puts(['shik', '', "\n", 'hao', 123]))
