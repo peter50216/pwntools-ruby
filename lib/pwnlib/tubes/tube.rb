@@ -195,15 +195,20 @@ module Pwnlib
       end
 
       # Receives the next "line" from the tube; lines are separated by +sep+.
-      # The difference with IO#gets is using +context.newline+ as default newline.
+      # The difference with +IO#gets+ is using +context.newline+ as default newline.
       #
-      # @param [Integer, String] sep
-      #   The separator.
+      # @param [String, Integer] sep
+      #   If +String+ is given, use +sep+ as the separator.
+      #   If +Integer+ is given, receive exactly +sep+ bytes.
       # @!macro drop_definition
       # @!macro timeout_definition
       #
       # @return [String]
       #   The next "line".
+      #
+      # @raise [EOFError]
+      #   When the remaining data does not contain +sep+.
+      #   When the size of the remaining data is less than +sep+.
       #
       # @example
       #   Sock.new('127.0.0.1', 1337).gets
@@ -271,7 +276,7 @@ module Pwnlib
       end
 
       # Sends the given object(s) to the tube.
-      # The difference with IO#puts is using +context.newline+ as default newline.
+      # The difference with +IO#puts+ is using +context.newline+ as default newline.
       #
       # @param [Array<Object>] objs
       #   The objects to send.
