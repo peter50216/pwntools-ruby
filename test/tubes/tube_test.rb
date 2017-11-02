@@ -229,6 +229,10 @@ class TubeTest < MiniTest::Test
     assert_equal(0, t.puts([]))
     assert_equal("shik\n\n\nhao\n123\n", t.buf)
 
+    t = hello_tube
+    assert_equal(20, t.puts(["darkhh\n\n", 'wei shi', 360]))
+    assert_equal("darkhh\n\nwei shi\n360\n", t.buf)
+
     context.local(newline: '!!!') do
       t = hello_tube
       assert_equal(5, t.puts('hi'))

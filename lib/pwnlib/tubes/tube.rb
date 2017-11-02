@@ -282,6 +282,47 @@ module Pwnlib
       #   The objects to send.
       #
       # @!macro send_return_definition
+      #
+      # @example
+      #   require 'socket'
+      #
+      #   server = TCPServer.new '127.0.0.1', 1337
+      #   loop do
+      #     client = server.accept    # Wait for a client to connect
+      #     puts '=== Accepted a client ==='
+      #     while line = client.gets  # Read lines from socket
+      #       puts line               # and print them
+      #     end
+      #     client.close
+      #     puts '=== Closed a client ==='
+      #   end
+      #
+      #   # === Accepted a client ===
+      #   #
+      #   # ---
+      #   # shik
+      #   # hao
+      #   # 123
+      #   # ---
+      #   # darkhh
+      #   #
+      #   # wei shi
+      #   # 360
+      #   # === Closed a client ===
+      #
+      # @example
+      #   s = Sock.new('127.0.0.1', 1337)
+      #   s.puts
+      #   #=> 1
+      #   s.puts('---')
+      #   #=> 4
+      #   s.puts('shik', "hao\n", 123)
+      #   #=> 13
+      #   s.puts('---')
+      #   #=> 4
+      #   s.puts(["darkhh\n\n", 'wei shi', 360])
+      #   #=> 20
+      #   s.close
       def puts(*objs)
         return write(context.newline) if objs.empty?
         objs = *objs.flatten
