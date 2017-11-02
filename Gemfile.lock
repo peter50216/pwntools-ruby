@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    pwntools (1.0.0)
+    pwntools (1.0.1)
       crabstone (~> 3)
       dentaku (~> 2.0.11)
       elftools (~> 1.0.1)
