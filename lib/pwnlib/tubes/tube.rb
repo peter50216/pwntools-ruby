@@ -182,7 +182,7 @@ module Pwnlib
 
       # Receives a single line from the tube.
       # A "line" is any sequence of bytes terminated by the byte sequence set in +context.newline+,
-      # which defaults to +"\n"+.
+      # which defaults to +"\\n"+.
       #
       # @!macro drop_definition
       # @!macro timeout_definition
@@ -252,7 +252,7 @@ module Pwnlib
       # Sends data.
       #
       # @param [String] data
-      #   The +data+ string to send.
+      #   The +data+ string to be sent.
       #
       # @!macro send_return_definition
       def send(data)
@@ -267,7 +267,7 @@ module Pwnlib
       # Sends the given object with +context.newline+.
       #
       # @param [Object] obj
-      #   The object to send.
+      #   The object to be sent.
       #
       # @!macro send_return_definition
       def sendline(obj)
@@ -275,11 +275,11 @@ module Pwnlib
         write(s)
       end
 
-      # Sends the given object(s) to the tube.
+      # Sends the given object(s).
       # The difference with +IO#puts+ is using +context.newline+ as default newline.
       #
       # @param [Array<Object>] objs
-      #   The objects to send.
+      #   The objects to be sent.
       #
       # @!macro send_return_definition
       #
@@ -287,6 +287,7 @@ module Pwnlib
       #   s.puts
       #   puts client.recv
       #   #
+      #   #=> nil
       #
       # @example
       #   s.puts('shik', "hao\n", 123)
@@ -294,6 +295,7 @@ module Pwnlib
       #   # shik
       #   # hao
       #   # 123
+      #   #=> nil
       #
       # @example
       #   s.puts(["darkhh\n\n", 'wei shi', 360])
@@ -302,6 +304,7 @@ module Pwnlib
       #   #
       #   # wei shi
       #   # 360
+      #   #=> nil
       def puts(*objs)
         return write(context.newline) if objs.empty?
         objs = *objs.flatten
