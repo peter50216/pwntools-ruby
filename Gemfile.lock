@@ -27,7 +27,7 @@ GEM
     keystone-engine (0.9.0)
       ffi (~> 1.9)
     method_source (0.9.0)
-    minitest (5.10.1)
+    minitest (5.10.3)
     parallel (1.11.2)
     parser (2.4.0.0)
       ast (~> 2.2)
@@ -60,7 +60,7 @@ PLATFORMS
 
 DEPENDENCIES
   codeclimate-test-reporter (~> 0.6)
-  minitest (= 5.10.1)
+  minitest (= 5.10.3)
   pry (~> 0.10)
   pwntools!
   rake (~> 12.1)
