@@ -3,7 +3,7 @@ PATH
   specs:
     pwntools (1.0.1)
       crabstone (~> 3)
-      dentaku (~> 2.0.11)
+      dentaku (>= 2.0.11, < 3.1.0)
       elftools (~> 1.0.1)
       keystone-engine (~> 0.9)
       rainbow (~> 2.2)
@@ -18,7 +18,7 @@ GEM
     coderay (1.1.2)
     crabstone (3.0.3)
       ffi
-    dentaku (2.0.11)
+    dentaku (3.0.0)
     docile (1.1.5)
     elftools (1.0.1)
       bindata (~> 2)
