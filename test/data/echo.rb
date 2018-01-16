@@ -2,14 +2,9 @@
 
 require 'socket'
 
-if ARGV.empty?
-  puts "Usage #{__FILE__} port"
-  exit 1
-end
+server = TCPServer.open('127.0.0.1', 0)
 
-server = TCPServer.open('127.0.0.1', ARGV[0].to_i)
-
-STDOUT.puts 'Start!'
+STDOUT.puts "Start with port #{server.addr[1]}"
 STDOUT.flush
 
 client = server.accept
