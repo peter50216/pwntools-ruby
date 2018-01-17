@@ -1,12 +1,13 @@
 PATH
   remote: .
   specs:
-    pwntools (1.0.1)
+    pwntools (1.0.2)
       crabstone (~> 3)
       dentaku (~> 2.0.11)
       elftools (~> 1.0.1)
       keystone-engine (~> 0.9)
       rainbow (~> 2.2)
+      rubyserial (~> 0.5)
 
 GEM
   remote: https://www.rubygems.org/
@@ -46,6 +47,8 @@ GEM
       ruby-progressbar (~> 1.7)
       unicode-display_width (~> 1.0, >= 1.0.1)
     ruby-progressbar (1.8.1)
+    rubyserial (0.5.0)
+      ffi (~> 1.9, >= 1.9.3)
     simplecov (0.15.1)
       docile (~> 1.1.0)
       json (>= 1.8, < 3)
