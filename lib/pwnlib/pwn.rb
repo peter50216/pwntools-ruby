@@ -12,6 +12,7 @@ require 'pwnlib/logger'
 require 'pwnlib/reg_sort'
 require 'pwnlib/shellcraft/shellcraft'
 require 'pwnlib/tubes/sock'
+require 'pwnlib/tubes/serialtube'
 
 require 'pwnlib/util/cyclic'
 require 'pwnlib/util/fiddling'
