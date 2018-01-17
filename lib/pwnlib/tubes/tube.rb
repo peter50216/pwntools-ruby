@@ -94,7 +94,7 @@ module Pwnlib
                 return ''
               end
 
-              return '' if c.empty?
+              next '' if c.empty?
               data << c
             end
             data.slice!(0..-1)
@@ -150,7 +150,7 @@ module Pwnlib
                 return ''
               end
 
-              return '' if s.empty?
+              next if s.empty?
               matching << s
 
               sidx = matching.size
