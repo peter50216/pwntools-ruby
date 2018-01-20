@@ -9,12 +9,11 @@ require 'pwnlib/tubes/sock'
 class SockTest < MiniTest::Test
   include ::Pwnlib::Tubes
   ECHO_FILE = File.expand_path('../data/echo.rb', __dir__)
-  BIND_PORT = 31_337
 
   def popen_echo(data)
-    Open3.popen2("bundle exec ruby #{ECHO_FILE} #{BIND_PORT}") do |_i, o, _t|
-      o.gets
-      s = Sock.new('localhost', BIND_PORT)
+    Open3.popen2("ruby #{ECHO_FILE}") do |_i, o, _t|
+      port = o.gets.split.last.to_i
+      s = Sock.new('127.0.0.1', port)
       yield s, data, o
     end
   end
