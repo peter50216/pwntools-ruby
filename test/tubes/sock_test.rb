@@ -11,7 +11,7 @@ class SockTest < MiniTest::Test
   ECHO_FILE = File.expand_path('../data/echo.rb', __dir__)
 
   def popen_echo(data)
-    Open3.popen2("ruby #{ECHO_FILE}") do |_i, o, _t|
+    Open3.popen2("bundle exec ruby #{ECHO_FILE}") do |_i, o, _t|
       port = o.gets.split.last.to_i
       s = Sock.new('127.0.0.1', port)
       yield s, data, o
