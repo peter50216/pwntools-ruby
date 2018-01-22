@@ -13,7 +13,7 @@ class SockTest < MiniTest::Test
   def popen_echo(data, port)
     Open3.popen2("bundle exec ruby #{ECHO_FILE} #{port}") do |_i, o, _t|
       o.gets
-      s = Sock.new('127.0.0.1', port)
+      s = Sock.new('localhost', port)
       yield s, data, o
     end
   end
