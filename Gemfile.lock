@@ -13,8 +13,8 @@ GEM
   specs:
     ast (2.3.0)
     bindata (2.4.1)
-    codeclimate-test-reporter (0.6.0)
-      simplecov (>= 0.7.1, < 1.0.0)
+    codeclimate-test-reporter (1.0.7)
+      simplecov
     coderay (1.1.2)
     crabstone (3.0.3)
       ffi
@@ -59,7 +59,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  codeclimate-test-reporter (~> 0.6)
+  codeclimate-test-reporter (~> 1.0)
   minitest (= 5.10.1)
   pry (~> 0.10)
   pwntools!
