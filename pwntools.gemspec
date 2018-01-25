@@ -34,7 +34,7 @@ Gem::Specification.new do |s|
 
   s.add_development_dependency 'codeclimate-test-reporter', '~> 1.0'
   # TODO(david942j): check why ruby crash during testing if upgrade minitest to 5.10.2/3
-  s.add_development_dependency 'minitest', '= 5.10.1'
+  s.add_development_dependency 'minitest', '= 5.11.1'
   s.add_development_dependency 'pry', '~> 0.10'
   s.add_development_dependency 'rake', '~> 12.1'
   s.add_development_dependency 'rubocop', '~> 0.49'
