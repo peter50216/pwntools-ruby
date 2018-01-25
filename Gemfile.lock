@@ -2,22 +2,28 @@ PATH
   remote: .
   specs:
     pwntools (1.0.1)
+      binding_of_caller (~> 0.8)
       crabstone (~> 3)
       dentaku (>= 2.0.11, < 3.2.0)
       elftools (~> 1.0.1)
       keystone-engine (~> 0.9)
+      method_source (~> 0.9)
       rainbow (~> 2.2)
+      ruby2ruby (~> 2.4)
 
 GEM
   remote: https://www.rubygems.org/
   specs:
     ast (2.3.0)
     bindata (2.4.1)
+    binding_of_caller (0.8.0)
+      debug_inspector (>= 0.0.1)
     codeclimate-test-reporter (1.0.7)
       simplecov
     coderay (1.1.2)
     crabstone (3.0.3)
       ffi
+    debug_inspector (0.0.3)
     dentaku (3.1.0)
     docile (1.1.5)
     elftools (1.0.1)
@@ -46,6 +52,12 @@ GEM
       ruby-progressbar (~> 1.7)
       unicode-display_width (~> 1.0, >= 1.0.1)
     ruby-progressbar (1.8.1)
+    ruby2ruby (2.4.0)
+      ruby_parser (~> 3.1)
+      sexp_processor (~> 4.6)
+    ruby_parser (3.10.1)
+      sexp_processor (~> 4.9)
+    sexp_processor (4.10.0)
     simplecov (0.15.1)
       docile (~> 1.1.0)
       json (>= 1.8, < 3)
@@ -70,4 +82,4 @@ DEPENDENCIES
   yard (~> 0.9)
 
 BUNDLED WITH
-   1.15.1
+   1.16.1

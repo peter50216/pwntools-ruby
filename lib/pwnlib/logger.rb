@@ -1,7 +1,11 @@
 # encoding: ASCII-8BIT
 
+require 'binding_of_caller'
 require 'logger'
+require 'method_source'
 require 'rainbow'
+require 'ruby2ruby'
+require 'ruby_parser'
 
 require 'pwnlib/context'
 
@@ -13,6 +17,7 @@ module Pwnlib
     # The type for logger which inherits Ruby builtin Logger.
     # Main difference is using +context.log_level+ instead of +level+ in logging methods.
     class LoggerType < ::Logger
+      # Color codes for pretty logging.
       SEV_COLOR = {
         'DEBUG' => '#ff5f5f',
         'INFO' => '#87ff00',
@@ -24,8 +29,8 @@ module Pwnlib
       # Instantiate a {Pwnlib::Logger::LoggerType} object.
       def initialize
         super(STDOUT)
-        @formatter = proc do |severity, _datetime, _progname, msg|
-          format("[%s] %s\n", Rainbow(severity).color(SEV_COLOR[severity]), msg)
+        @formatter = proc do |severity, _datetime, progname, msg|
+          format("[%s] %s\n", Rainbow(progname || severity).color(SEV_COLOR[severity]), msg)
         end
       end
 
@@ -43,12 +48,84 @@ module Pwnlib
         true
       end
 
+      # Log the string and its evaluated result.
+      #
+      # This method has same severity as +INFO+.
+      #
+      # @param [Array<String>] args
+      #   The strings to be evaluated.
+      #
+      # @yieldreturn [Object]
+      #   See examples.
+      #   Block will be invoked only if +args+ is empty.
+      #
+      # @return See ::Logger#add.
+      #
+      # @example
+      #   x = 2
+      #   y = 3
+      #   log.dump('x + y', 'x * y')
+      #   # [DUMP] x + y = 5, x * y = 6
+      #   libc = 0x7fc0bdd13000
+      #   log.dump { libc.hex }
+      #   # [DUMP] libc.hex = "0x7fc0bdd13000"
+      #
+      # @note
+      #   This method doesn't work in a REPL shell.
+      def dump(*args, &block)
+        severity = INFO
+        # Don't invoke the block if it's unnecessary.
+        return true if severity < context.log_level
+        exprs = args.empty? ? Array(parse_proc(block)) : args
+        ctx = binding.of_caller(1)
+        msg = exprs.map { |expr| "#{expr} = #{ctx.eval(expr).inspect}" }.join(', ')
+        add(severity, msg, 'DUMP')
+      end
+
       private
 
       def add(severity, message = nil, progname = nil)
         severity ||= UNKNOWN
         return true if severity < context.log_level
         super(severity, message, progname)
+      end
+
+      # This method do the following things:
+      #   1. Get the source code from file (using gem `method_source`)
+      #   2. Parse the source code to Sexp using `ruby_parser`
+      #   3. Traverse the sexp and find the block argument when calling `:dump`
+      #   4. Convert the sexp back to Ruby code (using gem `ruby2ruby`)
+      #
+      # @param [Proc] process
+      #
+      # @return [String]
+      def parse_proc(process)
+        # XXX(david942j): move this method to another place?
+
+        # source might contain other 'dirty' things,
+        # use ruby parser to fetch the true code inside block.
+        src = process.source
+        sexp = RubyParser.new.process(src)
+        # XXX(david942j): don't hardcode the target
+        sexp = search_sexp(sexp, [:iter, [:call, nil, :dump]]) || []
+        Ruby2Ruby.new.process(sexp.last)
+      end
+
+      def search_sexp(sexp, target)
+        return nil unless sexp.is_a?(::Sexp)
+        return sexp if match_sexp?(sexp, target)
+        sexp.find do |e|
+          f = search_sexp(e, target)
+          break f if f
+        end
+      end
+
+      def match_sexp?(sexp, target)
+        target.each_with_index.all? do |e, i|
+          next true if e.nil?
+          next match_sexp?(sexp[i], e) if e.is_a?(Array)
+          sexp[i] == e
+        end
       end
 
       include ::Pwnlib::Context

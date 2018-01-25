@@ -58,4 +58,16 @@ class LoggerTest < MiniTest::Test
     meowmeowmeow
     EOS
   end
+
+  def test_dump
+    x = 2 # rubocop: disable Lint/UselessAssignment
+    y = 3 # rubocop: disable Lint/UselessAssignment
+    assert_equal(<<-EOS, @logger.dump('x + y', 'x * y'))
+[DUMP] x + y = 5, x * y = 6
+    EOS
+    libc = 0x7fc0bdd13000
+    assert_equal(<<-EOS, @logger.dump { libc.to_s(16) })
+[DUMP] libc.to_s(16) = "7fc0bdd13000"
+    EOS
+  end
 end
