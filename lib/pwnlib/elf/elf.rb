@@ -40,7 +40,7 @@ module Pwnlib
       #   #=> #<Pwnlib::ELF::ELF:0x00559bd670dcb8>
       def initialize(path, checksec: true)
         path = File.realpath(path)
-        @elf_file = ELFTools::ELFFile.new(File.open(path, 'rb')) # rubocop:disable Style/AutoResourceCleanup
+        @elf_file = ELFTools::ELFFile.new(File.open(path, 'rb'))
         load_got
         load_plt
         load_symbols
@@ -67,7 +67,6 @@ module Pwnlib
         [@got, @plt, @symbols].compact.each do |tbl|
           tbl.each_pair { |k, _| tbl[k] += val - old }
         end
-        val
       end
 
       # Return the protection information, wrapper with color codes.

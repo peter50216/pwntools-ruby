@@ -36,6 +36,9 @@ Metrics/ParameterLists:
 Metrics/PerceivedComplexity:
   Enabled: false
 
+Naming/HeredocDelimiterNaming:
+  Enabled: false
+
 Rails:
   Enabled: false
 
@@ -57,6 +60,9 @@ Style/Documentation:
 Style/Encoding:
   Enabled: false
 
+Style/FormatStringToken:
+  Enabled: false
+
 # TODO(david942j):
 #   `yield` cannot be ignored (didn't track why).
 #   Enable this cop whenever its related bugs are fixed.
@@ -70,6 +76,12 @@ Style/Encoding:
 
 Style/MethodCalledOnDoEndBlock:
   Enabled: true
+
+Style/MixinUsage:
+  Enabled: true
+  Exclude:
+    - test/**/*.rb
+    - lib/pwn.rb
 
 Style/OptionHash:
   Enabled: true
