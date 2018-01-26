@@ -3,6 +3,7 @@
 require 'time'
 
 require 'pwnlib/context'
+require 'pwnlib/errors'
 
 module Pwnlib
   # A simple timer class.
@@ -27,7 +28,7 @@ module Pwnlib
     end
 
     def timeout
-      return @timeout || Pwnlib::Context.context.timeout unless started?
+      return @timeout || ::Pwnlib::Context.context.timeout unless started?
       @deadline == :forever ? :forever : [@deadline - Time.now, 0].max
     end
 
@@ -46,13 +47,14 @@ module Pwnlib
       end
 
       timeout ||= @timeout
-      timeout ||= Pwnlib::Context.context.timeout
+      timeout ||= ::Pwnlib::Context.context.timeout
 
       @deadline = timeout == :forever ? :forever : Time.now + timeout
 
       begin
         yield
       ensure
+        raise ::Pwnlib::Errors::TimeoutError unless active?
         @deadline = nil
       end
     end

@@ -3,6 +3,7 @@
 require 'keystone_engine/keystone_const'
 
 require 'pwnlib/context'
+require 'pwnlib/errors'
 require 'pwnlib/util/ruby'
 
 module Pwnlib
@@ -22,7 +23,7 @@ module Pwnlib
     # @return [String]
     #   Disassemble result with nice typesetting.
     #
-    # @raise [LoadError]
+    # @raise [Pwnlib::Errors::LoadError]
     #   If libcapstone is not installed.
     #
     # @example
@@ -118,7 +119,7 @@ module Pwnlib
       def require_message(lib, msg)
         require lib
       rescue LoadError => e
-        raise LoadError, e.message + "\n\n" + msg
+        raise ::Pwnlib::Errors::LoadError, e.message + "\n\n" + msg
       end
 
       def install_crabstone_guide

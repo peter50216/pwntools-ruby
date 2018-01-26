@@ -4,6 +4,7 @@ require 'dentaku'
 
 require 'pwnlib/constants/constant'
 require 'pwnlib/context'
+require 'pwnlib/errors'
 
 module Pwnlib
   # Module containing constants.
@@ -36,17 +37,23 @@ module Pwnlib
       # @return [Constant]
       #   The evaluated result.
       #
+      # @raise [Pwnlib::Errors::NameError]
+      #   If no value provided for variables.
+      #
       # @example
       #   eval('O_CREAT')
       #   #=> Constant('(O_CREAT)', 0x40)
       #   eval('O_CREAT | O_APPEND')
       #   #=> Constant('(O_CREAT | O_APPEND)', 0x440)
+      # @example
+      #   eval('meow')
+      #   # Pwnlib::Errors::NameError: no value provided for variables: meow
       def eval(str)
         return str unless str.instance_of?(String)
         begin
           val = calculator.evaluate!(str.strip).to_i
         rescue Dentaku::UnboundVariableError => e
-          raise NameError, e.message
+          raise ::Pwnlib::Errors::NameError, e.message
         end
         ::Pwnlib::Constants::Constant.new("(#{str})", val)
       end

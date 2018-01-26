@@ -34,20 +34,20 @@ class SockTest < MiniTest::Test
       o.gets
       s.puts(514)
       sleep(0.1) # Wait for connection reset
-      assert_raises(EOFError) { s.puts(514) }
-      assert_raises(EOFError) { s.puts(514) }
-      assert_raises(EOFError) { s.recv }
-      assert_raises(EOFError) { s.recv }
+      assert_raises(::Pwnlib::Errors::EOFError) { s.puts(514) }
+      assert_raises(::Pwnlib::Errors::EOFError) { s.puts(514) }
+      assert_raises(::Pwnlib::Errors::EOFError) { s.recv }
+      assert_raises(::Pwnlib::Errors::EOFError) { s.recv }
     end
   end
 
   def test_close
     popen_echo('DARKHH') do |s, _data, _o|
       s.close
-      assert_raises(EOFError) { s.puts(514) }
-      assert_raises(EOFError) { s.puts(514) }
-      assert_raises(EOFError) { s.recv }
-      assert_raises(EOFError) { s.recv }
+      assert_raises(::Pwnlib::Errors::EOFError) { s.puts(514) }
+      assert_raises(::Pwnlib::Errors::EOFError) { s.puts(514) }
+      assert_raises(::Pwnlib::Errors::EOFError) { s.recv }
+      assert_raises(::Pwnlib::Errors::EOFError) { s.recv }
       assert_raises(ArgumentError) { s.close(:hh) }
     end
 
@@ -56,10 +56,10 @@ class SockTest < MiniTest::Test
       3.times { s.close(:recv) }
       3.times { s.close(:send) }
       3.times { s.close(:write) }
-      assert_raises(EOFError) { s.puts(514) }
-      assert_raises(EOFError) { s.puts(514) }
-      assert_raises(EOFError) { s.recv }
-      assert_raises(EOFError) { s.recv }
+      assert_raises(::Pwnlib::Errors::EOFError) { s.puts(514) }
+      assert_raises(::Pwnlib::Errors::EOFError) { s.puts(514) }
+      assert_raises(::Pwnlib::Errors::EOFError) { s.recv }
+      assert_raises(::Pwnlib::Errors::EOFError) { s.recv }
       3.times { s.close }
       assert_raises(ArgumentError) { s.close(:shik) }
     end
