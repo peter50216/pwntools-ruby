@@ -121,10 +121,10 @@ module Pwnlib
       end
 
       def match_sexp?(sexp, target)
-        target.each_with_index.all? do |e, i|
-          next true if e.nil?
-          next match_sexp?(sexp[i], e) if e.is_a?(Array)
-          sexp[i] == e
+        target.zip(sexp.entries).all? do |t, s|
+          next true if t.nil?
+          next match_sexp?(s, t) if t.is_a?(Array)
+          s == t
         end
       end
 
