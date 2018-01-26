@@ -90,7 +90,7 @@ module Pwnlib
               begin
                 # TODO(Darkpi): Some form of binary search to speed up?
                 c = recv(1)
-              rescue
+              rescue # rubocop: disable Style/RescueStandardError
                 return ''
               end
 
@@ -146,7 +146,7 @@ module Pwnlib
             while @timer.active?
               begin
                 s = recv(1)
-              rescue # TODO(Darkpi): QQ
+              rescue # rubocop: disable Style/RescueStandardError # TODO(Darkpi): QQ
                 return ''
               end
 
@@ -352,13 +352,16 @@ module Pwnlib
         data
       end
 
-      def send_raw(_data); raise NotImplementedError, 'Not implemented'
+      def send_raw(_data)
+        raise NotImplementedError, 'Not implemented'
       end
 
-      def recv_raw(_size); raise NotImplementedError, 'Not implemented'
+      def recv_raw(_size)
+        raise NotImplementedError, 'Not implemented'
       end
 
-      def timeout_raw=(_timeout); raise NotImplementedError, 'Not implemented'
+      def timeout_raw=(_timeout)
+        raise NotImplementedError, 'Not implemented'
       end
 
       include ::Pwnlib::Context

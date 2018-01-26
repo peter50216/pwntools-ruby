@@ -80,6 +80,19 @@ class TubeTest < MiniTest::Test
     t
   end
 
+  def test_not_implement
+    t = Tube.new
+    # send_raw
+    assert_raises(NotImplementedError) { t.puts }
+    # timeout_raw=
+    assert_raises(NotImplementedError) { t.recv(timeout: 1) }
+    class << t
+      def timeout_raw=(_) end
+    end
+    # recv_raw
+    assert_raises(NotImplementedError) { t.gets }
+  end
+
   def test_recv
     t = hello_tube
     assert_equal('Hello, world', t.recv)
