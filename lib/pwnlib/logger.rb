@@ -66,20 +66,32 @@ module Pwnlib
       #   y = 3
       #   log.dump('x + y', 'x * y')
       #   # [DUMP] x + y = 5, x * y = 6
+      # @example
       #   libc = 0x7fc0bdd13000
       #   log.dump { libc.hex }
       #   # [DUMP] libc.hex = "0x7fc0bdd13000"
+      #   log.dump { libc = 12345678; libc.hex }
+      #   # [DUMP] libc = 12345678
+      #   #        libc.hex = "0xbc614e"
       #
       # @note
       #   This method doesn't work in a REPL shell.
+      #
+      # @note
+      #   The source code in block will be parsed using +ruby_parser+,
+      #   therefore this method fails in some situations, such as:
+      #     log.dump(&something) # will fail in souce code parsing
+      #     log.dump { 1 }; log.dump { 2 } # 1 will be logged two times
       def dump(*args, &block)
         severity = INFO
         # Don't invoke the block if it's unnecessary.
         return true if severity < context.log_level
         exprs = args.empty? ? Array(parse_proc(block)) : args
         ctx = binding.of_caller(1)
-        msg = exprs.map { |expr| "#{expr} = #{ctx.eval(expr).inspect}" }.join(', ')
-        add(severity, msg, 'DUMP')
+        msg = exprs.map { |expr| "#{expr.strip} = #{ctx.eval(expr).inspect}" }.join(', ')
+        # do indent if msg contains multiple lines
+        first, *remain = msg.split("\n")
+        add(severity, ([first] + remain.map { |r| '[DUMP] '.gsub(/./, ' ') + r }).join("\n"), 'DUMP')
       end
 
       private

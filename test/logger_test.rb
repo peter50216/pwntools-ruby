@@ -65,9 +65,27 @@ class LoggerTest < MiniTest::Test
     assert_equal(<<-EOS, @logger.dump('x + y', 'x * y'))
 [DUMP] x + y = 5, x * y = 6
     EOS
+    assert_equal(<<-EOS, @logger.dump("    x+ y\n   "))
+[DUMP] x+ y = 5
+    EOS
+
     libc = 0x7fc0bdd13000
     assert_equal(<<-EOS, @logger.dump { libc.to_s(16) })
 [DUMP] libc.to_s(16) = "7fc0bdd13000"
+    EOS
+
+    res = @logger.dump do
+      libc = 12_345_678
+      libc <<= 12
+      # comments will be ignored
+      libc.to_s # dummy line
+      libc.to_s(16)
+    end
+    assert_equal(<<-EOS, res)
+[DUMP] libc = 12345678
+       libc = (libc << 12)
+       libc.to_s
+       libc.to_s(16) = "bc614e000"
     EOS
   end
 end
