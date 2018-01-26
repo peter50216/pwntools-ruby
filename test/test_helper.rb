@@ -24,7 +24,7 @@ module MiniTest
     # require 'pwnlib/logger' before using these methods.
 
     def log_null(&block)
-      # Windows not support File.open('/dev/null')
+      # Windows does not support File.open('/dev/null')
       log_hook(StringIO.new, &block)
     end
 
@@ -35,9 +35,11 @@ module MiniTest
     def log_hook(obj)
       old = ::Pwnlib::Logger.log.instance_variable_get(:@logdev)
       ::Pwnlib::Logger.log.instance_variable_set(:@logdev, obj)
-      res = yield
-      ::Pwnlib::Logger.log.instance_variable_set(:@logdev, old)
-      res
+      begin
+        yield
+      ensure
+        ::Pwnlib::Logger.log.instance_variable_set(:@logdev, old)
+      end
     end
   end
 end
