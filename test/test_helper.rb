@@ -20,12 +20,11 @@ module MiniTest
       Rainbow.enabled = false
     end
 
-    # Some methods for hooking logger,
+    # Methods for hooking logger,
     # require 'pwnlib/logger' before using these methods.
 
     def log_null(&block)
-      # Windows does not support File.open('/dev/null')
-      log_hook(StringIO.new, &block)
+      File.open(File::NULL, 'w') { |f| log_hook(f, &block) }
     end
 
     def log_stdout(&block)
