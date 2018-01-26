@@ -6,11 +6,13 @@ require 'pwnlib/elf/elf'
 require 'pwnlib/logger'
 
 class ELFTest < MiniTest::Test
-  include ::Pwnlib::Logger
-
   def setup
     @path_of = ->(file) { File.join(__dir__, '..', 'data', 'elfs', file) }
-    @elf = ::Pwnlib::ELF::ELF.new(@path_of.call('i386.prelro.elf'), checksec: false)
+    @elf = to_elf_silent('i386.prelro.elf')
+  end
+
+  def to_elf_silent(filename)
+    log_null { ::Pwnlib::ELF::ELF.new(@path_of.call(filename), checksec: false) }
   end
 
   # check stdout when loaded
@@ -43,7 +45,7 @@ NX:       NX enabled
 PIE:      No PIE (0x8048000)
     EOS
 
-    nrelro_elf = ::Pwnlib::ELF::ELF.new(@path_of.call('amd64.nrelro.elf'), checksec: false)
+    nrelro_elf = to_elf_silent('amd64.nrelro.elf')
     assert_equal(<<-EOS.strip, nrelro_elf.checksec)
 RELRO:    No RELRO
 Stack:    Canary found
@@ -51,7 +53,7 @@ NX:       NX enabled
 PIE:      No PIE (0x400000)
     EOS
 
-    frelro_elf = ::Pwnlib::ELF::ELF.new(@path_of.call('amd64.frelro.elf'), checksec: false)
+    frelro_elf = to_elf_silent('amd64.frelro.elf')
     assert_equal(<<-EOS.strip, frelro_elf.checksec)
 RELRO:    Full RELRO
 Stack:    Canary found
@@ -78,7 +80,7 @@ PIE:      No PIE (0x400000)
     assert_same(0x80483b0, @elf.plt.printf)
     assert_same(0x80483f0, @elf.plt[:scanf])
 
-    elf = ::Pwnlib::ELF::ELF.new(@path_of.call('amd64.frelro.pie.elf'), checksec: false)
+    elf = to_elf_silent('amd64.frelro.pie.elf')
     assert_nil(elf.plt)
   end
 
@@ -90,7 +92,7 @@ PIE:      No PIE (0x400000)
     @elf.address = new_address
     assert_equal(old_main - old_address + new_address, @elf.symbols.main)
 
-    elf = ::Pwnlib::ELF::ELF.new(@path_of.call('i386.frelro.pie.elf'), checksec: false)
+    elf = to_elf_silent('i386.frelro.pie.elf')
     assert_equal(0, elf.address)
     assert_same(0x6c2, elf.symbols.main)
     elf.address = 0xdeadbeef0000
@@ -99,7 +101,7 @@ PIE:      No PIE (0x400000)
   end
 
   def test_static
-    elf = ::Pwnlib::ELF::ELF.new(@path_of.call('amd64.static.elf'), checksec: false)
+    elf = to_elf_silent('amd64.static.elf')
     assert_equal(<<-EOS.strip, elf.checksec)
 RELRO:    Partial RELRO
 Stack:    Canary found
@@ -123,12 +125,5 @@ PIE:      No PIE (0x400000)
     elf.address = 0x1234000
     assert_equal([0x1234001, 0x1392613], elf.search('ELF').to_a)
     assert_equal(0x138d00b, elf.find('/bin/sh').next)
-  end
-
-  def log_stdout
-    old = log.instance_variable_get(:@logdev)
-    log.instance_variable_set(:@logdev, $stdout)
-    yield
-    log.instance_variable_set(:@logdev, old)
   end
 end
