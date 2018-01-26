@@ -73,12 +73,22 @@ module Pwnlib
       #   log.dump { libc = 12345678; libc.hex }
       #   # [DUMP] libc = 12345678
       #   #        libc.hex = "0xbc614e"
+      # @example
+      #   log.dump do
+      #     meow = 123
+      #     # comments will be ignored
+      #     meow <<= 1 # this is a comment
+      #     meow
+      #   end
+      #   # [DUMP] meow = 123
+      #   #        meow = (meow << 1)
+      #   #        meow = 246
       #
       # @note
-      #   This method doesn't work in a REPL shell.
+      #   This method doesn't work in a REPL shell (such as irb and pry).
       #
       # @note
-      #   The source code in block will be parsed using +ruby_parser+,
+      #   The source code of block will be parsed by using +ruby_parser+,
       #   therefore this method fails in some situations, such as:
       #     log.dump(&something) # will fail in souce code parsing
       #     log.dump { 1 }; log.dump { 2 } # 1 will be logged two times
@@ -104,9 +114,9 @@ module Pwnlib
 
       # This method do the following things:
       #   1. Get the source code from file (using gem `method_source`)
-      #   2. Parse the source code to Sexp using `ruby_parser`
-      #   3. Traverse the sexp and find the block argument when calling `:dump`
-      #   4. Convert the sexp back to Ruby code (using gem `ruby2ruby`)
+      #   2. Parse the source code to `Sexp` (using `ruby_parser`)
+      #   3. Traverse the sexp to find the block argument when calling `dump`
+      #   4. Convert the sexp of block back to Ruby code (using gem `ruby2ruby`)
       #
       # @param [Proc] process
       #
@@ -117,12 +127,13 @@ module Pwnlib
         # source might contain other 'dirty' things,
         # use ruby parser to fetch the true code inside block.
         src = process.source
-        sexp = RubyParser.new.process(src)
+        sexp = ::RubyParser.new.process(src)
         # XXX(david942j): don't hardcode the target
         sexp = search_sexp(sexp, [:iter, [:call, nil, :dump]]) || []
-        Ruby2Ruby.new.process(sexp.last)
+        ::Ruby2Ruby.new.process(sexp.last)
       end
 
+      # depth-first search
       def search_sexp(sexp, target)
         return nil unless sexp.is_a?(::Sexp)
         return sexp if match_sexp?(sexp, target)
