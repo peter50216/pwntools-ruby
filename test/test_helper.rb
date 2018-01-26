@@ -19,5 +19,26 @@ module MiniTest
       # Default to disable coloring for easier testing.
       Rainbow.enabled = false
     end
+
+    # Methods for hooking logger,
+    # require 'pwnlib/logger' before using these methods.
+
+    def log_null(&block)
+      File.open(File::NULL, 'w') { |f| log_hook(f, &block) }
+    end
+
+    def log_stdout(&block)
+      log_hook($stdout, &block)
+    end
+
+    def log_hook(obj)
+      old = ::Pwnlib::Logger.log.instance_variable_get(:@logdev)
+      ::Pwnlib::Logger.log.instance_variable_set(:@logdev, obj)
+      begin
+        yield
+      ensure
+        ::Pwnlib::Logger.log.instance_variable_set(:@logdev, old)
+      end
+    end
   end
 end
