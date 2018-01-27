@@ -23,7 +23,7 @@ module Pwnlib
     # @return [String]
     #   Disassemble result with nice typesetting.
     #
-    # @raise [Pwnlib::Errors::LoadError]
+    # @raise [Pwnlib::Errors::DependencyError]
     #   If libcapstone is not installed.
     #
     # @example
@@ -119,7 +119,7 @@ module Pwnlib
       def require_message(lib, msg)
         require lib
       rescue LoadError => e
-        raise ::Pwnlib::Errors::LoadError, e.message + "\n\n" + msg
+        raise ::Pwnlib::Errors::DependencyError, e.message + "\n\n" + msg
       end
 
       def install_crabstone_guide

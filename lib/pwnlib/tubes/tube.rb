@@ -24,7 +24,7 @@ module Pwnlib
     #     Returns the number of bytes had been sent.
     #
     # @!macro [new] raise_eof
-    #   @raise [Pwnlib::Errors::EOFError]
+    #   @raise [Pwnlib::Errors::EndOfTubeError]
     #     If the request is not satisfied when all data is received.
     #
     # @!macro [new] raise_timeout
@@ -215,7 +215,7 @@ module Pwnlib
       # @return [String]
       #   The next "line".
       #
-      # @raise [Pwnlib::Errors::EOFError]
+      # @raise [Pwnlib::Errors::EndOfTubeError]
       #   When the remaining data does not contain +sep+.
       #   When the size of the remaining data is less than +sep+.
       #
@@ -342,7 +342,7 @@ module Pwnlib
           end
         end
       # TODO(darkhh): Use our own Exception class.
-      rescue ::Pwnlib::Errors::EOFError
+      rescue ::Pwnlib::Errors::EndOfTubeError
         log.info('Got EOF in interactive mode')
       end
 

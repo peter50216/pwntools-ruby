@@ -60,7 +60,7 @@ class TubeTest < MiniTest::Test
 
     class << t
       def recv_raw(_n)
-        raise Pwnlib::Errors::EOFError if io.eof?
+        raise Pwnlib::Errors::EndOfTubeError if io.eof?
         io.read
       end
 
@@ -132,7 +132,7 @@ class TubeTest < MiniTest::Test
     t = basic_tube
     t.unrecv('meow')
     # test EOF
-    assert_raises(::Pwnlib::Errors::EOFError) do
+    assert_raises(::Pwnlib::Errors::EndOfTubeError) do
       assert_equal('', t.recvuntil('DARKHH'))
     end
     assert_equal('meow', t.recv)
@@ -153,7 +153,7 @@ class TubeTest < MiniTest::Test
     t = basic_tube
     t.unrecv('Hello, world')
     # test EOF
-    assert_raises(::Pwnlib::Errors::EOFError) do
+    assert_raises(::Pwnlib::Errors::EndOfTubeError) do
       assert_equal('', t.recvline)
     end
     assert_equal('Hello, world', t.recv)
@@ -186,7 +186,7 @@ class TubeTest < MiniTest::Test
     t = basic_tube
     t.unrecv('darkhh')
     # test EOF
-    assert_raises(::Pwnlib::Errors::EOFError) do
+    assert_raises(::Pwnlib::Errors::EndOfTubeError) do
       assert_match('', t.recvpred { |data| data =~ r })
     end
   end
@@ -278,7 +278,7 @@ class TubeTest < MiniTest::Test
     begin
       t = basic_tube
       t.interact
-    rescue ::Pwnlib::Errors::EOFError
+    rescue ::Pwnlib::Errors::EndOfTubeError
       t.io.rewind
       assert_equal(IO.binread(FLAG_FILE), t.io.read)
     end
@@ -298,7 +298,7 @@ class TubeTest < MiniTest::Test
       t = basic_tube
       t.instance_variable_set(:@fakeio, File.new(FLAG_FILE, File::RDONLY))
       t.interact
-    rescue ::Pwnlib::Errors::EOFError
+    rescue ::Pwnlib::Errors::EndOfTubeError
       $stdout.rewind
       assert_equal(IO.binread(FLAG_FILE), $stdout.read)
     end

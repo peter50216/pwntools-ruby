@@ -7,16 +7,16 @@ module Pwnlib
 
   # Pnwlib Errors
   module Errors
-    # Raised by some IO operations.
-    class EOFError < ::Pwnlib::Error
+    # Raised by some IO operations in tubes.
+    class EndOfTubeError < ::Pwnlib::Error
     end
 
-    # Raised when a file required (dependencies, etc.) fails to load.
-    class LoadError < ::Pwnlib::Error
+    # Raised when a dependent file fails to load.
+    class DependencyError < ::Pwnlib::Error
     end
 
-    # Raised when a given name is invalid or undefined.
-    class NameError < ::Pwnlib::Error
+    # Raised when a given constant is invalid or undefined.
+    class ConstantNotFoundError < ::Pwnlib::Error
     end
 
     # Raised when timeout exceeded.

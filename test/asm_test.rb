@@ -98,7 +98,7 @@ class AsmTest < MiniTest::Test
 
   # To ensure coverage
   def test_require
-    err = assert_raises(::Pwnlib::Errors::LoadError) do
+    err = assert_raises(::Pwnlib::Errors::DependencyError) do
       Asm.__send__(:require_message, 'no_such_lib', 'meow')
     end
     assert_match(/meow/, err.message)

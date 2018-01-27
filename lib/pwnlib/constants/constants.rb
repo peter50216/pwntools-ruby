@@ -37,7 +37,7 @@ module Pwnlib
       # @return [Constant]
       #   The evaluated result.
       #
-      # @raise [Pwnlib::Errors::NameError]
+      # @raise [Pwnlib::Errors::ConstantNotFoundError]
       #   If no value provided for variables.
       #
       # @example
@@ -47,13 +47,13 @@ module Pwnlib
       #   #=> Constant('(O_CREAT | O_APPEND)', 0x440)
       # @example
       #   eval('meow')
-      #   # Pwnlib::Errors::NameError: no value provided for variables: meow
+      #   # Pwnlib::Errors::ConstantNotFoundError: no value provided for variables: meow
       def eval(str)
         return str unless str.instance_of?(String)
         begin
           val = calculator.evaluate!(str.strip).to_i
         rescue Dentaku::UnboundVariableError => e
-          raise ::Pwnlib::Errors::NameError, e.message
+          raise ::Pwnlib::Errors::ConstantNotFoundError, e.message
         end
         ::Pwnlib::Constants::Constant.new("(#{str})", val)
       end
