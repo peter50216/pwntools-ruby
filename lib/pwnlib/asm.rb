@@ -17,7 +17,8 @@ module Pwnlib
     # Default virtaul memory base address of architectures.
     DEFAULT_VMA = {
       i386: 0x08048000,
-      amd64: 0x400000
+      amd64: 0x400000,
+      arm: 0x8000
     }.freeze
 
     # Disassembles a bytestring into human readable assembly.
@@ -102,24 +103,26 @@ module Pwnlib
     #   Load address for the ELF file.
     #   If +nil+ is given, default address will be used.
     #   See {DEFAULT_VMA}.
-    # @param [Boolean] extract
+    # @param [Boolean] to_file
     #   Returns ELF content or the path to the ELF file.
-    #   If +false+ is given, the ELF will be saved into a temp file, and the path is returned.
+    #   If +true+ is given, the ELF will be saved into a temp file, and the path is returned.
     #   Otherwise, the content of ELF is returned.
     #
     # @return [String]
-    #   If +extract+ is +true+ (default), returns the content of ELF. Otherwise, a file is created and the path of it is
+    #   If +to_filet+ is +false+ (default), returns the content of ELF. Otherwise, a file is created and the path is
     #   returned.
     #
     # @diff
-    #   Unlike pwntools-python uses cross-compiler to compile codes into ELF, we create ELF(s) in pure Ruby
-    #   implementation, to have higher flexibility and less binary dependencies.
-    def make_elf(data, vma: nil, extract: true)
+    #   Unlike pwntools-python uses cross-compiler to compile code into ELF, we create ELFs in pure Ruby
+    #   implementation, this let us have higher flexibility and less binary dependencies.
+    #
+    # @todo
+    #   Create a shared object when +vma+ is zero.
+    def make_elf(data, vma: nil, to_file: false)
       vma ||= DEFAULT_VMA[context.arch.to_sym]
-      vma &= -PAGE_SIZE
+      vma &= -0x1000
       # ELF header
       # Program headers
-      # Section headers
       # <data>
       headers = create_elf_headers(vma)
       ehdr = headers[:elf_header]
@@ -129,9 +132,9 @@ module Pwnlib
       ehdr.e_phoff = ehdr.num_bytes
       phdr.p_filesz = phdr.p_memsz = entry + data.size
       elf = ehdr.to_binary_s + phdr.to_binary_s + data
-      return elf if extract
+      return elf unless to_file
       temp = Dir::Tmpname.create(['pwn', '.elf']) {}
-      File.open(temp, 'wb', 0750) { |f| f.write(elf) }
+      File.open(temp, 'wb', 0o750) { |f| f.write(elf) }
       temp
     end
 
@@ -217,12 +220,11 @@ https://github.com/keystone-engine/keystone/tree/master/docs
         # TODO(david942j): support create a shared object
         header.e_type = ::ELFTools::Constants::ET::ET_EXEC
         header.e_machine = e_machine
+        # XXX(david942j): is header.e_flags important?
         header.e_ehsize = header.num_bytes
         header
       end
 
-      # Size of one page, where is the best place to define this constant?
-      PAGE_SIZE = 0x1000
       def create_program_header(vma)
         header = ::ELFTools::Structs::ELF_Phdr[context.bits].new(endian: endian)
         header.p_type = ::ELFTools::Constants::PT::PT_LOAD
@@ -230,8 +232,18 @@ https://github.com/keystone-engine/keystone/tree/master/docs
         header.p_vaddr = vma
         header.p_paddr = vma
         header.p_flags = 4 | 1 # r-x
-        header.p_align = PAGE_SIZE
+        header.p_align = arch_align
         header
+      end
+
+      # Not sure how this field is used, remove this if it is not important.
+      # This table is collected by cross-compiling and see the align in LOAD segment.
+      # TODO(david942j): check if there's difference when ELF is a shared object.
+      def arch_align
+        case context.arch.to_sym
+        when :i386, :amd64 then 0x1000
+        when :arm then 0x8000
+        end
       end
 
       # Mapping +context.arch+ to +::ELFTools::Constants::EM::EM_*+.
@@ -250,7 +262,7 @@ https://github.com/keystone-engine/keystone/tree/master/docs
         powerpc: 'PPC',
         s390: 'S390',
         sparc64: 'SPARCV9',
-        sparc: 'SPARC',
+        sparc: 'SPARC'
       }.freeze
       def e_machine
         const = ARCH_EM[context.arch.to_sym]
