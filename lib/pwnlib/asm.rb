@@ -112,6 +112,16 @@ module Pwnlib
     #   If +to_filet+ is +false+ (default), returns the content of ELF. Otherwise, a file is created and the path is
     #   returned.
     #
+    # @raise [::Pwnlib::Errors::UnsupportedArchError]
+    #   Raised when don't know how to create an ELF under architecture +context.arch+.
+    #
+    # @todo
+    #   Create a shared object when +vma+ is zero.
+    #
+    # @diff
+    #   Unlike pwntools-python uses cross-compiler to compile code into ELF, we create ELFs in pure Ruby
+    #   implementation, this let us have higher flexibility and less binary dependencies.
+    #
     # @example
     #   path = make_elf(asm(shellcraft.cat('/proc/self/maps')), to_file: true)
     #   puts `#{path}`
@@ -119,13 +129,6 @@ module Pwnlib
     #   # f77c7000-f77c9000 r--p 00000000 00:00 0                                  [vvar]
     #   # f77c9000-f77cb000 r-xp 00000000 00:00 0                                  [vdso]
     #   # ffda6000-ffdc8000 rwxp 00000000 00:00 0                                  [stack]
-    #
-    # @diff
-    #   Unlike pwntools-python uses cross-compiler to compile code into ELF, we create ELFs in pure Ruby
-    #   implementation, this let us have higher flexibility and less binary dependencies.
-    #
-    # @todo
-    #   Create a shared object when +vma+ is zero.
     def make_elf(data, vma: nil, to_file: false)
       vma ||= DEFAULT_VMA[context.arch.to_sym]
       vma &= -0x1000
@@ -272,10 +275,13 @@ https://github.com/keystone-engine/keystone/tree/master/docs
         sparc64: 'SPARCV9',
         sparc: 'SPARC'
       }.freeze
+
       def e_machine
         const = ARCH_EM[context.arch.to_sym]
-        # TODO(david942j): raise UnsupportedArchError
-        return ::ELFTools::Constants::EM::EM_NONE if const.nil?
+        if const.nil?
+          raise ::Pwnlib::Errors::UnsupportedArchError,
+                "Unknown machine type of architecture #{context.arch.inspect}."
+        end
         ::ELFTools::Constants::EM.const_get("EM_#{const}")
       end
 

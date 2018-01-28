@@ -147,6 +147,13 @@ class AsmTest < MiniTest::Test
       assert_equal('ARM', elf_file.machine)
       assert_equal(0x8000, elf_file.segments.first.header.p_vaddr)
     end
+
+    context.local(arch: :vax) do
+      err = assert_raises(::Pwnlib::Errors::UnsupportedArchError) do
+        Asm.make_elf('')
+      end
+      assert_equal('Unknown machine type of architecture "vax".', err.message)
+    end
   end
 
   # this test can be removed after we implement method +run_shellcode+

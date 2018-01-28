@@ -3,7 +3,6 @@
 require 'test_helper'
 
 require 'pwnlib/context'
-require 'pwnlib/logger'
 require 'pwnlib/shellcraft/shellcraft'
 
 class ShellcraftTest < MiniTest::Test
@@ -23,9 +22,8 @@ class ShellcraftTest < MiniTest::Test
     assert_raises(NoMethodError) { @shellcraft.meow }
 
     context.local(arch: 'arm') do
-      assert_output(<<-EOS) { log_stdout { @shellcraft.respond_to?(:mov) } }
-[ERROR] Can't use shellcraft under architecture "arm".
-      EOS
+      err = assert_raises(::Pwnlib::Errors::UnsupportedArchError) { @shellcraft.respond_to?(:mov) }
+      assert_equal("Can't use shellcraft under architecture \"arm\".", err.message)
     end
   end
 end
