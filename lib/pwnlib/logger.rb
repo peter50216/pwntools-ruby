@@ -1,8 +1,7 @@
 # encoding: ASCII-8BIT
 
-require 'binding_of_caller'
 require 'logger'
-require 'method_source'
+require 'method_source/code_helpers' # don't require 'method_source', it pollutes Method/Proc classes.
 require 'rainbow'
 require 'ruby2ruby'
 require 'ruby_parser'
@@ -17,6 +16,11 @@ module Pwnlib
     # The type for logger which inherits Ruby builtin Logger.
     # Main difference is using +context.log_level+ instead of +level+ in logging methods.
     class LoggerType < ::Logger
+      # To use method +expression_at+.
+      #
+      # XXX(david942j): move this extension if other modules need +expression_at+ as well.
+      extend ::MethodSource::CodeHelpers
+
       # Color codes for pretty logging.
       SEV_COLOR = {
         'DEBUG' => '#ff5f5f',
@@ -48,14 +52,17 @@ module Pwnlib
         true
       end
 
-      # Log the string and its evaluated result.
+      # Log the arguments and their evalutated results.
       #
       # This method has same severity as +INFO+.
       #
-      # @param [Array<String>] args
-      #   The strings to be evaluated.
+      # The difference between using arguments and passing a block is the block will be executed if the logger's level
+      # is sufficient to log a message.
       #
-      # @yieldreturn [Object]
+      # @param [Array<#inspect>] args
+      #   Anything. See examples.
+      #
+      # @yieldreturn [#inspect]
       #   See examples.
       #   Block will be invoked only if +args+ is empty.
       #
@@ -64,9 +71,13 @@ module Pwnlib
       # @example
       #   x = 2
       #   y = 3
-      #   log.dump('x + y', 'x * y')
-      #   # [DUMP] x + y = 5, x * y = 6
+      #   log.dump(x + y, x * y)
+      #   # [DUMP] (x + y) = 5, (x * y) = 6
       # @example
+      #   libc = 0x7fc0bdd13000
+      #   log.dump libc.hex
+      #   # [DUMP] libc.hex = "0x7fc0bdd13000"
+      #
       #   libc = 0x7fc0bdd13000
       #   log.dump { libc.hex }
       #   # [DUMP] libc.hex = "0x7fc0bdd13000"
@@ -85,20 +96,21 @@ module Pwnlib
       #   #        meow = 246
       #
       # @note
-      #   This method doesn't work in a REPL shell (such as irb and pry).
+      #   This method does NOT work in a REPL shell (such as irb and pry).
       #
       # @note
-      #   The source code of block will be parsed by using +ruby_parser+,
+      #   The source code where invoked +log.dump+ will be parsed by using +ruby_parser+,
       #   therefore this method fails in some situations, such as:
       #     log.dump(&something) # will fail in souce code parsing
       #     log.dump { 1 }; log.dump { 2 } # 1 will be logged two times
-      def dump(*args, &block)
+      def dump(*args)
         severity = INFO
         # Don't invoke the block if it's unnecessary.
         return true if severity < context.log_level
-        exprs = args.empty? ? Array(parse_proc(block)) : args
-        ctx = binding.of_caller(1)
-        msg = exprs.map { |expr| "#{expr.strip} = #{ctx.eval(expr).inspect}" }.join(', ')
+        caller_ = caller_locations(1, 1).first
+        src = source_of(caller_.absolute_path, caller_.lineno)
+        results = args.empty? ? [[yield, source_of_block(src)]] : args.zip(source_of_args(src))
+        msg = results.map { |res, expr| "#{expr.strip} = #{res.inspect}" }.join(', ')
         # do indent if msg contains multiple lines
         first, *remain = msg.split("\n")
         add(severity, ([first] + remain.map { |r| '[DUMP] '.gsub(/./, ' ') + r }).join("\n"), 'DUMP')
@@ -112,25 +124,50 @@ module Pwnlib
         super(severity, message, progname)
       end
 
-      # This method do the following things:
-      #   1. Get the source code from file (using gem `method_source`)
-      #   2. Parse the source code to `Sexp` (using `ruby_parser`)
-      #   3. Traverse the sexp to find the block argument when calling `dump`
-      #   4. Convert the sexp of block back to Ruby code (using gem `ruby2ruby`)
+      def source_of(path, line_number)
+        File.open(path) { |f| LoggerType.expression_at(f, line_number) }
+      end
+
+      # Find the content of block that invoked by log.dump { ... }.
       #
-      # @param [Proc] process
+      # @param [String] source
       #
       # @return [String]
-      def parse_proc(process)
-        # XXX(david942j): move this method to another place?
+      #
+      # @example
+      #   source_of_block("log.dump do\n123\n456\nend")
+      #   #=> "123\n456\n"
+      def source_of_block(source)
+        parse_and_search(source, [:iter, [:call, nil, :dump]]) { |sexp| ::Ruby2Ruby.new.process(sexp.last) }
+      end
 
-        # source might contain other 'dirty' things,
-        # use ruby parser to fetch the true code inside block.
-        src = process.source
-        sexp = ::RubyParser.new.process(src)
-        # XXX(david942j): don't hardcode the target
-        sexp = search_sexp(sexp, [:iter, [:call, nil, :dump]]) || []
-        ::Ruby2Ruby.new.process(sexp.last)
+      # Find the arguments passed to log.dump(...).
+      #
+      # @param [String] source
+      #
+      # @return [Array<String>]
+      #
+      # @example
+      #   source_of_args("log.dump(x, y, x + y)")
+      #   #=> ["x", "y", "(x + y)"]
+      def source_of_args(source)
+        parse_and_search(source, [:call, nil, :dump]) do |sexp|
+          sexp[3..-1].map { |s| ::Ruby2Ruby.new.process(s) }
+        end
+      end
+
+      # This method do the following things:
+      #   1. Parse the source code to `Sexp` (using `ruby_parser`)
+      #   2. Traverse the sexp to find the block/arguments (according to target) when calling `dump`
+      #   3. Convert the sexp of block back to Ruby code (using gem `ruby2ruby`)
+      #
+      # @yieldparam [Sexp] sexp
+      #   The found Sexp according to +target+.
+      def parse_and_search(source, target)
+        sexp = ::RubyParser.new.process(source)
+        sexp = search_sexp(sexp, target)
+        return nil if sexp.nil?
+        yield sexp
       end
 
       # depth-first search

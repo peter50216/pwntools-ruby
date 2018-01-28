@@ -26,7 +26,6 @@ Gem::Specification.new do |s|
 
   s.required_ruby_version = '>= 2.1.0'
 
-  s.add_runtime_dependency 'binding_of_caller', '~> 0.8'
   s.add_runtime_dependency 'crabstone', '~> 3'
   s.add_runtime_dependency 'dentaku', '>= 2.0.11', '< 3.2.0'
   s.add_runtime_dependency 'elftools', '~> 1.0.1'

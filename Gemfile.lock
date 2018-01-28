@@ -2,7 +2,6 @@ PATH
   remote: .
   specs:
     pwntools (1.0.1)
-      binding_of_caller (~> 0.8)
       crabstone (~> 3)
       dentaku (>= 2.0.11, < 3.2.0)
       elftools (~> 1.0.1)
@@ -16,12 +15,9 @@ GEM
   specs:
     ast (2.3.0)
     bindata (2.4.1)
-    binding_of_caller (0.8.0)
-      debug_inspector (>= 0.0.1)
     coderay (1.1.2)
     crabstone (3.0.3)
       ffi
-    debug_inspector (0.0.3)
     dentaku (3.1.0)
     docile (1.1.5)
     elftools (1.0.1)
