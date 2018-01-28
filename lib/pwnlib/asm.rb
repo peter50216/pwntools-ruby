@@ -1,6 +1,8 @@
 # encoding: ASCII-8BIT
 
+require 'elftools'
 require 'keystone_engine/keystone_const'
+require 'tempfile'
 
 require 'pwnlib/context'
 require 'pwnlib/errors'
@@ -11,6 +13,12 @@ module Pwnlib
   # Use two open-source projects +keystone+/+capstone+ to asm/disasm.
   module Asm
     module_function
+
+    # Default virtaul memory base address of architectures.
+    DEFAULT_VMA = {
+      i386: 0x08048000,
+      amd64: 0x400000
+    }.freeze
 
     # Disassembles a bytestring into human readable assembly.
     #
@@ -86,6 +94,47 @@ module Pwnlib
       KeystoneEngine::Ks.new(ks_arch, ks_mode).asm(code)[0]
     end
 
+    # Builds an ELF file from executable code.
+    #
+    # @param [String] data
+    #   Assembled code.
+    # @param [Integer?] vma
+    #   Load address for the ELF file.
+    #   If +nil+ is given, default address will be used.
+    #   See {DEFAULT_VMA}.
+    # @param [Boolean] extract
+    #   Returns ELF content or the path to the ELF file.
+    #   If +false+ is given, the ELF will be saved into a temp file, and the path is returned.
+    #   Otherwise, the content of ELF is returned.
+    #
+    # @return [String]
+    #   If +extract+ is +true+ (default), returns the content of ELF. Otherwise, a file is created and the path of it is
+    #   returned.
+    #
+    # @diff
+    #   Unlike pwntools-python uses cross-compiler to compile codes into ELF, we create ELF(s) in pure Ruby
+    #   implementation, to have higher flexibility and less binary dependencies.
+    def make_elf(data, vma: nil, extract: true)
+      vma ||= DEFAULT_VMA[context.arch.to_sym]
+      vma &= -PAGE_SIZE
+      # ELF header
+      # Program headers
+      # Section headers
+      # <data>
+      headers = create_elf_headers(vma)
+      ehdr = headers[:elf_header]
+      phdr = headers[:program_header]
+      entry = ehdr.num_bytes + phdr.num_bytes
+      ehdr.e_entry = entry + phdr.p_vaddr
+      ehdr.e_phoff = ehdr.num_bytes
+      phdr.p_filesz = phdr.p_memsz = entry + data.size
+      elf = ehdr.to_binary_s + phdr.to_binary_s + data
+      return elf if extract
+      temp = Dir::Tmpname.create(['pwn', '.elf']) {}
+      File.open(temp, 'wb', 0750) { |f| f.write(elf) }
+      temp
+    end
+
     ::Pwnlib::Util::Ruby.private_class_method_block do
       def cap_arch
         {
@@ -141,6 +190,79 @@ https://github.com/keystone-engine/keystone/tree/master/docs
 
         EOS
       end
+
+      # build headers according to context.arch/bits/endian
+      def create_elf_headers(vma)
+        elf_header = create_elf_header
+        # we only need one LOAD segment
+        program_header = create_program_header(vma)
+        elf_header.e_phentsize = program_header.num_bytes
+        elf_header.e_phnum = 1
+        {
+          elf_header: elf_header,
+          program_header: program_header
+        }
+      end
+
+      def create_elf_header
+        header = ::ELFTools::Structs::ELF_Ehdr.new(endian: endian)
+        # this decide size of entries
+        header.elf_class = context.bits
+        header.e_ident.magic = ::ELFTools::Constants::ELFMAG
+        header.e_ident.ei_class = { 32 => 1, 64 => 2 }[context.bits]
+        header.e_ident.ei_data = { little: 1, big: 2 }[endian]
+        # Not sure what version field means, seems it can be any value.
+        header.e_ident.ei_version = 1
+        header.e_ident.ei_padding = "\x00" * 7
+        # TODO(david942j): support create a shared object
+        header.e_type = ::ELFTools::Constants::ET::ET_EXEC
+        header.e_machine = e_machine
+        header.e_ehsize = header.num_bytes
+        header
+      end
+
+      # Size of one page, where is the best place to define this constant?
+      PAGE_SIZE = 0x1000
+      def create_program_header(vma)
+        header = ::ELFTools::Structs::ELF_Phdr[context.bits].new(endian: endian)
+        header.p_type = ::ELFTools::Constants::PT::PT_LOAD
+        header.p_offset = 0
+        header.p_vaddr = vma
+        header.p_paddr = vma
+        header.p_flags = 4 | 1 # r-x
+        header.p_align = PAGE_SIZE
+        header
+      end
+
+      # Mapping +context.arch+ to +::ELFTools::Constants::EM::EM_*+.
+      ARCH_EM = {
+        aarch64: 'AARCH64',
+        alpha: 'ALPHA',
+        amd64: 'X86_64',
+        arm: 'ARM',
+        cris: 'CRIS',
+        i386: '386',
+        ia64: 'IA_64',
+        m68k: '68K',
+        mips64: 'MIPS',
+        mips: 'MIPS',
+        powerpc64: 'PPC64',
+        powerpc: 'PPC',
+        s390: 'S390',
+        sparc64: 'SPARCV9',
+        sparc: 'SPARC',
+      }.freeze
+      def e_machine
+        const = ARCH_EM[context.arch.to_sym]
+        # TODO(david942j): raise UnsupportedArchError
+        return ::ELFTools::Constants::EM::EM_NONE if const.nil?
+        ::ELFTools::Constants::EM.const_get("EM_#{const}")
+      end
+
+      def endian
+        context.endian.to_sym
+      end
+
       include ::Pwnlib::Context
     end
   end
