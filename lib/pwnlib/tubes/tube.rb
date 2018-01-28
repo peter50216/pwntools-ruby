@@ -1,6 +1,7 @@
 # encoding: ASCII-8BIT
 
 require 'pwnlib/context'
+require 'pwnlib/errors'
 require 'pwnlib/logger'
 require 'pwnlib/timer'
 require 'pwnlib/tubes/buffer'
@@ -21,6 +22,14 @@ module Pwnlib
     # @!macro [new] send_return_definition
     #   @return [Integer]
     #     Returns the number of bytes had been sent.
+    #
+    # @!macro [new] raise_eof
+    #   @raise [Pwnlib::Errors::EndOfTubeError]
+    #     If the request is not satisfied when all data is received.
+    #
+    # @!macro [new] raise_timeout
+    #   @raise [Pwnlib::Errors::TimeoutError]
+    #     If the request is not satisfied when timeout exceeded.
     class Tube
       BUFSIZE = 4096
 
@@ -79,6 +88,9 @@ module Pwnlib
       #
       # @raise [ArgumentError]
       #   If the block is not given.
+      #
+      # @!macro raise_eof
+      # @!macro raise_timeout
       def recvpred(timeout: nil)
         raise ArgumentError, 'Need a block for recvpred' unless block_given?
         @timer.countdown(timeout) do
@@ -87,12 +99,7 @@ module Pwnlib
             until yield(data)
               return '' unless @timer.active?
 
-              begin
-                # TODO(Darkpi): Some form of binary search to speed up?
-                c = recv(1)
-              rescue # rubocop: disable Style/RescueStandardError
-                return ''
-              end
+              c = recv(1)
 
               return '' if c.empty?
               data << c
@@ -115,6 +122,9 @@ module Pwnlib
       # @return [String]
       #   A string contains bytes received from the tube, or +''+ if a timeout occurred while
       #   waiting.
+      #
+      # @!macro raise_eof
+      # @!macro raise_timeout
       def recvn(num_bytes, timeout: nil)
         @timer.countdown(timeout) do
           fillbuffer while @timer.active? && @buffer.size < num_bytes
@@ -133,6 +143,9 @@ module Pwnlib
       # @return [String]
       #   A string contains bytes, which ends string in +delims+, received from the tube.
       #
+      # @!macro raise_eof
+      # @!macro raise_timeout
+      #
       # @diff We return the string that ends the earliest, rather then starts the earliest,
       #       since the latter can't be done greedly. Still, it would be bad to call this
       #       for case with ambiguity.
@@ -144,11 +157,7 @@ module Pwnlib
           matching = ''
           begin
             while @timer.active?
-              begin
-                s = recv(1)
-              rescue # rubocop: disable Style/RescueStandardError # TODO(Darkpi): QQ
-                return ''
-              end
+              s = recv(1)
 
               return '' if s.empty?
               matching << s
@@ -206,7 +215,7 @@ module Pwnlib
       # @return [String]
       #   The next "line".
       #
-      # @raise [EOFError]
+      # @raise [Pwnlib::Errors::EndOfTubeError]
       #   When the remaining data does not contain +sep+.
       #   When the size of the remaining data is less than +sep+.
       #
@@ -333,7 +342,7 @@ module Pwnlib
           end
         end
       # TODO(darkhh): Use our own Exception class.
-      rescue EOFError
+      rescue ::Pwnlib::Errors::EndOfTubeError
         log.info('Got EOF in interactive mode')
       end
 

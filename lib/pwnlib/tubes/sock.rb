@@ -2,6 +2,7 @@
 
 require 'socket'
 
+require 'pwnlib/errors'
 require 'pwnlib/tubes/tube'
 
 module Pwnlib
@@ -70,24 +71,24 @@ module Pwnlib
       end
 
       def send_raw(data)
-        raise EOFError if @closed[:send]
+        raise ::Pwnlib::Errors::EndOfTubeError if @closed[:send]
         begin
           @sock.write(data)
         rescue Errno::EPIPE, Errno::ECONNRESET, Errno::ECONNREFUSED
           shutdown(:send)
-          raise EOFError
+          raise ::Pwnlib::Errors::EndOfTubeError
         end
       end
 
       def recv_raw(size)
-        raise EOFError if @closed[:recv]
+        raise ::Pwnlib::Errors::EndOfTubeError if @closed[:recv]
         begin
           rs, = IO.select([@sock], [], [], @timeout)
           return if rs.nil?
           return @sock.readpartial(size)
         rescue Errno::ECONNREFUSED, Errno::ECONNRESET, Errno::ECONNABORTED, EOFError
           shutdown(:recv)
-          raise EOFError
+          raise ::Pwnlib::Errors::EndOfTubeError
         end
       end
     end
