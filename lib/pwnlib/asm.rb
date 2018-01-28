@@ -100,7 +100,7 @@ module Pwnlib
     # @param [String] data
     #   Assembled code.
     # @param [Integer?] vma
-    #   Load address for the ELF file.
+    #   The load address for the ELF file.
     #   If +nil+ is given, default address will be used.
     #   See {DEFAULT_VMA}.
     # @param [Boolean] to_file
@@ -111,6 +111,14 @@ module Pwnlib
     # @return [String]
     #   If +to_filet+ is +false+ (default), returns the content of ELF. Otherwise, a file is created and the path is
     #   returned.
+    #
+    # @example
+    #   path = make_elf(asm(shellcraft.cat('/proc/self/maps')), to_file: true)
+    #   puts `#{path}`
+    #   # 08048000-08049000 r-xp 00000000 fd:01 27671233                           /tmp/pwn20180129-3411-7klnng.elf
+    #   # f77c7000-f77c9000 r--p 00000000 00:00 0                                  [vvar]
+    #   # f77c9000-f77cb000 r-xp 00000000 00:00 0                                  [vdso]
+    #   # ffda6000-ffdc8000 rwxp 00000000 00:00 0                                  [stack]
     #
     # @diff
     #   Unlike pwntools-python uses cross-compiler to compile code into ELF, we create ELFs in pure Ruby
@@ -133,9 +141,9 @@ module Pwnlib
       phdr.p_filesz = phdr.p_memsz = entry + data.size
       elf = ehdr.to_binary_s + phdr.to_binary_s + data
       return elf unless to_file
-      temp = Dir::Tmpname.create(['pwn', '.elf']) {}
-      File.open(temp, 'wb', 0o750) { |f| f.write(elf) }
-      temp
+      Dir::Tmpname.create(['pwn', '.elf']) do |temp|
+        File.open(temp, 'wb', 0o750) { |f| f.write(elf) }
+      end
     end
 
     ::Pwnlib::Util::Ruby.private_class_method_block do
