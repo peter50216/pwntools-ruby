@@ -15,8 +15,8 @@ class ConstantsTest < MiniTest::Test
       assert_equal('__NR_arch_prctl', Constants.__NR_arch_prctl.to_s)
       assert_equal('Constant("(O_CREAT)", 0x40)', Constants.eval('O_CREAT').inspect)
       assert_equal('Constant("(O_CREAT | O_WRONLY)", 0x41)', Constants.eval('O_CREAT | O_WRONLY').inspect)
-      err = assert_raises(::Pwnlib::Errors::ConstantNotFoundError) { Constants.eval('rax') }
-      assert_equal('no value provided for variables: rax', err.message)
+      err = assert_raises(::Pwnlib::Errors::ConstantNotFoundError) { Constants.eval('rax + rbx') }
+      assert_equal('Undefined constant(s): rax, rbx', err.message)
     end
   end
 

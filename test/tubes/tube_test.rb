@@ -60,7 +60,7 @@ class TubeTest < MiniTest::Test
 
     class << t
       def recv_raw(_n)
-        raise Pwnlib::Errors::EndOfTubeError if io.eof?
+        raise ::Pwnlib::Errors::EndOfTubeError if io.eof?
         io.read
       end
 
@@ -125,16 +125,12 @@ class TubeTest < MiniTest::Test
     assert_equal('Hello,', t.recvuntil(' wor', drop: true))
 
     # test timeout
-    assert_raises(::Pwnlib::Errors::TimeoutError) do
-      assert_equal('', t.recvuntil('DARKHH', drop: true, timeout: 0.1))
-    end
+    assert_raises(::Pwnlib::Errors::TimeoutError) { t.recvuntil('DARKHH', drop: true, timeout: 0.1) }
 
     t = basic_tube
     t.unrecv('meow')
     # test EOF
-    assert_raises(::Pwnlib::Errors::EndOfTubeError) do
-      assert_equal('', t.recvuntil('DARKHH'))
-    end
+    assert_raises(::Pwnlib::Errors::EndOfTubeError) { t.recvuntil('DARKHH') }
     assert_equal('meow', t.recv)
   end
 
@@ -153,9 +149,7 @@ class TubeTest < MiniTest::Test
     t = basic_tube
     t.unrecv('Hello, world')
     # test EOF
-    assert_raises(::Pwnlib::Errors::EndOfTubeError) do
-      assert_equal('', t.recvline)
-    end
+    assert_raises(::Pwnlib::Errors::EndOfTubeError) { assert_equal('', t.recvline) }
     assert_equal('Hello, world', t.recv)
   end
 
@@ -180,15 +174,11 @@ class TubeTest < MiniTest::Test
     r = /H.*W/
 
     # test timeout
-    assert_raises(::Pwnlib::Errors::TimeoutError) do
-      assert_match('', t.recvpred(timeout: 0.01) { |data| data =~ r })
-    end
+    assert_raises(::Pwnlib::Errors::TimeoutError) { t.recvpred(timeout: 0.01) { |data| data =~ r } }
     t = basic_tube
     t.unrecv('darkhh')
     # test EOF
-    assert_raises(::Pwnlib::Errors::EndOfTubeError) do
-      assert_match('', t.recvpred { |data| data =~ r })
-    end
+    assert_raises(::Pwnlib::Errors::EndOfTubeError) { t.recvpred { |data| data =~ r } }
   end
 
   def test_recvregex
