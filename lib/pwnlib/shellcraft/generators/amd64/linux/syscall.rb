@@ -8,10 +8,12 @@ module Pwnlib
     module Generators
       module Amd64
         module Linux
-          # See {Generators::X86::Linux#syscall}.
-          def syscall(*arguments)
-            context.local(arch: 'amd64') do
-              cat X86::Linux.syscall(*arguments)
+          # @overload syscall(*arguments)
+          #
+          # @see Generators::X86::Linux#syscall
+          def syscall(*args)
+            context.local(arch: :amd64) do
+              cat X86::Linux.syscall(*args)
             end
           end
         end

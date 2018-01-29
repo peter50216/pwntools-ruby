@@ -1,3 +1,5 @@
+# encoding: ASCII-8BIT
+
 require 'pwnlib/shellcraft/generators/amd64/common/common'
 require 'pwnlib/shellcraft/generators/x86/common/setregs'
 
@@ -6,9 +8,11 @@ module Pwnlib
     module Generators
       module Amd64
         module Common
-          # See {Generators::X86::Common#setregs}.
+          # @overload setregs(reg_context, stack_allowed: true)
+          #
+          # @see Generators::X86::Common#setregs
           def setregs(*args)
-            context.local(arch: 'amd64') do
+            context.local(arch: :amd64) do
               cat X86::Common.setregs(*args)
             end
           end

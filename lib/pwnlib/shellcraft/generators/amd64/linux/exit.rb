@@ -12,7 +12,7 @@ module Pwnlib
           #
           # @see Generators::X86::Linux#exit
           def exit(*args)
-            context.local(arch: 'amd64') do
+            context.local(arch: :amd64) do
               cat X86::Linux.exit(*args)
             end
           end
