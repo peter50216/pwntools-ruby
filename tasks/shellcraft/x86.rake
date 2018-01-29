@@ -1,4 +1,5 @@
 namespace :shellcraft do
+  # Example: bundle exec rake 'shellcraft:x86[linux/*.rb]'
   desc 'Generate the almost same files under amd64/i386 that invoke methods of X86'
   GEN_PATH = File.join(__dir__, '..', '..', 'lib', 'pwnlib', 'shellcraft', 'generators').freeze
   task :x86, :pattern do |_t, args|
@@ -37,13 +38,12 @@ end
 
   def do_gen(path)
     x86, dir, file = path.split('/')
-    return unless x86 == 'x86'
     invalid(path) unless x86 == 'x86' && %w[linux common].include?(dir) && file.end_with?('.rb')
     func = file[0..-4]
     return if dir == func
-    puts "Generating files from #{path.inspect}.."
+    puts "Generating files of #{path.inspect}.."
     dir_ = dir.capitalize
-    prototype = IO.binread(File.join(GEN_PATH, path)).scan(/^\s+def (#{func}.*)$/).flatten.first
+    prototype = IO.binread(File.join(GEN_PATH, path)).scan(/^\s+def (#{func}.*)$/).flatten.last
     %w[amd64 i386].each do |arch|
       arch_ = arch.capitalize
       str = format(TEMPLATE,

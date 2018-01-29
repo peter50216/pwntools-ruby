@@ -18,7 +18,7 @@ module Pwnlib
           #   +mode+ will be used as the file permission for creating the file.
           #
           # @return [String]
-          #   Assembly for open syscall.
+          #   Assembly for syscall open.
           #
           # @example
           #   puts shellcraft.open('/etc/passwd', 'O_RDONLY')
