@@ -15,6 +15,8 @@ module Pwnlib
     module_function
 
     # Default virtaul memory base address of architectures.
+    #
+    # This address may different by using different linker.
     DEFAULT_VMA = {
       i386: 0x08048000,
       amd64: 0x400000,
@@ -116,7 +118,7 @@ module Pwnlib
     #   Raised when don't know how to create an ELF under architecture +context.arch+.
     #
     # @todo
-    #   Create a shared object when +vma+ is zero.
+    #   Create a PIE ELF when +vma+ is zero.
     #
     # @diff
     #   Unlike pwntools-python uses cross-compiler to compile code into ELF, we create ELFs in pure Ruby
@@ -249,7 +251,7 @@ https://github.com/keystone-engine/keystone/tree/master/docs
 
       # Not sure how this field is used, remove this if it is not important.
       # This table is collected by cross-compiling and see the align in LOAD segment.
-      # TODO(david942j): check if there's difference when ELF is a shared object.
+      # TODO(david942j): check if there's difference when ELF is PIE.
       def arch_align
         case context.arch.to_sym
         when :i386, :amd64 then 0x1000
