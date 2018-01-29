@@ -17,6 +17,12 @@ module Pwnlib
           #
           # @example
           #   puts shellcraft.exit(1)
+          #   #   /* call exit(1) */
+          #   #   push 1 /* (SYS_exit) */
+          #   #   pop eax
+          #   #   push 1
+          #   #   pop ebx
+          #   #   int 0x80
           def exit(status = 0)
             cat Linux.syscall('SYS_exit', status)
           end
