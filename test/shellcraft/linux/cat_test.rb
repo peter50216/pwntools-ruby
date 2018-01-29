@@ -17,11 +17,11 @@ class CatTest < MiniTest::Test
       assert_equal(<<-'EOS', @shellcraft.cat('flag'))
   /* push "flag\x00" */
   push 0x67616c66
-  /* call open("rsp", 0, "O_RDONLY") */
+  /* call open("rsp", "O_RDONLY", 0) */
   push 2 /* (SYS_open) */
   pop rax
   mov rdi, rsp
-  xor esi, esi /* 0 */
+  xor esi, esi /* (O_RDONLY) */
   cdq /* rdx=0 */
   syscall
   /* call sendfile(1, "rax", 0, 2147483647) */
@@ -37,11 +37,11 @@ class CatTest < MiniTest::Test
       assert_equal(<<-'EOS', @shellcraft.cat('flag', fd: 2))
   /* push "flag\x00" */
   push 0x67616c66
-  /* call open("rsp", 0, "O_RDONLY") */
+  /* call open("rsp", "O_RDONLY", 0) */
   push 2 /* (SYS_open) */
   pop rax
   mov rdi, rsp
-  xor esi, esi /* 0 */
+  xor esi, esi /* (O_RDONLY) */
   cdq /* rdx=0 */
   syscall
   /* call sendfile(2, "rax", 0, 2147483647) */
@@ -64,11 +64,11 @@ class CatTest < MiniTest::Test
   push 1
   dec byte ptr [esp]
   push 0x67616c66
-  /* call open("esp", 0, "O_RDONLY") */
+  /* call open("esp", "O_RDONLY", 0) */
   push 5 /* (SYS_open) */
   pop eax
   mov ebx, esp
-  xor ecx, ecx /* 0 */
+  xor ecx, ecx /* (O_RDONLY) */
   cdq /* edx=0 */
   int 0x80
   /* call sendfile(1, "eax", 0, 2147483647) */

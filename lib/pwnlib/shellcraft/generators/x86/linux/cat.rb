@@ -43,8 +43,7 @@ module Pwnlib
           #  #=> nil
           def cat(filename, fd: 1)
             abi = ::Pwnlib::ABI::ABI.syscall
-            cat Common.pushstr(filename)
-            cat Linux.syscall('SYS_open', abi.stack_pointer, 0, 'O_RDONLY')
+            cat Linux.open(filename, 'O_RDONLY')
             cat Linux.syscall('SYS_sendfile', fd, abi.register_arguments.first, 0, 0x7fffffff)
           end
         end

@@ -12,7 +12,7 @@ module Pwnlib
           # @param [String] filename
           #   The file to be opened.
           # @param [String, Integer] flags
-          #   flags for opening a file, see examples for its usage.
+          #   Flags for opening a file.
           # @param [Integer] mode
           #   If +filename+ doesn't exist and 'O_CREAT' is specified in +flags+,
           #   +mode+ will be used as the file permission for creating the file.
@@ -34,7 +34,7 @@ module Pwnlib
           #   #   xor ecx, ecx /* (O_RDONLY) */
           #   #   cdq /* edx=0 */
           #   #   int 0x80
-          def open(filename, flags, mode = 0)
+          def open(filename, flags = 'O_RDONLY', mode = 0)
             abi = ::Pwnlib::ABI::ABI.syscall
             cat Common.pushstr(filename)
             cat Linux.syscall('SYS_open', abi.stack_pointer, flags, mode)

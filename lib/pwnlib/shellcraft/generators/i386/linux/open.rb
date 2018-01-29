@@ -8,7 +8,7 @@ module Pwnlib
     module Generators
       module I386
         module Linux
-          # @overload open(filename, flags, mode = 0)
+          # @overload open(filename, flags = 'O_RDONLY', mode = 0)
           #
           # @see Generators::X86::Linux#open
           def open(*args)
