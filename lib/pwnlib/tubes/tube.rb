@@ -94,7 +94,7 @@ module Pwnlib
                 return ''
               end
 
-              next '' if c.empty?
+              next if c.empty?
               data << c
             end
             data.slice!(0..-1)
