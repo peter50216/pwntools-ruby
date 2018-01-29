@@ -32,6 +32,7 @@ module Pwnlib
       # if that's all that's available
       def recv_raw(numbytes)
         raise EOFError if @conn.nil?
+
         begin
           return @conn.read(numbytes)
         rescue RubySerial::Error
@@ -53,12 +54,11 @@ module Pwnlib
         end
       end
 
-      def settimeout_raw
-        raise 'Not Implemented by rubyserial'
-      end
-
-      def can_recv_raw
-        raise 'Not Implemented by rubyserial'
+      def timeout_raw=(timeout)
+        # XXX: We can't do it, just ignoring
+        # In particular, rubyserial doesn't do timeouts, it always returns
+        # immediately. Fortunately, the Tube superclass has a fallback timer
+        # which covers our needs.
       end
 
       def connected_raw
