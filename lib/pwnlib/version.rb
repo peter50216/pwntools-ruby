@@ -2,5 +2,5 @@
 
 module Pwnlib
   # version of pwntools-ruby
-  VERSION = '1.0.2'.freeze
+  VERSION = '1.0.1'.freeze
 end
