@@ -8,14 +8,14 @@ module Pwnlib
   module Tubes
     # Serial Connections
     class SerialTube < Tube
-      def initialize(port = nil, baudrate = 115_200,
-                     convert_newlines = true,
-                     bytesize = 8, parity = :none)
+      def initialize(port = nil, baudrate: 115_200,
+                     convert_newlines: true,
+                     bytesize: 8, parity: :none)
         super()
 
         # go hunting for a port
-        port = Dir.glob('/dev/tty.usbserial*')[0] if port.nil?
-        port = '/dev/ttyUSB0' if port.nil?
+        port || port = Dir.glob('/dev/tty.usbserial*')[0]
+        port || port = '/dev/ttyUSB0'
 
         @convert_newlines = convert_newlines
         @conn = Serial.new(port, baudrate, bytesize, parity)
@@ -27,6 +27,7 @@ module Pwnlib
       end
 
       # Implementation of the methods required for tube
+      private
 
       # Non-blocking, will happily return less than numbytes
       # if that's all that's available
@@ -59,21 +60,6 @@ module Pwnlib
         # In particular, rubyserial doesn't do timeouts, it always returns
         # immediately. Fortunately, the Tube superclass has a fallback timer
         # which covers our needs.
-      end
-
-      def connected_raw
-        return false if @conn.nil?
-        return false if @conn.closed?
-        true
-      end
-
-      def fileno
-        raise 'A closed serialtube does not have a file number' if @conn.closed?
-        raise 'Not Implemented by rubyserial'
-      end
-
-      def shutdown_raw
-        close
       end
     end
   end
