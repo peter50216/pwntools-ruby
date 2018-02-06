@@ -3,6 +3,7 @@
 require 'singleton'
 
 require 'pwnlib/context'
+require 'pwnlib/errors'
 require 'pwnlib/logger'
 
 module Pwnlib
@@ -48,8 +49,8 @@ module Pwnlib
         begin
           arch_module = ::Pwnlib::Shellcraft::Generators.const_get(context.arch.capitalize)
         rescue NameError
-          log.error("Can't use shellcraft under architecture #{context.arch.inspect}.")
-          return nil
+          raise ::Pwnlib::Errors::UnsupportedArchError,
+                "Can't use shellcraft under architecture #{context.arch.inspect}."
         end
         # try search in Common module
         common_module = arch_module.const_get(:Common)
