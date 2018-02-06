@@ -22,5 +22,9 @@ module Pwnlib
     # Raised when timeout exceeded.
     class TimeoutError < ::Pwnlib::Error
     end
+
+    # Raised when method doesn't support under current architecture.
+    class UnsupportedArchError < ::Pwnlib::Error
+    end
   end
 end

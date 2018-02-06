@@ -1,30 +1,16 @@
 ---
-engines:
-  bundler-audit:
-    enabled: true
+version: "2"
+plugins:
   duplication:
     enabled: true
-    config:
-      languages:
-      - ruby
-      - javascript
-      - python
-      - php
     exclude_paths:
-      - lib/pwnlib/shellcraft/generators/
-  fixme:
+    - lib/pwnlib/shellcraft/generators/
+    - test/
+checks:
+  method-lines:
     enabled: false
-  rubocop:
-    enabled: false
-ratings:
-  paths:
-  - Gemfile.lock
-  - "**.inc"
-  - "**.js"
-  - "**.jsx"
-  - "**.module"
-  - "**.php"
-  - "**.py"
-  - "**.rb"
-exclude_paths:
-- test/
+  method-complexity:
+    config:
+      threshold: 10
+exclude_patterns:
+- "test/"
