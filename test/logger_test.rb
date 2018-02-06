@@ -58,4 +58,42 @@ class LoggerTest < MiniTest::Test
     meowmeowmeow
     EOS
   end
+
+  def test_dump
+    x = 2
+    y = 3
+    assert_equal(<<-EOS, @logger.dump(x + y, x * y))
+[DUMP] (x + y) = 5, (x * y) = 6
+    EOS
+
+    libc = 0x7fc0bdd13000
+    # check if source code parsing works good
+    msg = @logger.dump(
+      libc # comment is ok
+      .to_s(16),
+      libc - libc
+    )
+    assert_equal(<<-EOS, msg)
+[DUMP] libc.to_s(16) = "7fc0bdd13000", (libc - libc) = 0
+    EOS
+
+    libc = 0x7fc0bdd13000
+    assert_equal(<<-EOS, @logger.dump { libc.to_s(16) })
+[DUMP] libc.to_s(16) = "7fc0bdd13000"
+    EOS
+
+    res = @logger.dump do
+      libc = 12_345_678
+      libc <<= 12
+      # comments will be ignored
+      libc.to_s # dummy line
+      libc.to_s(16)
+    end
+    assert_equal(<<-EOS, res)
+[DUMP] libc = 12345678
+       libc = (libc << 12)
+       libc.to_s
+       libc.to_s(16) = "bc614e000"
+    EOS
+  end
 end
