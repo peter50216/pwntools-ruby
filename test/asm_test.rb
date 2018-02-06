@@ -122,7 +122,7 @@ class AsmTest < MiniTest::Test
   end
 
   def test_make_elf
-    # create elf and use ELFTools to test it
+    # create ELF and use ELFTools to test it
     data = 'not important'
     elf, elf_file = make_elf_file(data)
     assert_equal('Intel 80386', elf_file.machine)
@@ -135,6 +135,14 @@ class AsmTest < MiniTest::Test
     temp_path = Asm.make_elf(data, to_file: true)
     assert_equal(elf, IO.binread(temp_path))
     File.unlink(temp_path)
+
+    # test block form
+    temp_path = Asm.make_elf(data) do |path|
+      assert(File.file?(path))
+      path
+    end
+    # check file removed
+    refute(File.exist?(temp_path))
 
     # test vma
     custom_base = 0x1234000
@@ -156,9 +164,9 @@ class AsmTest < MiniTest::Test
     end
   end
 
-  # this test can be removed after we implement method +run_shellcode+
+  # this test can be removed after method +run_shellcode+ being implemented
   def test_make_elf_and_run
-    # run the elf we created to make sure it works.
+    # run the ELF we created to make sure it works.
     linux_only
 
     # test supported architecture
@@ -168,11 +176,11 @@ class AsmTest < MiniTest::Test
     }.each do |arch, regexp|
       context.local(arch: arch) do
         data = Asm.asm(@shellcraft.cat('/proc/self/maps') + @shellcraft.syscall('SYS_exit', 0))
-        path = Asm.make_elf(data, to_file: true)
-        Open3.popen2(path) do |_i, o, _t|
-          assert_match(regexp, o.gets)
+        Asm.make_elf(data) do |path|
+          Open3.popen2(path) do |_i, o, _t|
+            assert_match(regexp, o.gets)
+          end
         end
-        File.unlink(path)
       end
     end
   end

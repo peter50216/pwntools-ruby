@@ -16,7 +16,7 @@ module Pwnlib
 
     # Default virtaul memory base address of architectures.
     #
-    # This address may different by using different linker.
+    # This address may be different by using different linker.
     DEFAULT_VMA = {
       i386: 0x08048000,
       amd64: 0x400000,
@@ -107,23 +107,32 @@ module Pwnlib
     #   See {DEFAULT_VMA}.
     # @param [Boolean] to_file
     #   Returns ELF content or the path to the ELF file.
-    #   If +true+ is given, the ELF will be saved into a temp file, and the path is returned.
-    #   Otherwise, the content of ELF is returned.
+    #   If +true+ is given, the ELF will be saved into a temp file.
     #
-    # @return [String]
-    #   If +to_filet+ is +false+ (default), returns the content of ELF. Otherwise, a file is created and the path is
-    #   returned.
+    # @return [String, Object]
+    #   Without block
+    #   - If +to_file+ is +false+ (default), returns the content of ELF.
+    #   - Otherwise, a file is created and the path is returned.
+    #   With block given, an ELF file will be created and its path will be yielded.
+    #   This method will return what the block returned, and the ELF file will be removed after the block yielded.
+    #
+    # @yieldparam [String] path
+    #   The path to the created ELF file.
+    #
+    # @yieldreturn [Object]
+    #   Whatever you want.
     #
     # @raise [::Pwnlib::Errors::UnsupportedArchError]
     #   Raised when don't know how to create an ELF under architecture +context.arch+.
     #
-    # @todo
-    #   Create a PIE ELF when +vma+ is zero.
-    #
     # @diff
     #   Unlike pwntools-python uses cross-compiler to compile code into ELF, we create ELFs in pure Ruby
-    #   implementation, this let us have higher flexibility and less binary dependencies.
+    #   implementation. Therefore, we have higher flexibility and less binary dependencies.
     #
+    # @example
+    #   bin = make_elf(asm(shellcraft.sh))
+    #   bin[0, 4]
+    #   #=> "\x7FELF"
     # @example
     #   path = make_elf(asm(shellcraft.cat('/proc/self/maps')), to_file: true)
     #   puts `#{path}`
@@ -131,7 +140,17 @@ module Pwnlib
     #   # f77c7000-f77c9000 r--p 00000000 00:00 0                                  [vvar]
     #   # f77c9000-f77cb000 r-xp 00000000 00:00 0                                  [vdso]
     #   # ffda6000-ffdc8000 rwxp 00000000 00:00 0                                  [stack]
+    # @example
+    #   # no need 'to_file' parameter if block is given
+    #   make_elf(asm(shellcraft.cat('/proc/self/maps'))) do |path|
+    #     puts `#{path}`
+    #     # 08048000-08049000 r-xp 00000000 fd:01 27671233                           /tmp/pwn20180129-3411-7klnng.elf
+    #     # f77c7000-f77c9000 r--p 00000000 00:00 0                                  [vvar]
+    #     # f77c9000-f77cb000 r-xp 00000000 00:00 0                                  [vdso]
+    #     # ffda6000-ffdc8000 rwxp 00000000 00:00 0                                  [stack]
+    #   end
     def make_elf(data, vma: nil, to_file: false)
+      to_file ||= block_given?
       vma ||= DEFAULT_VMA[context.arch.to_sym]
       vma &= -0x1000
       # ELF header
@@ -146,9 +165,10 @@ module Pwnlib
       phdr.p_filesz = phdr.p_memsz = entry + data.size
       elf = ehdr.to_binary_s + phdr.to_binary_s + data
       return elf unless to_file
-      Dir::Tmpname.create(['pwn', '.elf']) do |temp|
+      path = Dir::Tmpname.create(['pwn', '.elf']) do |temp|
         File.open(temp, 'wb', 0o750) { |f| f.write(elf) }
       end
+      block_given? ? yield(path).tap { File.unlink(path) } : path
     end
 
     ::Pwnlib::Util::Ruby.private_class_method_block do
@@ -230,7 +250,6 @@ https://github.com/keystone-engine/keystone/tree/master/docs
         # Not sure what version field means, seems it can be any value.
         header.e_ident.ei_version = 1
         header.e_ident.ei_padding = "\x00" * 7
-        # TODO(david942j): support create a shared object
         header.e_type = ::ELFTools::Constants::ET::ET_EXEC
         header.e_machine = e_machine
         # XXX(david942j): is header.e_flags important?
@@ -251,7 +270,6 @@ https://github.com/keystone-engine/keystone/tree/master/docs
 
       # Not sure how this field is used, remove this if it is not important.
       # This table is collected by cross-compiling and see the align in LOAD segment.
-      # TODO(david942j): check if there's difference when ELF is PIE.
       def arch_align
         case context.arch.to_sym
         when :i386, :amd64 then 0x1000
