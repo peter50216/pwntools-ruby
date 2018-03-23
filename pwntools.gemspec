@@ -31,7 +31,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'elftools', '~> 1.0.1'
   s.add_runtime_dependency 'keystone-engine', '~> 0.9'
   s.add_runtime_dependency 'method_source', '~> 0.9'
-  s.add_runtime_dependency 'rainbow', '~> 2.2'
+  s.add_runtime_dependency 'rainbow', '>= 2.2', '< 4.0'
   s.add_runtime_dependency 'ruby2ruby', '~> 2.4'
 
   # TODO(david942j): check why ruby crash during testing if upgrade minitest to 5.10.2/3
