@@ -73,7 +73,7 @@ class TubeTest < MiniTest::Test
       end
 
       def io
-        @fakeio ||= Tempfile.new('pwntools_ruby_test')
+        @io ||= Tempfile.new('pwntools_ruby_test')
       end
     end
 
@@ -286,7 +286,7 @@ class TubeTest < MiniTest::Test
     @log.clear
     begin
       t = basic_tube
-      t.instance_variable_set(:@fakeio, File.new(FLAG_FILE, File::RDONLY))
+      t.instance_variable_set(:@io, File.new(FLAG_FILE, File::RDONLY))
       t.interact
     rescue ::Pwnlib::Errors::EndOfTubeError
       $stdout.rewind
