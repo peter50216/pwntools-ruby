@@ -39,6 +39,9 @@ Metrics/PerceivedComplexity:
 Naming/HeredocDelimiterNaming:
   Enabled: false
 
+Naming/UncommunicativeMethodParamName:
+  Enabled: false
+
 Rails:
   Enabled: false
 
