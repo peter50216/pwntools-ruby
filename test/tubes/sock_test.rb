@@ -11,16 +11,16 @@ class SockTest < MiniTest::Test
   ECHO_FILE = File.expand_path('../data/echo.rb', __dir__)
   BIND_PORT = 31_337
 
-  def popen_echo(data)
-    Open3.popen2("bundle exec ruby #{ECHO_FILE} #{BIND_PORT}") do |_i, o, _t|
+  def popen_echo(data, bind_port)
+    Open3.popen2("bundle exec ruby #{ECHO_FILE} #{bind_port}") do |_i, o, _t|
       o.gets
-      s = Sock.new('localhost', BIND_PORT)
+      s = Sock.new('localhost', bind_port)
       yield s, data, o
     end
   end
 
   def test_io
-    popen_echo('DARKHH') do |s, data, _o|
+    popen_echo('DARKHH', BIND_PORT + 1) do |s, data, _o|
       s.io.puts(data)
       rs, = IO.select([s.io])
       refute_nil(rs)
@@ -29,7 +29,7 @@ class SockTest < MiniTest::Test
   end
 
   def test_sock
-    popen_echo('DARKHH') do |s, data, o|
+    popen_echo('DARKHH', BIND_PORT + 2) do |s, data, o|
       s.puts(data)
       assert_equal(data + "\n", s.gets)
       o.gets
@@ -43,7 +43,7 @@ class SockTest < MiniTest::Test
   end
 
   def test_close
-    popen_echo('DARKHH') do |s, _data, _o|
+    popen_echo('DARKHH', BIND_PORT + 3) do |s, _data, _o|
       s.close
       assert_raises(EOFError) { s.puts(514) }
       assert_raises(EOFError) { s.puts(514) }
@@ -52,7 +52,7 @@ class SockTest < MiniTest::Test
       assert_raises(ArgumentError) { s.close(:hh) }
     end
 
-    popen_echo('DARKHH') do |s, _data, _o|
+    popen_echo('DARKHH', BIND_PORT + 4) do |s, _data, _o|
       3.times { s.close(:read) }
       3.times { s.close(:recv) }
       3.times { s.close(:send) }
