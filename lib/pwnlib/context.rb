@@ -274,9 +274,7 @@ module Pwnlib
         when true, false
           signed = value
         end
-        if signed.nil?
-          raise ArgumentError, "signed must be boolean or one of #{SIGNEDNESSES.keys.sort.inspect}"
-        end
+        raise ArgumentError, "signed must be boolean or one of #{SIGNEDNESSES.keys.sort.inspect}" if signed.nil?
         @attrs[:signed] = signed
       end
 

@@ -71,9 +71,7 @@ module Pwnlib
             end
           else
             if is_all
-              if number < 0
-                raise ArgumentError, "Can't pack negative number with bits='all' and signed=false"
-              end
+              raise ArgumentError, "Can't pack negative number with bits='all' and signed=false" if number < 0
               bits = number.zero? ? 8 : ((number.bit_length - 1) | 7) + 1
             end
 
@@ -136,9 +134,7 @@ module Pwnlib
           signed = context.signed
           bytes = (bits + 7) / 8
 
-          unless data.size == bytes
-            raise ArgumentError, "data.size=#{data.size} does not match with bits=#{bits}"
-          end
+          raise ArgumentError, "data.size=#{data.size} does not match with bits=#{bits}" unless data.size == bytes
 
           data = data.reverse if endian == 'little'
           data = data.unpack('C*')
@@ -200,9 +196,7 @@ module Pwnlib
 
           bytes = bits / 8
 
-          if data.size % bytes != 0
-            raise ArgumentError, "data.size=#{data.size} must be a multiple of bytes=#{bytes}"
-          end
+          raise ArgumentError, "data.size=#{data.size} must be a multiple of bytes=#{bytes}" if data.size % bytes != 0
           ret = []
           (data.size / bytes).times do |idx|
             x1 = idx * bytes
