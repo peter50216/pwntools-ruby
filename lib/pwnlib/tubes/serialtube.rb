@@ -26,7 +26,7 @@ module Pwnlib
         super()
 
         # go hunting for a port
-        port = Dir.glob('/dev/tty.usbserial*')[0] if port.nil?
+        port = Dir.glob('/dev/tty.usbserial*').first if port.nil?
         port = '/dev/ttyUSB0' if port.nil?
 
         @convert_newlines = convert_newlines
@@ -40,7 +40,10 @@ module Pwnlib
         @conn = nil
       end
 
-      # Gets bytes over the serial connection until some bytes are received, or +@timeout+ has passed. It is an error for it to return no data in less than +@timeout+ seconds. It is ok for it to return some data in less time.
+      # Gets bytes over the serial connection until some bytes are received, or
+      # +@timeout+ has passed. It is an error for it to return no data in less
+      # than +@timeout+ seconds. It is ok for it to return some data in less
+      # time.
       #
       # @param [Integer] numbytes
       #   An upper limit on the number of bytes to get.
