@@ -31,6 +31,7 @@ module Pwnlib
 
         @convert_newlines = convert_newlines
         @conn = Serial.new(port, baudrate, bytesize, parity)
+        @timer = Timer.new
       end
 
       # Closes the active connection
@@ -40,10 +41,6 @@ module Pwnlib
       end
 
       # Gets bytes over the serial connection until some bytes are received, or +@timeout+ has passed. It is an error for it to return no data in less than +@timeout+ seconds. It is ok for it to return some data in less time.
-      #
-      # Non-blocking, will happily return less than numbytes
-      # if that's all that's available
-      # TODO: above is a bug, API for recv_raw requires it be blocking
       #
       # @param [Integer] numbytes
       #   An upper limit on the number of bytes to get.
@@ -55,11 +52,20 @@ module Pwnlib
       def recv_raw(numbytes)
         raise EOFError if @conn.nil?
 
-        begin
-          return @conn.read(numbytes)
-        rescue RubySerial::Error
-          shutdown(:recv)
-          raise EOFError
+        @timer.countdown do
+          data = ''
+          begin
+            while @timer.active?
+              data += @conn.read(numbytes - data.length)
+              break if data.length >= numbytes
+              sleep 0.1
+            end
+            # TODO: should we reverse @convert_newlines here?
+            return data
+          rescue RubySerial::Error
+            close
+            raise EOFError
+          end
         end
       end
 
@@ -75,12 +81,11 @@ module Pwnlib
       def send_raw(data)
         raise EOFError if @conn.nil?
 
-        # TODO: use context.newline
-        data.gsub!(/\n/, "\r\n") if @convert_newlines
+        data.gsub!(context.newline, "\r\n") if @convert_newlines
         begin
           return @conn.write(data)
         rescue RubySerial::Error
-          shutdown(:send)
+          close
           raise EOFError
         end
       end
@@ -89,10 +94,7 @@ module Pwnlib
       #
       # @param [Integer] timeout
       def timeout_raw=(timeout)
-        # XXX: We can't do it, just ignoring
-        # In particular, rubyserial doesn't do timeouts, it always returns
-        # immediately. Fortunately, the Tube superclass has a fallback timer
-        # which covers our needs.
+        @timer.timeout = timeout
       end
 
       # Checks to see if the serial connection is active.
@@ -109,11 +111,6 @@ module Pwnlib
       def fileno
         raise 'A closed serialtube does not have a file number' if @conn.closed?
         raise 'Not Implemented by rubyserial'
-      end
-
-      # Closes the active connection.
-      def shutdown_raw
-        close
       end
     end
   end
