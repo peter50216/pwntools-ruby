@@ -15,14 +15,15 @@ class ShellcraftTest < MiniTest::Test
   def test_respond
     context.local(arch: 'amd64') do
       # Check respond_to_missing? is well defined
-      assert @shellcraft.respond_to?(:mov)
-      assert @shellcraft.method(:sh)
+      assert(@shellcraft.respond_to?(:mov))
+      assert(@shellcraft.method(:sh))
     end
-    refute @shellcraft.respond_to?(:linux)
+    refute(@shellcraft.respond_to?(:linux))
     assert_raises(NoMethodError) { @shellcraft.meow }
 
     context.local(arch: 'arm') do
-      refute @shellcraft.respond_to?(:mov)
+      err = assert_raises(::Pwnlib::Errors::UnsupportedArchError) { @shellcraft.respond_to?(:mov) }
+      assert_equal("Can't use shellcraft under architecture \"arm\".", err.message)
     end
   end
 end

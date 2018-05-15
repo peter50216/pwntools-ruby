@@ -70,7 +70,7 @@ module Pwnlib
         first_reg, val = list.shift
         # Special case for val.zero? because zeroify registers is cheaper than mov.
         next if list.empty? || all_regs.include?(val) || val.zero?
-        list.each do |reg, _|
+        list.each do |(reg, _)|
           hash[reg] = first_reg
           in_out.delete(reg)
         end
