@@ -1,6 +1,7 @@
 # encoding: ASCII-8BIT
 
 require 'logger'
+
 require 'method_source/code_helpers' # don't require 'method_source', it pollutes Method/Proc classes.
 require 'rainbow'
 require 'ruby2ruby'

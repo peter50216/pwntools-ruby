@@ -1,5 +1,6 @@
-require 'elftools'
 require 'ostruct'
+
+require 'elftools'
 require 'rainbow'
 
 require 'pwnlib/logger'

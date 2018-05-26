@@ -1,8 +1,9 @@
 # encoding: ASCII-8BIT
 
+require 'tempfile'
+
 require 'elftools'
 require 'keystone_engine/keystone_const'
-require 'tempfile'
 
 require 'pwnlib/context'
 require 'pwnlib/errors'

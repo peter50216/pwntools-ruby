@@ -7,8 +7,10 @@ require 'rake/testtask'
 require 'rubocop/rake_task'
 require 'yard'
 
+import 'tasks/shellcraft/x86.rake'
+
 RuboCop::RakeTask.new(:rubocop) do |task|
-  task.patterns = ['lib/**/*.rb', 'test/**/*.rb']
+  task.patterns = ['lib/**/*.rb', 'tasks/**/*.rake', 'test/**/*.rb']
 end
 
 task default: %i(install_git_hooks rubocop test)
