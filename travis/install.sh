@@ -29,6 +29,7 @@ install_keystone_from_source()
 
 setup_linux()
 {
+  sudo apt-get update
   sudo apt-get install --force-yes gcc-multilib g++-multilib binutils
   # install capstone
   install_deb libcapstone3
