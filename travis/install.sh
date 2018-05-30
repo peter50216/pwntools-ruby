@@ -29,7 +29,7 @@ install_keystone_from_source()
 
 setup_linux()
 {
-  sudo apt-get install -qq --force-yes gcc-multilib g++-multilib binutils > /dev/null
+  sudo apt-get install --force-yes gcc-multilib g++-multilib binutils
   # install capstone
   install_deb libcapstone3
   export LD_LIBRARY_PATH=$TRAVIS_BUILD_DIR/usr/lib:$LD_LIBRARY_PATH
