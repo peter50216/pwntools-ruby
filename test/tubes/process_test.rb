@@ -17,6 +17,12 @@ class ProcessTest < MiniTest::Test
     assert_equal("HAHA2\n", cat.gets)
   end
 
+  def test_aslr
+    map1 = ::Pwnlib::Tubes::Process.new('cat /proc/self/maps', aslr: false).read
+    map2 = ::Pwnlib::Tubes::Process.new(['cat', '/proc/self/maps'], aslr: false).read
+    assert_equal(map1, map2)
+  end
+
   def test_eof
     ls = ::Pwnlib::Tubes::Process.new(['ls', '-la'])
     assert_match(/total/, ls.gets)

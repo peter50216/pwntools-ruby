@@ -131,6 +131,7 @@ module Pwnlib
           @buffer.size >= num_bytes ? @buffer.get(num_bytes) : ''
         end
       end
+      alias readn recvn
 
       # Receives data until one of +delims+ is encountered. If the request is not satisfied before
       # +timeout+ seconds pass, all data is buffered and an empty string is returned.

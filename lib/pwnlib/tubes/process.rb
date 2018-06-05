@@ -13,7 +13,8 @@ module Pwnlib
       DEFAULT_OPTIONS = {
         in: :pipe,
         out: :pipe,
-        raw: true
+        raw: true,
+        aslr: true
       }.freeze
 
       # Instantiate a {Pwnlib::Tubes::Process} object.
@@ -31,12 +32,14 @@ module Pwnlib
       # @option opts [Boolean] raw (true)
       #   Set the created PTY to raw mode. i.e. disable control characters.
       #   If no pty is created, this has no effect.
+      # @option opts [Boolean] aslr (true)
+      #   If +false+ is given, the ASLR of the target process will be disabled via +setarch -R+.
       # @option opts [Float?] timeout (nil)
       #   See {Pwnlib::Tubes::Tube#initialize}.
       def initialize(argv, **opts)
         opts = DEFAULT_OPTIONS.merge(opts)
         super(timeout: opts[:timeout])
-        argv = Array(argv)
+        argv = normalize_argv(argv, opts)
         slave_i, @i = pipe(opts[:in], opts[:raw])
         @o, slave_o = pipe(opts[:out], opts[:raw])
         @pid = ::Process.spawn(*argv, in: slave_i, out: slave_o)
@@ -73,6 +76,17 @@ module Pwnlib
       def close_io(*dir)
         @o.close if dir.include?(:read)
         @i.close if dir.include?(:write)
+      end
+
+      def normalize_argv(argv, opts)
+        # XXX(david942j): Set personality on child process will be better than using setarch
+        pre_cmd = opts[:aslr] ? '' : "setarch #{`uname -m`.strip} -R "
+        argv = if argv.is_a?(String)
+                 pre_cmd + argv
+               else
+                 pre_cmd.split + argv
+               end
+        Array(argv)
       end
 
       # @return [(IO, IO)]
