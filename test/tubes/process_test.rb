@@ -24,6 +24,26 @@ class ProcessTest < MiniTest::Test
     assert_raises(::Pwnlib::Errors::EndOfTubeError) { loop { ls.gets } }
   end
 
+  def test_shutdown
+    cat = ::Pwnlib::Tubes::Process.new('cat')
+    assert_raises(::Pwnlib::Errors::TimeoutError) { cat.recvn(1, timeout: 0.1) }
+    cat.shutdown(:write) # This should cause `cat` dead
+    assert_raises(::Pwnlib::Errors::EndOfTubeError) { cat.recvn(1, timeout: 0.1) }
+    cat.shutdown
+
+    cat = ::Pwnlib::Tubes::Process.new('cat')
+    cat.shutdown(:recv)
+    assert_raises(::Pwnlib::Errors::EndOfTubeError) { cat.recvn(1) }
+    cat.shutdown
+    assert_raises(ArgumentError) { cat.shutdown(:zz) }
+  end
+
+  def test_kill
+    cat = ::Pwnlib::Tubes::Process.new('cat')
+    cat.kill
+    assert_raises(::Pwnlib::Errors::EndOfTubeError) { cat.recvn(1) }
+  end
+
   def test_tty
     tty_test = proc do |*args, raw: true|
       in_, out = args.map { |v| v ? :pty : :pipe }

@@ -350,7 +350,7 @@ module Pwnlib
 
       def fillbuffer(timeout: nil)
         data = @timer.countdown(timeout) do
-          self.timeout_raw = @timer.timeout
+          self.timeout_raw = (@timer.timeout == :forever ? nil : @timer.timeout)
           recv_raw(BUFSIZE)
         end
         if data

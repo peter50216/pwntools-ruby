@@ -69,7 +69,7 @@ module Pwnlib
       end
 
       def timeout_raw=(timeout)
-        @timeout = timeout == :forever ? nil : timeout
+        @timeout = timeout
       end
 
       def send_raw(data)

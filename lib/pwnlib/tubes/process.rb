@@ -1,6 +1,5 @@
 # encoding: ASCII-8BIT
 
-require 'open3'
 require 'pty'
 
 require 'pwnlib/errors'
@@ -45,8 +44,37 @@ module Pwnlib
         slave_o.close
       end
 
+      # Close the IO.
+      #
+      # @param [:both, :recv, :read, :send, :write] direction
+      #   Disallow further read/write of the process.
+      def shutdown(direction = :both)
+        case direction
+        when :both then close_io(%i[read write])
+        when :recv, :read then close_io(:read)
+        when :send, :write then close_io(:write)
+        else
+          raise ArgumentError, 'Only allow :both, :recv, :read, :send and :write passed'
+        end
+      end
+
+      # Kill the process.
+      #
+      # @return [void]
+      def kill
+        ::Process.kill('KILL', @pid)
+      end
+      alias close kill
+
       private
 
+      def close_io(*dir)
+        @o.close if dir.include?(:read)
+        @i.close if dir.include?(:write)
+      end
+
+      # @return [(IO, IO)]
+      #   IO pair.
       def pipe(type, raw)
         case type
         when :pipe then IO.pipe
@@ -56,7 +84,7 @@ module Pwnlib
 
       def send_raw(data)
         @i.write(data)
-      rescue Errno::EIO, Errno::EPIPE
+      rescue Errno::EIO, Errno::EPIPE, IOError
         raise ::Pwnlib::Errors::EndOfTubeError
       end
 
@@ -64,12 +92,12 @@ module Pwnlib
         o, = IO.select([@o], [], [], @timeout)
         return if o.nil?
         @o.readpartial(size)
-      rescue Errno::EIO, Errno::EPIPE, EOFError
+      rescue Errno::EIO, Errno::EPIPE, IOError
         raise ::Pwnlib::Errors::EndOfTubeError
       end
 
       def timeout_raw=(timeout)
-        @timeout = timeout == :forever ? nil : timeout
+        @timeout = timeout
       end
     end
   end
