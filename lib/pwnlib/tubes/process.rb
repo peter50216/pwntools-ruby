@@ -39,6 +39,29 @@ module Pwnlib
       #   If +false+ is given, the ASLR of the target process will be disabled via +setarch -R+.
       # @option opts [Float?] timeout (nil)
       #   See {Pwnlib::Tubes::Tube#initialize}.
+      #
+      # @example
+      #   io = Tubes::Process.new('ls')
+      #   io.gets
+      #   #=> "Gemfile\n"
+      #
+      #   io = Tubes::Process.new('ls', out: :pty)
+      #   io.gets
+      #   #=> "Gemfile       LICENSE-pwntools-python.txt  STYLE.md\t git-hooks  pwntools-1.0.1.gem  test\n"
+      # @example
+      #    io = Tubes::Process.new('cat /proc/self/maps')
+      #    io.gets
+      #    #=> "55f8b8a10000-55f8b8a18000 r-xp 00000000 fd:00 9044035                    /bin/cat\n"
+      #    io.close
+      #
+      #    io = Tubes::Process.new('cat /proc/self/maps', aslr: false)
+      #    io.gets
+      #    #=> "555555554000-55555555c000 r-xp 00000000 fd:00 9044035                    /bin/cat\n"
+      #    io.close
+      # @example
+      #   io = Tubes::Process.new('env', env: { 'FOO' => 'BAR' })
+      #   io.gets
+      #   #=> "FOO=BAR\n"
       def initialize(argv, **opts)
         opts = DEFAULT_OPTIONS.merge(opts)
         super(timeout: opts[:timeout])
