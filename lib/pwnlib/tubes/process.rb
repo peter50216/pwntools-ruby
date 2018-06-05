@@ -62,7 +62,9 @@ module Pwnlib
       #
       # @return [void]
       def kill
+        shutdown
         ::Process.kill('KILL', @pid)
+        ::Process.wait(@pid)
       end
       alias close kill
 
