@@ -54,8 +54,7 @@ module Pwnlib
       begin
         yield
       ensure
-        raise ::Pwnlib::Errors::TimeoutError unless active?
-        @deadline = nil
+        raise ::Pwnlib::Errors::TimeoutError unless active?.tap { @deadline = nil }
       end
     end
   end

@@ -15,8 +15,10 @@ module Pwnlib
       #   The host to connect.
       # @param [Integer] port
       #   The port to connect.
-      def initialize(host, port)
-        super()
+      # @param [Float?] timeout
+      #   See {Pwnlib::Tubes::Tube#initialize}.
+      def initialize(host, port, timeout: nil)
+        super(timeout: timeout)
         @sock = TCPSocket.new(host, port)
         @sock.binmode
         @timeout = nil
