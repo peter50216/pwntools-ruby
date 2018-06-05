@@ -17,9 +17,17 @@ class ProcessTest < MiniTest::Test
     assert_equal("HAHA2\n", cat.gets)
   end
 
+  def test_env
+    data = ::Pwnlib::Tubes::Process.new('env').read
+    assert_match('PATH=', data)
+    data = ::Pwnlib::Tubes::Process.new('env', env: { 'FOO' => 'BAR' }).read
+    assert_equal("FOO=BAR\n", data)
+  end
+
   def test_aslr
     map1 = ::Pwnlib::Tubes::Process.new('cat /proc/self/maps', aslr: false).read
     map2 = ::Pwnlib::Tubes::Process.new(['cat', '/proc/self/maps'], aslr: false).read
+    assert_match('/bin/cat', map1) # make sure it read something
     assert_equal(map1, map2)
   end
 

@@ -11,6 +11,7 @@ module Pwnlib
     class Process < Tube
       # Default options for {#initialize}.
       DEFAULT_OPTIONS = {
+        env: ENV,
         in: :pipe,
         out: :pipe,
         raw: true,
@@ -22,12 +23,14 @@ module Pwnlib
       # @param [Array<String>, String] argv
       #   List of arguments to pass to the spawned process.
       #
+      # @option opts [Hash{String => String}] env (ENV)
+      #   Environment variables. By default, inherits from Ruby's environment.
       # @option opts [Symbol] in (:pipe)
-      #   What kind of io should be used for `stdin`.
-      #   Candidates are: `:pipe`, `:pty`.
+      #   What kind of io should be used for +stdin+.
+      #   Candidates are: +:pipe+, +:pty+.
       # @option opts [Symbol] out (:pipe)
-      #   What kind of io should be used for `stdout`.
-      #   Candidates are: `:pipe`, `:pty`.
+      #   What kind of io should be used for +stdout+.
+      #   Candidates are: +:pipe+, +:pty+.
       #   See examples for more details.
       # @option opts [Boolean] raw (true)
       #   Set the created PTY to raw mode. i.e. disable control characters.
@@ -42,7 +45,7 @@ module Pwnlib
         argv = normalize_argv(argv, opts)
         slave_i, @i = pipe(opts[:in], opts[:raw])
         @o, slave_o = pipe(opts[:out], opts[:raw])
-        @pid = ::Process.spawn(*argv, in: slave_i, out: slave_o)
+        @pid = ::Process.spawn(opts[:env], *argv, in: slave_i, out: slave_o, unsetenv_others: true)
         slave_i.close
         slave_o.close
       end
