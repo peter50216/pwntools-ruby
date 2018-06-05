@@ -1,5 +1,6 @@
 # encoding: ASCII-8BIT
 
+require 'io/console'
 require 'pty'
 
 require 'pwnlib/errors'
