@@ -1,5 +1,7 @@
 # encoding: ASCII-8BIT
 
+require 'tty-platform'
+
 require 'test_helper'
 
 require 'pwnlib/errors'
@@ -25,6 +27,7 @@ class ProcessTest < MiniTest::Test
   end
 
   def test_aslr
+    skip 'Only tested on linux' unless TTY::Platform.new.linux?
     map1 = ::Pwnlib::Tubes::Process.new('cat /proc/self/maps', aslr: false).read
     map2 = ::Pwnlib::Tubes::Process.new(['cat', '/proc/self/maps'], aslr: false).read
     assert_match('/bin/cat', map1) # make sure it read something
