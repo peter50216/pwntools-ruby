@@ -70,7 +70,7 @@ module Pwnlib
         slave_i, slave_o = create_pipe(opts)
         @pid = ::Process.spawn(opts[:env], *argv, in: slave_i, out: slave_o, unsetenv_others: true)
         slave_i.close
-        slave_o.close
+        slave_o.close unless slave_i == slave_o
       end
 
       # Close the IO.

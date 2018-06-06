@@ -10,6 +10,10 @@ require 'pwnlib/tubes/process'
 class ProcessTest < MiniTest::Test
   include ::Pwnlib::Tubes
 
+  def setup
+    skip 'Skip on Windows' if TTY::Platform.new.windows?
+  end
+
   def test_io
     cat = ::Pwnlib::Tubes::Process.new('cat')
     cat.puts('HAHA')
