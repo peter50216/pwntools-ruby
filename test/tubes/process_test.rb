@@ -88,11 +88,12 @@ class ProcessTest < MiniTest::Test
   end
 
   def test_interact
-    cat = ::Pwnlib::Tubes::Process.new('ls Gemfile*')
+    ls = ::Pwnlib::Tubes::Process.new('ls Gemfile*')
     saved = $stdin
     # prevents stdin being closed
     $stdin = UDPSocket.new
-    assert_output("Gemfile\nGemfile.lock\n") { context.local(log_level: :fatal) { cat.interact } }
+    assert_output("Gemfile\nGemfile.lock\n") { context.local(log_level: :fatal) { ls.interact } }
+    $stdin.close
     $stdin = saved
   end
 end

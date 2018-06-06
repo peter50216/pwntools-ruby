@@ -45,7 +45,7 @@ module Pwnlib
       #
       #   io = Tubes::Process.new('ls', out: :pty)
       #   io.gets
-      #   #=> "Gemfile       LICENSE-pwntools-python.txt  STYLE.md\t git-hooks  pwntools-1.0.1.gem  test\n"
+      #   #=> "Gemfile       LICENSE\t\t\t   README.md  STYLE.md\t    git-hooks  pwntools.gemspec  test\n"
       # @example
       #   io = Tubes::Process.new('cat /proc/self/maps')
       #   io.gets
@@ -108,12 +108,8 @@ module Pwnlib
       def normalize_argv(argv, opts)
         # XXX(david942j): Set personality on child process will be better than using setarch
         pre_cmd = opts[:aslr] ? '' : "setarch #{`uname -m`.strip} -R "
-        argv = if argv.is_a?(String)
-                 pre_cmd + argv
-               else
-                 pre_cmd.split + argv
-               end
-        Array(argv)
+        pre_cmd = pre_cmd.split if argv.is_a?(Array)
+        Array(pre_cmd + argv)
       end
 
       def create_pipe(opts)
@@ -125,8 +121,8 @@ module Pwnlib
           mpty, spty = PTY.open
           mpty.raw! if opts[:raw]
         end
-        slave_i, @i = pipe(opts[:in], spty, mpty)
         @o, slave_o = pipe(opts[:out], mpty, spty)
+        slave_i, @i = pipe(opts[:in], spty, mpty)
         [slave_i, slave_o]
       end
 
