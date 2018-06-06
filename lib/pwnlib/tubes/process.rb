@@ -34,7 +34,7 @@ module Pwnlib
       #   Candidates are: +:pipe+, +:pty+.
       #   See examples for more details.
       # @option opts [Boolean] raw (true)
-      #   Set the created PTY to raw mode. i.e. disable control characters.
+      #   Set the created PTY to raw mode. i.e. disable echo and control characters.
       #   If no pty is created, this has no effect.
       # @option opts [Boolean] aslr (true)
       #   If +false+ is given, the ASLR of the target process will be disabled via +setarch -R+.
@@ -67,8 +67,7 @@ module Pwnlib
         opts = DEFAULT_OPTIONS.merge(opts)
         super(timeout: opts[:timeout])
         argv = normalize_argv(argv, opts)
-        slave_i, @i = pipe(opts[:in], opts[:raw])
-        @o, slave_o = pipe(opts[:out], opts[:raw])
+        slave_i, slave_o = create_pipe(opts)
         @pid = ::Process.spawn(opts[:env], *argv, in: slave_i, out: slave_o, unsetenv_others: true)
         slave_i.close
         slave_o.close
@@ -116,12 +115,22 @@ module Pwnlib
         Array(argv)
       end
 
+      def create_pipe(opts)
+        if [opts[:in], opts[:out]].include?(:pty)
+          mpty, spty = PTY.open
+          mpty.raw! if opts[:raw]
+        end
+        slave_i, @i = pipe(opts[:in], spty, mpty)
+        @o, slave_o = pipe(opts[:out], mpty, spty)
+        [slave_i, slave_o]
+      end
+
       # @return [(IO, IO)]
       #   IO pair.
-      def pipe(type, raw)
+      def pipe(type, mst, slv)
         case type
         when :pipe then IO.pipe
-        when :pty then PTY.open.tap { |mst, _slv| mst.raw! if raw }
+        when :pty then [mst, slv]
         end
       end
 

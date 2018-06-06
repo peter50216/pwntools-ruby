@@ -69,5 +69,12 @@ class ProcessTest < MiniTest::Test
     assert_equal("[true, false]\n", tty_test.call(true, false))
     assert_equal("[false, true]\n", tty_test.call(false, true))
     assert_equal("[false, true]\r\n", tty_test.call(false, true, raw: false))
+
+    cat = ::Pwnlib::Tubes::Process.new('cat', in: :pty, out: :pty, raw: false)
+    cat.puts('Hi')
+    # In cooked mode, tty should echo the input, so we can gets twice.
+    assert_equal("Hi\r\n", cat.gets)
+    assert_equal("Hi\r\n", cat.gets)
+    cat.close
   end
 end
