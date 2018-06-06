@@ -47,15 +47,15 @@ module Pwnlib
       #   io.gets
       #   #=> "Gemfile       LICENSE-pwntools-python.txt  STYLE.md\t git-hooks  pwntools-1.0.1.gem  test\n"
       # @example
-      #    io = Tubes::Process.new('cat /proc/self/maps')
-      #    io.gets
-      #    #=> "55f8b8a10000-55f8b8a18000 r-xp 00000000 fd:00 9044035                    /bin/cat\n"
-      #    io.close
+      #   io = Tubes::Process.new('cat /proc/self/maps')
+      #   io.gets
+      #   #=> "55f8b8a10000-55f8b8a18000 r-xp 00000000 fd:00 9044035                    /bin/cat\n"
+      #   io.close
       #
-      #    io = Tubes::Process.new('cat /proc/self/maps', aslr: false)
-      #    io.gets
-      #    #=> "555555554000-55555555c000 r-xp 00000000 fd:00 9044035                    /bin/cat\n"
-      #    io.close
+      #   io = Tubes::Process.new('cat /proc/self/maps', aslr: false)
+      #   io.gets
+      #   #=> "555555554000-55555555c000 r-xp 00000000 fd:00 9044035                    /bin/cat\n"
+      #   io.close
       # @example
       #   io = Tubes::Process.new('env', env: { 'FOO' => 'BAR' })
       #   io.gets
@@ -95,6 +95,10 @@ module Pwnlib
       alias close kill
 
       private
+
+      def io_out
+        @o
+      end
 
       def close_io(*dir)
         @o.close if dir.include?(:read)

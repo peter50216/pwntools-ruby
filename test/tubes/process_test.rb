@@ -1,14 +1,16 @@
 # encoding: ASCII-8BIT
 
+require 'socket'
 require 'tty-platform'
 
 require 'test_helper'
 
+require 'pwnlib/context'
 require 'pwnlib/errors'
 require 'pwnlib/tubes/process'
 
 class ProcessTest < MiniTest::Test
-  include ::Pwnlib::Tubes
+  include ::Pwnlib::Context
 
   def setup
     skip 'Skip on Windows' if TTY::Platform.new.windows?
@@ -83,5 +85,14 @@ class ProcessTest < MiniTest::Test
     assert_equal("Hi\r\n", cat.gets)
     assert_equal("Hi\r\n", cat.gets)
     cat.close
+  end
+
+  def test_interact
+    cat = ::Pwnlib::Tubes::Process.new('ls Gemfile*')
+    saved = $stdin
+    # prevents stdin being closed
+    $stdin = UDPSocket.new
+    assert_output("Gemfile\nGemfile.lock\n") { context.local(log_level: :fatal) { cat.interact } }
+    $stdin = saved
   end
 end

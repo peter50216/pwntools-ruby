@@ -331,18 +331,17 @@ module Pwnlib
       def interact
         log.info('Switching to interactive mode')
         $stdout.write(@buffer.get)
-        until io.closed?
-          rs, = IO.select([$stdin, io])
+        until io_out.closed?
+          rs, = IO.select([$stdin, io_out])
           if rs.include?($stdin)
             s = $stdin.readpartial(BUFSIZE)
             write(s)
           end
-          if rs.include?(io)
+          if rs.include?(io_out)
             s = recv
             $stdout.write(s)
           end
         end
-      # TODO(darkhh): Use our own Exception class.
       rescue ::Pwnlib::Errors::EndOfTubeError
         log.info('Got EOF in interactive mode')
       end
@@ -362,14 +361,24 @@ module Pwnlib
         data
       end
 
+      # The IO object of output, will be used for IO.select([io_out]) in interactive mode.
+      #
+      # @return [IO]
+      def io_out
+        raise NotImplementedError, 'Not implemented'
+      end
+
+      # @return [void]
       def send_raw(_data)
         raise NotImplementedError, 'Not implemented'
       end
 
+      # @return [String]
       def recv_raw(_size)
         raise NotImplementedError, 'Not implemented'
       end
 
+      # @return [void]
       def timeout_raw=(_timeout)
         raise NotImplementedError, 'Not implemented'
       end
