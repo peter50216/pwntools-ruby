@@ -1,8 +1,5 @@
 # encoding: ASCII-8BIT
 
-require 'io/console'
-require 'pty'
-
 require 'pwnlib/errors'
 require 'pwnlib/tubes/tube'
 
@@ -117,6 +114,10 @@ module Pwnlib
 
       def create_pipe(opts)
         if [opts[:in], opts[:out]].include?(:pty)
+          # Require only when we need it.
+          # This prevents broken on Windows, which has no pty support.
+          require 'io/console'
+          require 'pty'
           mpty, spty = PTY.open
           mpty.raw! if opts[:raw]
         end
