@@ -8,8 +8,8 @@ require 'pwnlib/tubes/buffer'
 require 'pwnlib/util/hexdump'
 
 module Pwnlib
+  # Module that contains all kinds of tubes.
   module Tubes
-    # Things common to all tubes (sockets, tty, ...)
     # @!macro [new] drop_definition
     #   @param [Boolean] drop
     #     Whether drop the ending.
@@ -30,7 +30,10 @@ module Pwnlib
     # @!macro [new] raise_timeout
     #   @raise [Pwnlib::Errors::TimeoutError]
     #     If the request is not satisfied when timeout exceeded.
+
+    # Things common to all tubes (sockets, tty, ...)
     class Tube
+      # Receive 4096 bytes each time.
       BUFSIZE = 4096
 
       # Instantiate a {Pwnlib::Tubes::Tube} object.
@@ -268,7 +271,7 @@ module Pwnlib
       def send(data)
         data = data.to_s
         log.debug(format('Sent %#x bytes:', data.size))
-        log.indented(hexdump(data), level: DEBUG)
+        log.indented(::Pwnlib::Util::HexDump.hexdump(data), level: DEBUG)
         send_raw(data)
         data.size
       end
@@ -356,7 +359,7 @@ module Pwnlib
         if data
           @buffer << data
           log.debug(format('Received %#x bytes:', data.size))
-          log.indented(hexdump(data), level: DEBUG)
+          log.indented(::Pwnlib::Util::HexDump.hexdump(data), level: DEBUG)
         end
         data
       end
@@ -385,7 +388,6 @@ module Pwnlib
 
       include ::Pwnlib::Context
       include ::Pwnlib::Logger
-      include ::Pwnlib::Util::HexDump
     end
   end
 end
