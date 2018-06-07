@@ -19,7 +19,7 @@ class SockTest < MiniTest::Test
   end
 
   def test_io
-    popen_echo('DARKHH', BIND_PORT + 1) do |s, data, _o|
+    popen_echo('DARKHH') do |s, data, _o|
       s.io.puts(data)
       rs, = IO.select([s.io])
       refute_nil(rs)
@@ -28,7 +28,7 @@ class SockTest < MiniTest::Test
   end
 
   def test_sock
-    popen_echo('DARKHH', BIND_PORT + 2) do |s, data, o|
+    popen_echo('DARKHH') do |s, data, o|
       s.puts(data)
       assert_equal(data + "\n", s.gets)
       o.gets
@@ -42,7 +42,7 @@ class SockTest < MiniTest::Test
   end
 
   def test_close
-    popen_echo('DARKHH', BIND_PORT + 3) do |s, _data, _o|
+    popen_echo('DARKHH') do |s, _data, _o|
       s.close
       assert_raises(::Pwnlib::Errors::EndOfTubeError) { s.puts(514) }
       assert_raises(::Pwnlib::Errors::EndOfTubeError) { s.puts(514) }
@@ -51,7 +51,7 @@ class SockTest < MiniTest::Test
       assert_raises(ArgumentError) { s.close(:hh) }
     end
 
-    popen_echo('DARKHH', BIND_PORT + 4) do |s, _data, _o|
+    popen_echo('DARKHH') do |s, _data, _o|
       3.times { s.close(:read) }
       3.times { s.close(:recv) }
       3.times { s.close(:send) }
