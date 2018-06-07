@@ -31,7 +31,7 @@ module Pwnlib
 
         @convert_newlines = convert_newlines
         @conn = Serial.new(port, baudrate, bytesize, parity)
-        @timer = Timer.new
+        @serial_timer = Timer.new
       end
 
       # Closes the active connection
@@ -58,10 +58,10 @@ module Pwnlib
       def recv_raw(numbytes)
         raise EOFError if @conn.nil?
 
-        @timer.countdown do
+        @serial_timer.countdown do
           data = ''
           begin
-            while @timer.active?
+            while @serial_timer.active?
               data += @conn.read(numbytes - data.length)
               break if data.length >= numbytes
               sleep 0.1
@@ -100,7 +100,7 @@ module Pwnlib
       #
       # @param [Integer] timeout
       def timeout_raw=(timeout)
-        @timer.timeout = timeout
+        @serial_timer.timeout = timeout
       end
     end
   end
