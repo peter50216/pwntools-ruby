@@ -10,7 +10,6 @@ module Pwnlib
     # Socket!
     class Sock < Tube
       attr_reader :sock # @return [TCPSocket] The socket object.
-      alias io sock
 
       # Instantiate a {Pwnlib::Tubes::Sock} object.
       #
