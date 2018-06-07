@@ -97,8 +97,8 @@ module Pwnlib
       end
 
       def close_io(dirs)
-        @o.close if dirs.include?(:read)
-        @i.close if dirs.include?(:write)
+        @o.close if dirs.include?(:read) && !@o.closed?
+        @i.close if dirs.include?(:write) && !@i.closed?
       end
 
       def normalize_argv(argv, opts)

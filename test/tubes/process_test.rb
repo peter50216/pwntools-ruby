@@ -55,7 +55,7 @@ class ProcessTest < MiniTest::Test
     cat.shutdown
 
     cat = ::Pwnlib::Tubes::Process.new('cat')
-    cat.shutdown(:recv)
+    cat.shutdown(:read)
     assert_raises(::Pwnlib::Errors::EndOfTubeError) { cat.recvn(1) }
     cat.shutdown
     assert_raises(ArgumentError) { cat.shutdown(:zz) }

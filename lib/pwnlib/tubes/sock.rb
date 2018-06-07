@@ -73,7 +73,7 @@ module Pwnlib
         begin
           @sock.write(data)
         rescue Errno::EPIPE, Errno::ECONNRESET, Errno::ECONNREFUSED
-          shutdown(:send)
+          shutdown(:write)
           raise ::Pwnlib::Errors::EndOfTubeError
         end
       end
@@ -85,7 +85,7 @@ module Pwnlib
           return if rs.nil?
           return @sock.readpartial(size)
         rescue Errno::ECONNREFUSED, Errno::ECONNRESET, Errno::ECONNABORTED, EOFError
-          shutdown(:recv)
+          shutdown(:read)
           raise ::Pwnlib::Errors::EndOfTubeError
         end
       end
