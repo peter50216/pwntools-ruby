@@ -24,7 +24,7 @@ module Pwnlib
         @sock = TCPSocket.new(host, port)
         @sock.binmode
         @timeout = nil
-        @closed = { recv: false, send: false }
+        @closed = { read: false, write: false }
       end
 
       # Close the TCPSocket if no arguments passed.
@@ -35,20 +35,17 @@ module Pwnlib
       #   * Disallow further read in +sock+ if +:recv+ or +:read+ passed.
       #   * Disallow further write in +sock+ if +:send+ or +:write+ passed.
       #
+      # @return [void]
+      #
       # @diff In pwntools-python, method +shutdown(direction)+ is for closing socket one side,
       #   +close()+ is for closing both side. We merge these two methods into one here.
       def close(direction = :both)
-        case direction
-        when :both
+        if direction == :both
           return if @sock.closed?
-          @closed[:recv] = @closed[:send] = true
+          @closed[:read] = @closed[:write] = true
           @sock.close
-        when :recv, :read
-          shutdown(:recv)
-        when :send, :write
-          shutdown(:send)
         else
-          raise ArgumentError, 'Only allow :both, :recv, :read, :send and :write passed'
+          shutdown(*normalize_direction(direction))
         end
       end
 
@@ -60,9 +57,9 @@ module Pwnlib
         return if @closed[direction]
         @closed[direction] = true
 
-        if direction.equal?(:recv)
+        if direction.equal?(:read)
           @sock.close_read
-        elsif direction.equal?(:send)
+        elsif direction.equal?(:write)
           @sock.close_write
         end
       end
@@ -72,7 +69,7 @@ module Pwnlib
       end
 
       def send_raw(data)
-        raise ::Pwnlib::Errors::EndOfTubeError if @closed[:send]
+        raise ::Pwnlib::Errors::EndOfTubeError if @closed[:write]
         begin
           @sock.write(data)
         rescue Errno::EPIPE, Errno::ECONNRESET, Errno::ECONNREFUSED
@@ -82,7 +79,7 @@ module Pwnlib
       end
 
       def recv_raw(size)
-        raise ::Pwnlib::Errors::EndOfTubeError if @closed[:recv]
+        raise ::Pwnlib::Errors::EndOfTubeError if @closed[:read]
         begin
           rs, = IO.select([@sock], [], [], @timeout)
           return if rs.nil?

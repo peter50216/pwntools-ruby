@@ -74,14 +74,10 @@ module Pwnlib
       #
       # @param [:both, :recv, :read, :send, :write] direction
       #   Disallow further read/write of the process.
+      #
+      # @return [void]
       def shutdown(direction = :both)
-        case direction
-        when :both then close_io(%i[read write])
-        when :recv, :read then close_io(:read)
-        when :send, :write then close_io(:write)
-        else
-          raise ArgumentError, 'Only allow :both, :recv, :read, :send and :write passed'
-        end
+        close_io(normalize_direction(direction))
       end
 
       # Kill the process.
@@ -100,9 +96,9 @@ module Pwnlib
         @o
       end
 
-      def close_io(*dir)
-        @o.close if dir.include?(:read)
-        @i.close if dir.include?(:write)
+      def close_io(dirs)
+        @o.close if dirs.include?(:read)
+        @i.close if dirs.include?(:write)
       end
 
       def normalize_argv(argv, opts)

@@ -351,6 +351,26 @@ module Pwnlib
 
       private
 
+      # Normalize direction.
+      #
+      # @param [Symbol] direction
+      #
+      # @return [Array<Symbol>]
+      #   If +direction+ equals to
+      #   * +:both+, returns +[:read, :write]+
+      #   * +:read+ or +:recv+, returns [:read]
+      #   * +:write+ or +:send+, returns [:write]
+      #   Otherwise, raise +ArgumentError+.
+      def normalize_direction(direction)
+        case direction
+        when :both then %i[read write]
+        when :read, :recv then [:read]
+        when :write, :send then [:write]
+        else
+          raise ArgumentError, 'Only allow :both, :recv, :read, :send and :write passed'
+        end
+      end
+
       def fillbuffer(timeout: nil)
         data = @timer.countdown(timeout) do
           self.timeout_raw = (@timer.timeout == :forever ? nil : @timer.timeout)
