@@ -18,12 +18,21 @@ class SerialTest < MiniTest::Test
       end
 
       serial = SerialTube.new devs[1], convert_newlines: false
-      File.open devs[0], 'r+' do |file|
-        file.set_encoding 'default'.encoding
-        yield file, serial
-      end
 
-      Process.kill('SIGTERM', thread.pid)
+      # rubocop:disable Style/AutoResourceCleanup
+      # Justification:
+      #   We need to both +file.close+ and +Process.kill+ in the
+      #   same +ensure+ block.
+      file = File.open devs[0], 'r+'
+      file.set_encoding 'default'.encoding
+
+      begin
+        yield file, serial
+      ensure
+        file.close
+        Process.kill('SIGTERM', thread.pid)
+      end
+      # rubocop:enable Style/AutoResourceCleanup
     end
   end
 
@@ -36,12 +45,15 @@ class SerialTest < MiniTest::Test
       # recv, recvline
       rs = random_string 24
       file.puts rs
-      result = serial.recv 12
-      assert_equal(rs[0...12], result)
-      result = serial.recvline.chomp
-      assert_equal(rs[12..-1], result)
+      result = serial.recv 8, timeout: 1
 
-      assert_empty serial.recv(1, timeout: 1)
+      assert_equal(rs[0...8], result)
+      result = serial.recv 8
+      assert_equal(rs[8...16], result)
+      result = serial.recvline.chomp
+      assert_equal(rs[16..-1], result)
+
+      assert_raises(Pwnlib::Errors::TimeoutError) { serial.recv(1, timeout: 1) }
 
       # recvpred
       rs = random_string 12
@@ -51,18 +63,21 @@ class SerialTest < MiniTest::Test
       end
       assert_equal rs, result
 
-      assert_empty serial.recv(1, timeout: 1)
+      assert_raises(Pwnlib::Errors::TimeoutError) { serial.recv(1, timeout: 1) }
 
       # recvn
       rs = random_string 6
       file.print rs
-      result = serial.recvn 12, timeout: 1
+      result = ''
+      assert_raises(Pwnlib::Errors::TimeoutError) do
+        result = serial.recvn 120, timeout: 1
+      end
       assert_empty result
       file.print rs
       result = serial.recvn 12
       assert_equal rs * 2, result
 
-      assert_empty serial.recv(1, timeout: 1)
+      assert_raises(Pwnlib::Errors::TimeoutError) { serial.recv(1, timeout: 1) }
 
       # recvuntil
       rs = random_string 12
@@ -70,7 +85,7 @@ class SerialTest < MiniTest::Test
       result = serial.recvuntil('|').chomp('|')
       assert_equal rs, result
 
-      assert_empty serial.recv(1, timeout: 1)
+      assert_raises(Pwnlib::Errors::TimeoutError) { serial.recv(1, timeout: 1) }
 
       # gets
       rs = random_string 24
@@ -80,7 +95,7 @@ class SerialTest < MiniTest::Test
       result = serial.gets.chomp
       assert_equal rs[12..-1], result
 
-      assert_empty serial.recv(1, timeout: 1)
+      assert_raises(Pwnlib::Errors::TimeoutError) { serial.recv(1, timeout: 1) }
     end
   end
 
@@ -88,7 +103,10 @@ class SerialTest < MiniTest::Test
     open_pair do |file, serial|
       # send, sendline
       rs = random_string 24
+      # rubocop:disable Style/Send
+      # Justification: This isn't Object#send, false positive.
       serial.send rs[0...12]
+      # rubocop:enable Style/Send
       serial.sendline rs[12...24]
       result = file.readline.chomp
       assert_equal rs, result
