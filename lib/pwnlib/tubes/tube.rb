@@ -51,6 +51,9 @@ module Pwnlib
       # @return [String]
       #   A string contains bytes received from the tube, or +''+ if a timeout occurred while
       #   waiting.
+      #
+      # @!macro raise_eof
+      # @!macro raise_timeout
       def recv(num_bytes = nil, timeout: nil)
         return '' if @buffer.empty? && !fillbuffer(timeout: timeout)
         @buffer.get(num_bytes)
@@ -105,9 +108,13 @@ module Pwnlib
               data << c
             end
             data.slice!(0..-1)
-          ensure
+          # rubocop:disable Style/RescueStandardError
+          # Justification: go home rubocop, you're drunk.
+          rescue
             unrecv(data)
+            raise
           end
+          # rubocop:enable Style/RescueStandardError
         end
       end
 
