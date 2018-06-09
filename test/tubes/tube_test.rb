@@ -75,6 +75,10 @@ class TubeTest < MiniTest::Test
       def io
         @io ||= Tempfile.new('pwntools_ruby_test')
       end
+
+      def io_out
+        io
+      end
     end
 
     t
@@ -82,6 +86,8 @@ class TubeTest < MiniTest::Test
 
   def test_not_implement
     t = Tube.new
+    # io_out
+    assert_raises(NotImplementedError) { context.local(log_level: :fatal) { t.interact } }
     # send_raw
     assert_raises(NotImplementedError) { t.puts }
     # timeout_raw=
