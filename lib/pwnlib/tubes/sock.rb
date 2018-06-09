@@ -9,6 +9,8 @@ module Pwnlib
   module Tubes
     # Socket!
     class Sock < Tube
+      attr_reader :sock # @return [TCPSocket] The socket object.
+
       # Instantiate a {Pwnlib::Tubes::Sock} object.
       #
       # @param [String] host
@@ -22,11 +24,6 @@ module Pwnlib
         @timeout = nil
         @closed = { recv: false, send: false }
       end
-
-      def io
-        @sock
-      end
-      alias sock io
 
       # Close the TCPSocket if no arguments passed.
       # Or close the direction in +sock+.
@@ -54,6 +51,8 @@ module Pwnlib
       end
 
       private
+
+      alias io_out sock
 
       def shutdown(direction)
         return if @closed[direction]

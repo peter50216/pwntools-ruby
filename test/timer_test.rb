@@ -30,7 +30,7 @@ class TimerTest < MiniTest::Test
     end
   end
 
-  # Chekc #115 fixed
+  # Check #115 fixed
   def test_nested_countdown_false_positve_115
     t = Timer.new
     assert_raises(::Pwnlib::Errors::TimeoutError) do

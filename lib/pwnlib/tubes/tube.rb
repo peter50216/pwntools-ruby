@@ -330,18 +330,17 @@ module Pwnlib
       def interact
         log.info('Switching to interactive mode')
         $stdout.write(@buffer.get)
-        until io.closed?
-          rs, = IO.select([$stdin, io])
+        until io_out.closed?
+          rs, = IO.select([$stdin, io_out])
           if rs.include?($stdin)
             s = $stdin.readpartial(BUFSIZE)
             write(s)
           end
-          if rs.include?(io)
+          if rs.include?(io_out)
             s = recv
             $stdout.write(s)
           end
         end
-      # TODO(darkhh): Use our own Exception class.
       rescue ::Pwnlib::Errors::EndOfTubeError
         log.info('Got EOF in interactive mode')
       end
@@ -350,7 +349,7 @@ module Pwnlib
 
       def fillbuffer(timeout: nil)
         data = @timer.countdown(timeout) do
-          self.timeout_raw = @timer.timeout
+          self.timeout_raw = (@timer.timeout == :forever ? nil : @timer.timeout)
           recv_raw(BUFSIZE)
         end
         if data
@@ -361,14 +360,30 @@ module Pwnlib
         data
       end
 
+      # The IO object of output, will be used for IO.select([io_out]) in interactive mode.
+      #
+      # @return [IO]
+      def io_out
+        raise NotImplementedError, 'Not implemented'
+      end
+
+      # @param [String] _data
+      #
+      # @return [void]
       def send_raw(_data)
         raise NotImplementedError, 'Not implemented'
       end
 
+      # @param [Integer] _size
+      #
+      # @return [String]
       def recv_raw(_size)
         raise NotImplementedError, 'Not implemented'
       end
 
+      # @param [Float?] _timeout
+      #
+      # @return [void]
       def timeout_raw=(_timeout)
         raise NotImplementedError, 'Not implemented'
       end
