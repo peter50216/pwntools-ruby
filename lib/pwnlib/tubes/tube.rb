@@ -391,16 +391,22 @@ module Pwnlib
         raise NotImplementedError, 'Not implemented'
       end
 
+      # @param [String] _data
+      #
       # @return [void]
       def send_raw(_data)
         raise NotImplementedError, 'Not implemented'
       end
 
+      # @param [Integer] _size
+      #
       # @return [String]
       def recv_raw(_size)
         raise NotImplementedError, 'Not implemented'
       end
 
+      # @param [Float?] _timeout
+      #
       # @return [void]
       def timeout_raw=(_timeout)
         raise NotImplementedError, 'Not implemented'
