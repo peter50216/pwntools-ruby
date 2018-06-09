@@ -29,4 +29,13 @@ class TimerTest < MiniTest::Test
       t.countdown(0.1) { sleep(0.2) }
     end
   end
+
+  # Chekc #115 fixed
+  def test_nested_countdown_false_positve_115
+    t = Timer.new
+    assert_raises(::Pwnlib::Errors::TimeoutError) do
+      t.countdown(0.01) { sleep(0.02) }
+    end
+    t.countdown(0.01) {}
+  end
 end
