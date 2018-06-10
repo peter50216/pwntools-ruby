@@ -18,7 +18,8 @@ class SerialTest < MiniTest::Test
       devs = []
       2.times do
         devs << stderr.readline.chomp.split.last
-        raise IOError, 'Could not create serial crosslink' if devs.last !~ %r{^/dev/pts/[0-9]+$}
+        # First pattern matches Linux, second is macOS
+        raise IOError, 'Could not create serial crosslink' if devs.last !~ %r{^(/dev/pts/[0-9]+|/dev/ttys[0-9]+)$}
       end
 
       serial = SerialTube.new devs[1], convert_newlines: false
