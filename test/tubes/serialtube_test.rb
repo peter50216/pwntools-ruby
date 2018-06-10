@@ -9,6 +9,10 @@ require 'pwnlib/tubes/serialtube'
 class SerialTest < MiniTest::Test
   include ::Pwnlib::Tubes
 
+  def skip_windows
+    skip 'Not test tube/serialtube on Windows' if TTY::Platform.new.windows?
+  end
+
   def open_pair
     Open3.popen3('socat -d -d pty,raw,echo=0 pty,raw,echo=0') do |_i, _o, stderr, thread|
       devs = []
@@ -35,6 +39,7 @@ class SerialTest < MiniTest::Test
   end
 
   def test_recv
+    skip_windows
     open_pair do |file, serial|
       # recv, recvline
       rs = random_string 24
@@ -94,6 +99,7 @@ class SerialTest < MiniTest::Test
   end
 
   def test_send
+    skip_windows
     open_pair do |file, serial|
       # send, sendline
       rs = random_string 24
@@ -119,6 +125,7 @@ class SerialTest < MiniTest::Test
   end
 
   def test_close
+    skip_windows
     open_pair do |_file, serial|
       serial.close
       assert_raises(EOFError) { serial.puts(514) }

@@ -49,6 +49,9 @@ setup_osx()
   install_keystone_from_source
   ln -s keystone/build/llvm/lib/libkeystone.dylib libkeystone.dylib # hack, don't know why next line has no effect
   # export DYLD_LIBRARY_PATH=$TRAVIS_BUILD_DIR/keystone/build/llvm/lib:$DYLD_LIBRARY_PATH
+
+  # install socat
+  brew install socat
 }
 
 if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
