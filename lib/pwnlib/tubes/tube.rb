@@ -108,13 +108,9 @@ module Pwnlib
               data << c
             end
             data.slice!(0..-1)
-          # rubocop:disable Style/RescueStandardError
-          # Justification: go home rubocop, you're drunk.
-          rescue
+          ensure
             unrecv(data)
-            raise
           end
-          # rubocop:enable Style/RescueStandardError
         end
       end
 

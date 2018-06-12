@@ -7,12 +7,9 @@ require 'pwnlib/tubes/tube'
 module Pwnlib
   module Tubes
     # Serial Connections
-    #
-    # Copy & Paste of macro definition from tube.rb because YARD doesn't follow includes.
     # @!macro [new] raise_eof
     #   @raise [Pwnlib::Errors::EndOfTubeError]
     #     If the request is not satisfied when all data is received.
-    #
     class SerialTube < Tube
       # Instantiate a {Pwnlib::Tubes::SerialTube} object.
       #
@@ -21,7 +18,8 @@ module Pwnlib
       # @param [Integer] baudrate
       #   Baud rate.
       # @param [Boolean] convert_newlines
-      #   If +true+, will convert local +context.newline+ to +"\\r\\n"+ for remote
+      #   If +true+, convert any +context.newline+s to +"\\r\\n"+ before
+      #   sending to remote. Has no effect on bytes received.
       # @param [Integer] bytesize
       #   Serial character byte size. The '8' in '8N1'.
       # @param [Symbol] parity
@@ -72,7 +70,7 @@ module Pwnlib
               break unless data.empty?
               sleep 0.1
             end
-            # TODO: should we reverse @convert_newlines here?
+            # XXX(JonathanBeverey): should we reverse @convert_newlines here?
             return data
           rescue RubySerial::Error
             close
