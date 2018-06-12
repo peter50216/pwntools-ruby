@@ -129,10 +129,10 @@ class SerialTest < MiniTest::Test
     skip_windows
     open_pair do |_file, serial|
       serial.close
-      assert_raises(EOFError) { serial.puts(514) }
-      assert_raises(EOFError) { serial.puts(514) }
-      assert_raises(EOFError) { serial.recv }
-      assert_raises(EOFError) { serial.recv }
+      assert_raises(::Pwnlib::Errors::EndOfTubeError) { serial.puts(514) }
+      assert_raises(::Pwnlib::Errors::EndOfTubeError) { serial.puts(514) }
+      assert_raises(::Pwnlib::Errors::EndOfTubeError) { serial.recv }
+      assert_raises(::Pwnlib::Errors::EndOfTubeError) { serial.recv }
       assert_raises(ArgumentError) { serial.close(:hh) }
     end
   end

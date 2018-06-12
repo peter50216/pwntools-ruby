@@ -7,6 +7,12 @@ require 'pwnlib/tubes/tube'
 module Pwnlib
   module Tubes
     # Serial Connections
+    #
+    # Copy & Paste of macro definition from tube.rb because YARD doesn't follow includes.
+    # @!macro [new] raise_eof
+    #   @raise [Pwnlib::Errors::EndOfTubeError]
+    #     If the request is not satisfied when all data is received.
+    #
     class SerialTube < Tube
       # Instantiate a {Pwnlib::Tubes::SerialTube} object.
       #
@@ -56,7 +62,7 @@ module Pwnlib
       #
       # @!macro raise_eof
       def recv_raw(numbytes)
-        raise EOFError if @conn.nil?
+        raise ::Pwnlib::Errors::EndOfTubeError if @conn.nil?
 
         @serial_timer.countdown do
           data = ''
@@ -70,7 +76,7 @@ module Pwnlib
             return data
           rescue RubySerial::Error
             close
-            raise EOFError
+            raise ::Pwnlib::Errors::EndOfTubeError
           end
         end
       end
@@ -85,20 +91,20 @@ module Pwnlib
       #
       # @!macro raise_eof
       def send_raw(data)
-        raise EOFError if @conn.nil?
+        raise ::Pwnlib::Errors::EndOfTubeError if @conn.nil?
 
         data.gsub!(context.newline, "\r\n") if @convert_newlines
         begin
           return @conn.write(data)
         rescue RubySerial::Error
           close
-          raise EOFError
+          raise ::Pwnlib::Errors::EndOfTubeError
         end
       end
 
       # Sets the +timeout+ to use for subsequent +recv_raw+ calls.
       #
-      # @param [Integer] timeout
+      # @param [Float] timeout
       def timeout_raw=(timeout)
         @serial_timer.timeout = timeout
       end

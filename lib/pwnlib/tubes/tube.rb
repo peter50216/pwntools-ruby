@@ -104,7 +104,7 @@ module Pwnlib
 
               c = recv(1)
 
-              next if c.empty?
+              return '' if c.empty?
               data << c
             end
             data.slice!(0..-1)
@@ -166,7 +166,7 @@ module Pwnlib
             while @timer.active?
               s = recv(1)
 
-              next if s.empty?
+              return '' if s.empty?
               matching << s
 
               sidx = matching.size
