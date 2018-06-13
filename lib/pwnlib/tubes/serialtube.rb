@@ -6,10 +6,11 @@ require 'pwnlib/tubes/tube'
 
 module Pwnlib
   module Tubes
-    # Serial Connections
     # @!macro [new] raise_eof
     #   @raise [Pwnlib::Errors::EndOfTubeError]
     #     If the request is not satisfied when all data is received.
+
+    # Serial Connections
     class SerialTube < Tube
       # Instantiate a {Pwnlib::Tubes::SerialTube} object.
       #
