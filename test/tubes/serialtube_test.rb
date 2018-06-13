@@ -6,6 +6,16 @@ require 'test_helper'
 
 require 'pwnlib/tubes/serialtube'
 
+module Pwnlib
+  module Tubes
+    class SerialTube
+      def break_encapsulation
+        @conn.close
+      end
+    end
+  end
+end
+
 class SerialTest < MiniTest::Test
   include ::Pwnlib::Tubes
 
@@ -45,13 +55,10 @@ class SerialTest < MiniTest::Test
       Process.kill('SIGTERM', thread.pid)
       assert_raises(Pwnlib::Errors::EndOfTubeError) { serial.puts('a') }
     end
-    # TODO(JonathanBeverley):
-    #   Find a way to test the +raise+ in serial.recv_raw(). Below is the only
-    #   way I've found, but it not possible without writing bad code.
-    # open_pair do |file, serial, thread|
-    #   serial.@conn.close
-    #   assert_raises(Pwnlib::Errors::EndOfTubeError) { serial.recv(1, timeout: 2) }
-    # end
+    open_pair do |_file, serial|
+      serial.break_encapsulation
+      assert_raises(Pwnlib::Errors::EndOfTubeError) { serial.recv(1, timeout: 2) }
+    end
   end
 
   def test_recv
