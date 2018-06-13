@@ -6,10 +6,11 @@ require 'pwnlib/tubes/tube'
 
 module Pwnlib
   module Tubes
-    # Serial Connections
     # @!macro [new] raise_eof
     #   @raise [Pwnlib::Errors::EndOfTubeError]
     #     If the request is not satisfied when all data is received.
+
+    # Serial Connections
     class SerialTube < Tube
       # Instantiate a {Pwnlib::Tubes::SerialTube} object.
       #
@@ -40,7 +41,7 @@ module Pwnlib
 
       # Closes the active connection
       def close
-        @conn.close if @conn
+        @conn.close if @conn && !@conn.closed?
         @conn = nil
       end
 
@@ -70,7 +71,7 @@ module Pwnlib
               break unless data.empty?
               sleep 0.1
             end
-            # XXX(JonathanBeverey): should we reverse @convert_newlines here?
+            # XXX(JonathanBeverley): should we reverse @convert_newlines here?
             return data
           rescue RubySerial::Error
             close

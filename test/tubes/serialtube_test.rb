@@ -27,16 +27,31 @@ class SerialTest < MiniTest::Test
       begin
         File.open devs[0], 'r+' do |file|
           file.set_encoding 'default'.encoding
-          yield file, serial
+          yield file, serial, thread
         end
       ensure
-        Process.kill('SIGTERM', thread.pid)
+        Process.kill('SIGTERM', thread.pid) if thread.alive?
       end
     end
   end
 
   def random_string(length)
     Random.rand(36**length).to_s(36).encode('default'.encoding)
+  end
+
+  def test_raise
+    skip_windows
+    open_pair do |_file, serial, thread|
+      Process.kill('SIGTERM', thread.pid)
+      assert_raises(Pwnlib::Errors::EndOfTubeError) { serial.puts('a') }
+    end
+    # TODO(JonathanBeverley):
+    #   Find a way to test the +raise+ in serial.recv_raw(). Below is the only
+    #   way I've found, but it not possible without writing bad code.
+    # open_pair do |file, serial, thread|
+    #   serial.@conn.close
+    #   assert_raises(Pwnlib::Errors::EndOfTubeError) { serial.recv(1, timeout: 2) }
+    # end
   end
 
   def test_recv
