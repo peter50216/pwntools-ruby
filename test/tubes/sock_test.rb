@@ -18,16 +18,16 @@ class SockTest < MiniTest::Test
     end
   end
 
-  def test_io
+  def test_sock
     popen_echo('DARKHH') do |s, data, _o|
-      s.io.puts(data)
-      rs, = IO.select([s.io])
+      s.sock.puts(data)
+      rs, = IO.select([s.sock])
       refute_nil(rs)
-      assert_equal(data, s.io.readpartial(data.size))
+      assert_equal(data, s.sock.readpartial(data.size))
     end
   end
 
-  def test_sock
+  def test_eof
     popen_echo('DARKHH') do |s, data, o|
       s.puts(data)
       assert_equal(data + "\n", s.gets)

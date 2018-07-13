@@ -12,6 +12,7 @@ require 'pwnlib/errors'
 require 'pwnlib/logger'
 require 'pwnlib/reg_sort'
 require 'pwnlib/shellcraft/shellcraft'
+require 'pwnlib/tubes/process'
 require 'pwnlib/tubes/serialtube'
 require 'pwnlib/tubes/sock'
 

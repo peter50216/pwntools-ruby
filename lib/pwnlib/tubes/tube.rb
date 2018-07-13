@@ -8,8 +8,8 @@ require 'pwnlib/tubes/buffer'
 require 'pwnlib/util/hexdump'
 
 module Pwnlib
+  # Module that contains all kinds of tubes.
   module Tubes
-    # Things common to all tubes (sockets, tty, ...)
     # @!macro [new] drop_definition
     #   @param [Boolean] drop
     #     Whether drop the ending.
@@ -30,7 +30,10 @@ module Pwnlib
     # @!macro [new] raise_timeout
     #   @raise [Pwnlib::Errors::TimeoutError]
     #     If the request is not satisfied when timeout exceeded.
+
+    # Things common to all tubes (sockets, tty, ...)
     class Tube
+      # Receive 4096 bytes each time.
       BUFSIZE = 4096
 
       # Instantiate a {Pwnlib::Tubes::Tube} object.
@@ -134,6 +137,7 @@ module Pwnlib
           @buffer.size >= num_bytes ? @buffer.get(num_bytes) : ''
         end
       end
+      alias readn recvn
 
       # Receives data until one of +delims+ is encountered. If the request is not satisfied before
       # +timeout+ seconds pass, all data is buffered and an empty string is returned.
@@ -270,7 +274,7 @@ module Pwnlib
       def send(data)
         data = data.to_s
         log.debug(format('Sent %#x bytes:', data.size))
-        log.indented(hexdump(data), level: DEBUG)
+        log.indented(::Pwnlib::Util::HexDump.hexdump(data), level: DEBUG)
         send_raw(data)
         data.size
       end
@@ -333,52 +337,86 @@ module Pwnlib
       def interact
         log.info('Switching to interactive mode')
         $stdout.write(@buffer.get)
-        until io.closed?
-          rs, = IO.select([$stdin, io])
+        until io_out.closed?
+          rs, = IO.select([$stdin, io_out])
           if rs.include?($stdin)
             s = $stdin.readpartial(BUFSIZE)
             write(s)
           end
-          if rs.include?(io)
+          if rs.include?(io_out)
             s = recv
             $stdout.write(s)
           end
         end
-      # TODO(darkhh): Use our own Exception class.
       rescue ::Pwnlib::Errors::EndOfTubeError
         log.info('Got EOF in interactive mode')
       end
 
       private
 
+      # Normalize direction.
+      #
+      # @param [Symbol] direction
+      #
+      # @return [Array<Symbol>]
+      #   If +direction+ equals to
+      #   * +:both+, returns +[:read, :write]+
+      #   * +:read+ or +:recv+, returns [:read]
+      #   * +:write+ or +:send+, returns [:write]
+      #   Otherwise, raise +ArgumentError+.
+      def normalize_direction(direction)
+        case direction
+        when :both then %i[read write]
+        when :read, :recv then [:read]
+        when :write, :send then [:write]
+        else
+          raise ArgumentError, 'Only allow :both, :recv, :read, :send and :write passed'
+        end
+      end
+
       def fillbuffer(timeout: nil)
         data = @timer.countdown(timeout) do
-          self.timeout_raw = @timer.timeout
+          self.timeout_raw = (@timer.timeout == :forever ? nil : @timer.timeout)
           recv_raw(BUFSIZE)
         end
         if data
           @buffer << data
           log.debug(format('Received %#x bytes:', data.size))
-          log.indented(hexdump(data), level: DEBUG)
+          log.indented(::Pwnlib::Util::HexDump.hexdump(data), level: DEBUG)
         end
         data
       end
 
+      # The IO object of output, will be used for IO.select([io_out]) in interactive mode.
+      #
+      # @return [IO]
+      def io_out
+        raise NotImplementedError, 'Not implemented'
+      end
+
+      # @param [String] _data
+      #
+      # @return [void]
       def send_raw(_data)
         raise NotImplementedError, 'Not implemented'
       end
 
+      # @param [Integer] _size
+      #
+      # @return [String]
       def recv_raw(_size)
         raise NotImplementedError, 'Not implemented'
       end
 
+      # @param [Float?] _timeout
+      #
+      # @return [void]
       def timeout_raw=(_timeout)
         raise NotImplementedError, 'Not implemented'
       end
 
       include ::Pwnlib::Context
       include ::Pwnlib::Logger
-      include ::Pwnlib::Util::HexDump
     end
   end
 end

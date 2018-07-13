@@ -8,10 +8,12 @@ module Pwnlib
     module Generators
       module Amd64
         module Linux
-          # See {Generators::X86::Linux#execve}.
-          def execve(*arguments)
-            context.local(arch: 'amd64') do
-              cat X86::Linux.execve(*arguments)
+          # @overload execve(path, argv, envp)
+          #
+          # @see Generators::X86::Linux#execve
+          def execve(*args)
+            context.local(arch: :amd64) do
+              cat X86::Linux.execve(*args)
             end
           end
         end
