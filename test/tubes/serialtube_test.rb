@@ -46,7 +46,7 @@ class SerialTest < MiniTest::Test
   end
 
   def random_string(length)
-    Random.rand(36**length).to_s(36).encode('default'.encoding)
+    Random.rand(36**length).to_s(36).rjust(length, '0')
   end
 
   def test_raise
