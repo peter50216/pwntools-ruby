@@ -24,7 +24,7 @@ class SerialTest < MiniTest::Test
   end
 
   def open_pair
-    p 'open_pair'
+    p caller(1..1).first
     Open3.popen3('socat -d -d pty,raw,echo=0 pty,raw,echo=0') do |_i, _o, stderr, thread|
       devs = []
       p [stderr, thread]
@@ -73,15 +73,22 @@ class SerialTest < MiniTest::Test
       # recv, recvline
       rs = random_string 24
       file.puts rs
+      @stage = 1
       result = serial.recv 8, timeout: 1
+      p @stage
+      @stage += 1
 
       assert_equal(rs[0...8], result)
       result = serial.recv 8
       assert_equal(rs[8...16], result)
       result = serial.recvline.chomp
       assert_equal(rs[16..-1], result)
+      p @stage
+      @stage += 1
 
       assert_raises(Pwnlib::Errors::TimeoutError) { serial.recv(1, timeout: 0.2) }
+      p @stage
+      @stage += 1
 
       # recvpred
       rs = random_string 12
@@ -89,9 +96,13 @@ class SerialTest < MiniTest::Test
       result = serial.recvpred do |data|
         data[-6..-1] == rs[-6..-1]
       end
+      p @stage
+      @stage += 1
       assert_equal rs, result
 
       assert_raises(Pwnlib::Errors::TimeoutError) { serial.recv(1, timeout: 0.2) }
+      p @stage
+      @stage += 1
 
       # recvn
       rs = random_string 6
@@ -100,9 +111,13 @@ class SerialTest < MiniTest::Test
       assert_raises(Pwnlib::Errors::TimeoutError) do
         result = serial.recvn 120, timeout: 1
       end
+      p @stage
+      @stage += 1
       assert_empty result
       file.print rs
       result = serial.recvn 12
+      p @stage
+      @stage += 1
       assert_equal rs * 2, result
 
       assert_raises(Pwnlib::Errors::TimeoutError) { serial.recv(1, timeout: 0.2) }
@@ -111,16 +126,24 @@ class SerialTest < MiniTest::Test
       rs = random_string 12
       file.print rs + '|'
       result = serial.recvuntil('|').chomp('|')
+      p @stage
+      @stage += 1
       assert_equal rs, result
 
       assert_raises(Pwnlib::Errors::TimeoutError) { serial.recv(1, timeout: 0.2) }
+      p @stage
+      @stage += 1
 
       # gets
       rs = random_string 24
       file.puts rs
       result = serial.gets 12
+      p @stage
+      @stage += 1
       assert_equal rs[0...12], result
       result = serial.gets.chomp
+      p @stage
+      @stage += 1
       assert_equal rs[12..-1], result
 
       assert_raises(Pwnlib::Errors::TimeoutError) { serial.recv(1, timeout: 0.2) }
