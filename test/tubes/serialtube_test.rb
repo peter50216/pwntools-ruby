@@ -24,20 +24,25 @@ class SerialTest < MiniTest::Test
   end
 
   def open_pair
+    p 'open_pair'
     Open3.popen3('socat -d -d pty,raw,echo=0 pty,raw,echo=0') do |_i, _o, stderr, thread|
       devs = []
+      p [stderr, thread]
       2.times do
         devs << stderr.readline.chomp.split.last
+        p devs
         # First pattern matches Linux, second is macOS
         raise IOError, 'Could not create serial crosslink' if devs.last !~ %r{^(/dev/pts/[0-9]+|/dev/ttys[0-9]+)$}
       end
 
       serial = SerialTube.new devs[1], convert_newlines: false
-
+      p 'new serial'
       begin
         File.open devs[0], 'r+' do |file|
           file.set_encoding 'default'.encoding
+          p 'yielding..'
           yield file, serial, thread
+          p 'yield done'
         end
       ensure
         ::Process.kill('SIGTERM', thread.pid) if thread.alive?
