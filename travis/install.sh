@@ -36,7 +36,7 @@ setup_linux()
   export LD_LIBRARY_PATH=$TRAVIS_BUILD_DIR/usr/lib:$LD_LIBRARY_PATH
 
   # install keystone
-  install_keystone_from_source
+  # install_keystone_from_source
   export LD_LIBRARY_PATH=$TRAVIS_BUILD_DIR/keystone/build/llvm/lib:$LD_LIBRARY_PATH
 }
 
@@ -47,7 +47,7 @@ setup_osx()
   export DYLD_LIBRARY_PATH=/usr/local/opt/capstone/lib:$DYLD_LIBRARY_PATH
 
   # install keystone
-  install_keystone_from_source
+  # install_keystone_from_source
   ln -s keystone/build/llvm/lib/libkeystone.dylib libkeystone.dylib # hack, don't know why next line has no effect
   # export DYLD_LIBRARY_PATH=$TRAVIS_BUILD_DIR/keystone/build/llvm/lib:$DYLD_LIBRARY_PATH
 

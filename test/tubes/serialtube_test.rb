@@ -45,6 +45,7 @@ class SerialTest < MiniTest::Test
           p 'yield done'
         end
       ensure
+        p thread.alive?
         ::Process.kill('SIGTERM', thread.pid) if thread.alive?
       end
     end
