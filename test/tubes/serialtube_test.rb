@@ -24,7 +24,6 @@ class SerialTest < MiniTest::Test
   end
 
   def open_pair
-    p caller(1..1).first
     Open3.popen3('socat -d -d pty,raw,echo=0 pty,raw,echo=0') do |_i, _o, stderr, thread|
       devs = []
       2.times do
