@@ -10,6 +10,7 @@ class AsmTest < MiniTest::Test
   Asm = ::Pwnlib::Asm
 
   def setup
+    skip
     @shellcraft = ::Pwnlib::Shellcraft::Shellcraft.instance
   end
 

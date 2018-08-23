@@ -9,6 +9,7 @@ PATH
       method_source (~> 0.9)
       rainbow (>= 2.2, < 4.0)
       ruby2ruby (~> 2.4)
+      rubyserial (~> 0.5)
 
 GEM
   remote: https://www.rubygems.org/
@@ -50,6 +51,8 @@ GEM
       sexp_processor (~> 4.6)
     ruby_parser (3.11.0)
       sexp_processor (~> 4.9)
+    rubyserial (0.5.0)
+      ffi (~> 1.9, >= 1.9.3)
     sexp_processor (4.10.1)
     simplecov (0.16.1)
       docile (~> 1.1)
