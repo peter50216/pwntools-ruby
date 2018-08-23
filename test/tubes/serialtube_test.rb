@@ -56,6 +56,8 @@ class SerialTest < MiniTest::Test
     skip_windows
     open_pair do |_file, serial, thread|
       ::Process.kill('SIGTERM', thread.pid)
+      # ensure the process has been killed
+      thread.value
       assert_raises(Pwnlib::Errors::EndOfTubeError) { serial.puts('a') }
     end
     open_pair do |_file, serial|
