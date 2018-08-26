@@ -57,7 +57,7 @@ gem install pwntools
 ```sh
 git clone https://github.com/peter50216/pwntools-ruby
 cd pwntools-ruby
-gem build pwntools.gemspec && gem install pwntools-*.gem
+bundle install && bundle exec rake install
 ```
 
 ### optional
@@ -101,9 +101,10 @@ sudo make install
 - [x] elf
 - [x] dynelf
 - [x] logger
-- [ ] tube
+- [x] tube
   - [x] sock
-  - [ ] process
+  - [x] process
+  - [x] serialtube
 - [ ] fmtstr
 - [x] util
   - [x] pack
