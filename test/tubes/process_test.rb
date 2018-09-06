@@ -17,7 +17,7 @@ class ProcessTest < MiniTest::Test
   end
 
   def test_io
-    cat = ::Pwnlib::Tubes::Process.new('cat')
+    cat = ::Pwnlib::Tubes::Process.new('cat 2>/dev/null')
     cat.puts('HAHA')
     assert_equal("HAHA\n", cat.gets)
     assert_raises(::Pwnlib::Errors::TimeoutError) { cat.gets(timeout: 0.1) }

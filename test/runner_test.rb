@@ -1,0 +1,28 @@
+# encoding: ASCII-8BIT
+
+require 'test_helper'
+
+require 'pwnlib/runner'
+require 'pwnlib/shellcraft/shellcraft'
+
+class RunnerTest < MiniTest::Test
+  include ::Pwnlib::Context
+
+  def setup
+    skip 'Runner can only be run on Linux' unless TTY::Platform.new.linux?
+  end
+
+  def shellcraft
+    ::Pwnlib::Shellcraft::Shellcraft.instance
+  end
+
+  def test_i386_run_assembly
+    context.local(arch: 'i386') do
+      r = ::Pwnlib::Runner.run_assembly(
+        shellcraft.pushstr('run_assembly') +
+        shellcraft.syscall('SYS_write', 1, 'esp', 12)
+      )
+      assert_equal('run_assembly', r.recvn(12))
+    end
+  end
+end

@@ -11,6 +11,7 @@ require 'pwnlib/elf/elf'
 require 'pwnlib/errors'
 require 'pwnlib/logger'
 require 'pwnlib/reg_sort'
+require 'pwnlib/runner'
 require 'pwnlib/shellcraft/shellcraft'
 require 'pwnlib/tubes/process'
 require 'pwnlib/tubes/serialtube'
@@ -28,6 +29,7 @@ module Pwn
   include ::Pwnlib::Asm
   include ::Pwnlib::Context
   include ::Pwnlib::Logger
+  include ::Pwnlib::Runner
   include ::Pwnlib::Util::Cyclic
   include ::Pwnlib::Util::Fiddling
   include ::Pwnlib::Util::HexDump
