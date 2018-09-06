@@ -265,6 +265,35 @@ module Pwnlib
         s.unpack('m0')[0]
       end
 
+      # Xor two strings.
+      # If two strings have different length, the shorter one will be repeated until has the same length as another
+      # one.
+      #
+      # @param [String] s1
+      #   First string.
+      # @param [String] s2
+      #   Second string.
+      #
+      # @return [String]
+      #   The xor-ed result.
+      #
+      # @example
+      #   xor("\xE8\xE1\xF0\xF0\xF9", "\x80")
+      #   => 'happy'
+      #
+      #   xor("\x80", "\xE8\xE1\xF0\xF0\xF9")
+      #   => 'happy'
+      #
+      #   xor('plaintext', 'thekey')
+      #   => "\x04\x04\x04\x02\v\r\x11\x10\x11"
+      #
+      #   xor('217', "\x00" * 10)
+      #   => '2172172172'
+      def xor(s1, s2)
+        s1, s2 = s2, s1 if s1.size < s2.size
+        s1.bytes.zip(''.ljust(s1.size, s2).bytes).map { |a, b| a ^ b }.pack('C*')
+      end
+
       # Find two strings that will xor into a given string, while only using a given alphabet.
       #
       # @param [String, Integer] data

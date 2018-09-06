@@ -104,4 +104,11 @@ class FiddlingTest < MiniTest::Test
     assert_equal('test', b64d('dGVzdA=='))
     assert_equal("\xb2\x18\xa4" * 100, b64d('shik' * 100))
   end
+
+  def test_xor
+    assert_equal('happy', xor("\xE8\xE1\xF0\xF0\xF9", "\x80"))
+    assert_equal('happy', xor("\x80", "\xE8\xE1\xF0\xF0\xF9"))
+    assert_equal("\x04\x04\x04\x02\v\r\x11\x10\x11", xor('plaintext', 'thekey'))
+    assert_equal('2172172172', xor('217', "\x00" * 10))
+  end
 end

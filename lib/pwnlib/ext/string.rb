@@ -13,7 +13,7 @@ module Pwnlib
 
         def_proxy_method ::Pwnlib::Util::Packing, %w(unpack unpack_many u8 u16 u32 u64)
         def_proxy_method ::Pwnlib::Util::Fiddling, %w(
-          enhex unhex urlencode urldecode bits bits_str unbits bitswap b64e b64d
+          enhex unhex urlencode urldecode bits bits_str unbits bitswap b64e b64d xor
         )
       end
     end
