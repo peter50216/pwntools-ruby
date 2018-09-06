@@ -4,6 +4,7 @@ require 'test_helper'
 
 require 'pwnlib/asm'
 require 'pwnlib/shellcraft/shellcraft'
+require 'pwnlib/tubes/process'
 
 class AsmTest < MiniTest::Test
   include ::Pwnlib::Context
@@ -177,9 +178,7 @@ class AsmTest < MiniTest::Test
       context.local(arch: arch) do
         data = Asm.asm(@shellcraft.cat('/proc/self/maps') + @shellcraft.syscall('SYS_exit', 0))
         Asm.make_elf(data) do |path|
-          Open3.popen2(path) do |_i, o, _t|
-            assert_match(regexp, o.gets)
-          end
+          assert_match(regexp, ::Pwnlib::Tubes::Process.new(path).gets)
         end
       end
     end
