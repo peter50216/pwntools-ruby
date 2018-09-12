@@ -1,10 +1,11 @@
 [![GitHub stars](https://img.shields.io/github/stars/peter50216/pwntools-ruby.svg)](https://github.com/peter50216/pwntools-ruby/stargazers)
-[![Dependency Status](https://img.shields.io/gemnasium/peter50216/pwntools-ruby.svg)](https://gemnasium.com/peter50216/pwntools-ruby)
+<!-- [![Dependency Status](https://img.shields.io/gemnasium/peter50216/pwntools-ruby.svg)](https://gemnasium.com/peter50216/pwntools-ruby) -->
 [![Build Status](https://img.shields.io/travis/peter50216/pwntools-ruby.svg)](https://travis-ci.org/peter50216/pwntools-ruby)
-[![Test Coverage](https://img.shields.io/codeclimate/coverage/github/peter50216/pwntools-ruby.svg)](https://codeclimate.com/github/peter50216/pwntools-ruby/coverage)
-[![Code Climate](https://img.shields.io/codeclimate/github/peter50216/pwntools-ruby.svg)](https://codeclimate.com/github/peter50216/pwntools-ruby)
+[![Test Coverage](https://img.shields.io/codeclimate/coverage/peter50216/pwntools-ruby.svg)](https://codeclimate.com/github/peter50216/pwntools-ruby/coverage)
+[![Code Climate](https://img.shields.io/codeclimate/issues/peter50216/pwntools-ruby.svg)](https://codeclimate.com/github/peter50216/pwntools-ruby)
 [![Inline docs](https://inch-ci.org/github/peter50216/pwntools-ruby.svg)](https://inch-ci.org/github/peter50216/pwntools-ruby)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](http://choosealicense.com/licenses/mit/)
+[![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=peter50216/pwntools-ruby)](https://dependabot.com)
 
 # pwntools-ruby
 
