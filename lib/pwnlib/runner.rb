@@ -6,7 +6,7 @@ require 'pwnlib/asm'
 require 'pwnlib/tubes/process'
 
 module Pwnlib
-  # Create a tube from data.
+  # This module collects the methods for executing codes, e.g., assembly code, assembled machine code, etc.
   module Runner
     module_function
 
@@ -26,7 +26,7 @@ module Pwnlib
     # Given assembled machine code bytes, execute them.
     #
     # @param [String] bytes
-    #   Assembled code
+    #   Assembled code.
     #
     # @return [Pwnlib::Tubes::Process]
     #   The tube for interacting.

@@ -9,7 +9,7 @@ class RunnerTest < MiniTest::Test
   include ::Pwnlib::Context
 
   def setup
-    skip 'Runner can only be run on Linux' unless TTY::Platform.new.linux?
+    skip 'Runner can only be used on Linux' unless TTY::Platform.new.linux?
   end
 
   def shellcraft
@@ -20,9 +20,12 @@ class RunnerTest < MiniTest::Test
     context.local(arch: 'i386') do
       r = ::Pwnlib::Runner.run_assembly(
         shellcraft.pushstr('run_assembly') +
-        shellcraft.syscall('SYS_write', 1, 'esp', 12)
+        shellcraft.syscall('SYS_write', 1, 'esp', 12) +
+        shellcraft.exit(0)
       )
       assert_equal('run_assembly', r.recvn(12))
+      # Test if reach EOF
+      assert_raises(::Pwnlib::Errors::EndOfTubeError) { r.recv }
     end
   end
 end
