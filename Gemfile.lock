@@ -51,7 +51,7 @@ GEM
       sexp_processor (~> 4.6)
     ruby_parser (3.11.0)
       sexp_processor (~> 4.9)
-    rubyserial (0.5.0)
+    rubyserial (0.6.0)
       ffi (~> 1.9, >= 1.9.3)
     sexp_processor (4.11.0)
     simplecov (0.16.1)
