@@ -264,7 +264,7 @@ https://github.com/keystone-engine/keystone/tree/master/docs
         header.p_offset = 0
         header.p_vaddr = vma
         header.p_paddr = vma
-        header.p_flags = 4 | 1 # r-x
+        header.p_flags = 4 | 2 | 1 # rwx
         header.p_align = arch_align
         header
       end
