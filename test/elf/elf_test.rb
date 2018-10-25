@@ -134,7 +134,7 @@ PIE:      No PIE (0x400000)
     libc = ::Pwnlib::ELF::ELF.new(File.join(__dir__, '..', 'data', 'lib64', 'libc.so.6'), checksec: false)
     # Well.. one_gadget(s) may change in the future, so we just check the return type
     val = libc.one_gadgets.first
-    assert_instance_of(Integer, val)
+    assert(val.is_a?(Integer))
     assert_equal(libc.one_gadgets[0], val)
     assert_equal(libc.one_gadgets[-1], libc.one_gadgets.last)
 
