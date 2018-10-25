@@ -182,16 +182,52 @@ module Pwnlib
       end
       alias find search
 
+      # Returns one-gadgets of glibc.
+      #
+      # @return [Array<Integer>]
+      #   Returns array of one-gadgets, see examples.
+      #
+      # @example
+      #   ELF::ELF.new('/lib/x86_64-linux-gnu/libc.so.6').one_gadgets[0]
+      #   #=> 324293 # 0x4f2c5
+      #
+      # @example
+      #   libc = ELF::ELF.new('/lib/x86_64-linux-gnu/libc.so.6')
+      #   libc.one_gadgets[1]
+      #   #=> 324386 # 0x4f322
+      #
+      #   libc.address = 0x7fff7fff0000
+      #   libc.one_gadgets[1]
+      #   #=> 140735341130530 # 0x7fff8003f322
+      #
+      # @example
+      #   libc = ELF::ELF.new('/lib/x86_64-linux-gnu/libc.so.6')
+      #   context.log_level = :debug
+      #   libc.one_gadgets[0]
+      #   # [DEBUG] 0x4f2c5 execve("/bin/sh", rsp+0x40, environ)
+      #   # constraints:
+      #   #   rcx == NULL
+      #   #=> 324293
       def one_gadgets
-        return @one_gadgets if @one_gadgets
+        return @one_gadgets if instance_variable_defined?(:@one_gadgets)
 
         @one_gadgets = OneGadget.gadgets(file: @path, details: true, level: 1)
+        @one_gadgets.define_singleton_method(:address, &method(:address))
+
         class << @one_gadgets
           def [](idx)
             ret = super
             return nil if ret.nil?
             log.debug(ret.inspect)
-            ret + address
+            ret.offset + address
+          end
+
+          def first
+            self[0]
+          end
+
+          def last
+            self[-1]
           end
 
           include ::Pwnlib::Logger

@@ -2,10 +2,13 @@
 
 require 'test_helper'
 
+require 'pwnlib/context'
 require 'pwnlib/elf/elf'
 require 'pwnlib/logger'
 
 class ELFTest < MiniTest::Test
+  include ::Pwnlib::Context
+
   def setup
     @path_of = ->(file) { File.join(__dir__, '..', 'data', 'elfs', file) }
     @elf = to_elf_silent('i386.prelro.elf')
@@ -125,5 +128,19 @@ PIE:      No PIE (0x400000)
     elf.address = 0x1234000
     assert_equal([0x1234001, 0x1392613], elf.search('ELF').to_a)
     assert_equal(0x138d00b, elf.find('/bin/sh').next)
+  end
+
+  def test_one_gadgets
+    libc = ::Pwnlib::ELF::ELF.new(File.join(__dir__, '..', 'data', 'lib64', 'libc.so.6'), checksec: false)
+    # Well.. one_gadget(s) may change in the future, so we just check the return type
+    val = libc.one_gadgets.first
+    assert_instance_of(Integer, val)
+    assert_equal(libc.one_gadgets[0], val)
+    assert_equal(libc.one_gadgets[-1], libc.one_gadgets.last)
+
+    libc.address = 0xdeadf000
+    assert_equal(0xdeadf000 + val, libc.one_gadgets[0])
+
+    assert_output(/execve/) { log_stdout { context.local(log_level: :debug) { libc.one_gadgets[0] } } }
   end
 end
