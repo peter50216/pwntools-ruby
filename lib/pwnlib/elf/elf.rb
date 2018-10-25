@@ -1,6 +1,7 @@
 require 'ostruct'
 
 require 'elftools'
+require 'one_gadget/one_gadget'
 require 'rainbow'
 
 require 'pwnlib/logger'
@@ -40,14 +41,14 @@ module Pwnlib
       #   # PIE:      PIE enabled
       #   #=> #<Pwnlib::ELF::ELF:0x00559bd670dcb8>
       def initialize(path, checksec: true)
-        path = File.realpath(path)
+        @path = File.realpath(path)
         @elf_file = ELFTools::ELFFile.new(File.open(path, 'rb'))
         load_got
         load_plt
         load_symbols
         @address = base_address
         @load_addr = @address
-        show_info(path) if checksec
+        show_info(@path) if checksec
       end
 
       # Set the base address.
@@ -180,6 +181,24 @@ module Pwnlib
         true
       end
       alias find search
+
+      def one_gadgets
+        return @one_gadgets if @one_gadgets
+
+        @one_gadgets = OneGadget.gadgets(file: @path, details: true, level: 1)
+        class << @one_gadgets
+          def [](idx)
+            ret = super
+            return nil if ret.nil?
+            log.debug(ret.inspect)
+            ret + address
+          end
+
+          include ::Pwnlib::Logger
+        end
+
+        @one_gadgets
+      end
 
       private
 

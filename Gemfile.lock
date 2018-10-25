@@ -7,6 +7,7 @@ PATH
       elftools (~> 1.0.1)
       keystone-engine (~> 0.9)
       method_source (~> 0.9)
+      one_gadget (~> 1.6.1)
       rainbow (>= 2.2, < 4.0)
       ruby2ruby (~> 2.4)
       rubyserial (~> 0.5)
@@ -15,7 +16,7 @@ GEM
   remote: https://www.rubygems.org/
   specs:
     ast (2.4.0)
-    bindata (2.4.3)
+    bindata (2.4.4)
     coderay (1.1.2)
     crabstone (3.0.3)
       ffi
@@ -29,6 +30,8 @@ GEM
       ffi (~> 1.9)
     method_source (0.9.0)
     minitest (5.10.1)
+    one_gadget (1.6.1)
+      elftools (~> 1.0)
     parallel (1.12.1)
     parser (2.5.1.0)
       ast (~> 2.4.0)
@@ -77,4 +80,4 @@ DEPENDENCIES
   yard (~> 0.9)
 
 BUNDLED WITH
-   1.16.1
+   1.16.6
