@@ -48,6 +48,7 @@ module Pwnlib
         load_symbols
         @address = base_address
         @load_addr = @address
+        @one_gadgets = nil
         show_info(@path) if checksec
       end
 
@@ -209,7 +210,7 @@ module Pwnlib
       #   #   rcx == NULL
       #   #=> 324293
       def one_gadgets
-        return @one_gadgets if instance_variable_defined?(:@one_gadgets)
+        return @one_gadgets if @one_gadgets
 
         @one_gadgets = OneGadget.gadgets(file: @path, details: true, level: 1)
         @one_gadgets.define_singleton_method(:address, &method(:address))
