@@ -58,6 +58,7 @@ module Pwnlib
       #   got
       #   plt
       #   symbols
+      #   one_gadgets
       #
       # @param [Integer] val
       #   Address to be changed to.
@@ -70,6 +71,7 @@ module Pwnlib
         [@got, @plt, @symbols].compact.each do |tbl|
           tbl.each_pair { |k, _| tbl[k] += val - old }
         end
+        @one_gadgets.map! { |off| off + val - old } if @one_gadgets
       end
 
       # Return the protection information, wrapper with color codes.
@@ -212,15 +214,13 @@ module Pwnlib
       def one_gadgets
         return @one_gadgets if @one_gadgets
 
-        @one_gadgets = OneGadget.gadgets(file: @path, details: true, level: 1)
-        @one_gadgets.define_singleton_method(:address, &method(:address))
+        gadgets = OneGadget.gadgets(file: @path, details: true, level: 1)
+        @one_gadgets = gadgets.map { |g| g.offset + address }
+        @one_gadgets.instance_variable_set(:@gadgets, gadgets)
 
         class << @one_gadgets
           def [](idx)
-            ret = super
-            return nil if ret.nil?
-            log.debug(ret.inspect)
-            ret.offset + address
+            super.tap { log.debug(@gadgets[idx].inspect) }
           end
 
           def first
