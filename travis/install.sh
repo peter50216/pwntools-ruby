@@ -11,7 +11,7 @@ install_deb()
 {
   package=$1
   echo "Installing $package"
-  INDEX="https://packages.ubuntu.com/en/xenial/amd64/$package/download"
+  INDEX="https://packages.ubuntu.com/en/bionic/amd64/$package/download"
   URL=$(curl "$INDEX" | grep -Eo "https?://.*$package.*\.deb" | head -1)
   local_deb_extract "$URL"
 }
@@ -23,7 +23,7 @@ install_keystone_from_source()
   #
   # XXX(david942j): How to prevent compile every time on Travis-CI?
   git clone https://github.com/keystone-engine/keystone.git
-  # rvm do lots of things on OSX when cwd changing.. use bash without rvm to prevent
+  # rvm does lots of things on OSX when cwd changing.. use bash without rvm to prevent this.
   /bin/bash --norc -c 'mkdir keystone/build && cd keystone/build && ../make-share.sh'
 }
 
