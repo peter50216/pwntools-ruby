@@ -11,6 +11,9 @@ environment:
 
 install:
   - set PATH=C:\Ruby%RUBY_VERSION%\bin;%PATH%
+  - gem update --system
+  - gem install bundler
+  - gem --version
   - bundle install
 
 build: off
