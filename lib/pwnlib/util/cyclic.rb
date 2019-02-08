@@ -42,6 +42,7 @@ module Pwnlib
       #     The result sequence.
       def de_bruijn(alphabet: ASCII_LOWERCASE, n: 4)
         return to_enum(__method__, alphabet: alphabet, n: n) { alphabet.size**n } unless block_given?
+
         k = alphabet.size
         a = [0] * (k * n)
 

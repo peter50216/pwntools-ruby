@@ -96,6 +96,7 @@ module Pwnlib
       def update(**kwargs)
         kwargs.each do |k, v|
           next if v.nil?
+
           public_send("#{k}=", v)
         end
         self
@@ -123,6 +124,7 @@ module Pwnlib
       #   # little
       def local(**kwargs)
         raise ArgumentError, "Need a block for #{self.class}##{__callee__}" unless block_given?
+
         # XXX(Darkpi):
         #   improve performance for this if this is too slow, since we use this in many places that has argument
         #   endian / signed / ...
@@ -183,6 +185,7 @@ module Pwnlib
         arch = arch.to_s.downcase.gsub(/[[:punct:]]/, '')
         defaults = ARCHS[arch]
         raise ArgumentError, "arch must be one of #{ARCHS.keys.sort.inspect}" unless defaults
+
         defaults.each { |k, v| @attrs[k] = v }
         @attrs[:arch] = arch
       end
@@ -193,6 +196,7 @@ module Pwnlib
       #   The word size.
       def bits=(bits)
         raise ArgumentError, "bits must be > 0 (#{bits} given)" unless bits > 0
+
         @attrs[:bits] = bits
       end
 
@@ -219,6 +223,7 @@ module Pwnlib
       def endian=(endian)
         endian = ENDIANNESSES[endian.to_s.downcase]
         raise ArgumentError, "endian must be one of #{ENDIANNESSES.sort.inspect}" if endian.nil?
+
         @attrs[:endian] = endian
       end
 
@@ -239,6 +244,7 @@ module Pwnlib
           log_level = value
         end
         raise ArgumentError, "log_level must be an integer or one of #{LOG_LEVELS.inspect}" unless log_level
+
         @attrs[:log_level] = log_level
       end
 
@@ -252,6 +258,7 @@ module Pwnlib
       def os=(os)
         os = os.to_s.downcase
         raise ArgumentError, "os must be one of #{OSES.sort.inspect}" unless OSES.include?(os)
+
         @attrs[:os] = os
       end
 
@@ -275,6 +282,7 @@ module Pwnlib
           signed = value
         end
         raise ArgumentError, "signed must be boolean or one of #{SIGNEDNESSES.keys.sort.inspect}" if signed.nil?
+
         @attrs[:signed] = signed
       end
 

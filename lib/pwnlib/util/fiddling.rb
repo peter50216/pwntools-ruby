@@ -145,6 +145,7 @@ module Pwnlib
           when Integer
             # TODO(Darkpi): What should we do to negative number?
             raise ArgumentError, 's must be non-negative' unless s >= 0
+
             r = s.to_s(2).chars.map { |ch| ch == '1' ? one : zero }
             r.unshift(zero) until (r.size % 8).zero?
             is_little ? r.reverse : r
@@ -315,6 +316,7 @@ module Pwnlib
           # alphabet.shuffle! if context.randomize
           c2 = alphabet.find { |c| alphabet.include?(c1 ^ c) }
           return nil if c2.nil?
+
           res1 << c2.chr
           res2 << (c1 ^ c2).chr
         end

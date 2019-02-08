@@ -32,12 +32,14 @@ module Pwnlib
       def method_missing(method, *args, &block)
         mod = find_module_for(method)
         return super if mod.nil?
+
         mod.public_send(method, *args, &block)
       end
 
       # For +respond_to?+.
       def respond_to_missing?(method, include_private = false)
         return true if find_module_for(method)
+
         super
       end
 
@@ -55,9 +57,11 @@ module Pwnlib
         # try search in Common module
         common_module = arch_module.const_get(:Common)
         return common_module if common_module.singleton_methods.include?(method)
+
         # search in ${os} module
         os_module = arch_module.const_get(context.os.capitalize)
         return os_module if os_module.singleton_methods.include?(method)
+
         nil
       end
 

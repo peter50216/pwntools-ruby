@@ -153,7 +153,7 @@ class HexDumpTest < MiniTest::Test
       assert_lines_equal(<<-'EOS', hexdump('abcdefghi', highlight: 'aeiou'))
 00000000  61! 62 63 64  65! 66 67 68  69!                        │a!bcd│e!fgh│i!│
 00000009
-        EOS
+      EOS
     ensure
       ::Pwnlib::Util::HexDump.const_set(:HIGHLIGHT_STYLE, orig_style)
       $VERBOSE = orig_verbose

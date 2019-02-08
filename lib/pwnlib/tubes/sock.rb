@@ -42,6 +42,7 @@ module Pwnlib
       def close(direction = :both)
         if direction == :both
           return if @sock.closed?
+
           @closed[:read] = @closed[:write] = true
           @sock.close
         else
@@ -55,6 +56,7 @@ module Pwnlib
 
       def shutdown(direction)
         return if @closed[direction]
+
         @closed[direction] = true
 
         if direction.equal?(:read)
@@ -70,6 +72,7 @@ module Pwnlib
 
       def send_raw(data)
         raise ::Pwnlib::Errors::EndOfTubeError if @closed[:write]
+
         begin
           @sock.write(data)
         rescue Errno::EPIPE, Errno::ECONNRESET, Errno::ECONNREFUSED
@@ -80,9 +83,11 @@ module Pwnlib
 
       def recv_raw(size)
         raise ::Pwnlib::Errors::EndOfTubeError if @closed[:read]
+
         begin
           rs, = IO.select([@sock], [], [], @timeout)
           return if rs.nil?
+
           return @sock.readpartial(size)
         rescue Errno::ECONNREFUSED, Errno::ECONNRESET, Errno::ECONNABORTED, EOFError
           shutdown(:read)

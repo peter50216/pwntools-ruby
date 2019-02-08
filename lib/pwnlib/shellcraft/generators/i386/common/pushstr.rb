@@ -14,6 +14,7 @@ module Pwnlib
             # This will not affect callee's +str+.
             str += "\x00" if append_null && !str.end_with?("\x00")
             return if str.empty?
+
             padding = str[-1].ord >= 128 ? "\xff" : "\x00"
             cat "/* push #{str.inspect} */"
             group(4, str, underfull_action: :fill, fill_value: padding).reverse_each do |word|

@@ -37,6 +37,7 @@ module Pwnlib
         unless %i(ignore drop fill).include?(underfull_action)
           raise ArgumentError, 'underfull_action expect to be one of :ignore, :drop, and :fill'
         end
+
         sliced = str.chars.each_slice(n).map(&:join)
         case underfull_action
         when :drop
@@ -45,6 +46,7 @@ module Pwnlib
           remain = n - sliced.last.size
           fill_value = fill_value.to_s
           raise ArgumentError, 'fill_value must be a character' unless fill_value.size == 1
+
           sliced.last.concat(fill_value * remain)
         end
         sliced

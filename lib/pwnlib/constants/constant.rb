@@ -27,9 +27,11 @@ module Pwnlib
       end
 
       # We don't need to fall back to super for this, so just disable the lint.
-      def method_missing(method, *args, &block) # rubocop:disable Style/MethodMissing
+      # rubocop:disable Style/MethodMissingSuper
+      def method_missing(method, *args, &block)
         @val.__send__(method, *args, &block)
       end
+      # rubocop:enable Style/MethodMissingSuper
 
       def respond_to_missing?(method, include_all)
         @val.respond_to?(method, include_all)
