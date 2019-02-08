@@ -68,6 +68,7 @@ module Pwnlib
           highlight.bytes.each { |b| style[b] = HIGHLIGHT_STYLE }
           (0..255).each do |b|
             next if style.include?(b)
+
             style[b] = (b.chr =~ /[[:print:]]/ ? style[:printable] : style[:unprintable])
           end
 
@@ -89,6 +90,7 @@ module Pwnlib
             # We assume that chunk is in ASCII-8BIT encoding.
             chunk = io.read(width)
             break unless chunk
+
             chunk_bytes = chunk.bytes
             start_byte_index = byte_index
             byte_index += chunk_bytes.size

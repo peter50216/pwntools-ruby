@@ -80,6 +80,7 @@ module Pwnlib
     def build_id
       build_id_offsets.each do |offset|
         next unless @leak.n(@libbase + offset + 12, 4) == "GNU\x00"
+
         return @leak.n(@libbase + offset + 16, 20).unpack('H*').first
       end
       nil
@@ -105,6 +106,7 @@ module Pwnlib
       ptr &= PAGE_MASK
       loop do
         return @base = ptr if @leak.n(ptr, 4) == "\x7fELF"
+
         ptr -= PAGE_SIZE
       end
     end
@@ -116,6 +118,7 @@ module Pwnlib
       loop do
         ptype = @leak.d(e_phoff)
         break if ptype == ELFTools::Constants::PT::PT_DYNAMIC
+
         e_phoff += phdr_size
       end
       offset = { 32 => 8, 64 => 16 }[@elfclass]
@@ -134,6 +137,7 @@ module Pwnlib
         d_addr = unpack(tmp[@elfword, @elfword])
         break if d_tag.zero?
         return d_addr if tag == d_tag
+
         ptr += dyn_size
       end
       nil
@@ -157,8 +161,8 @@ module Pwnlib
     def build_id_offsets
       {
         i386: [0x174],
-        arm:  [0x174],
-        thumb:  [0x174],
+        arm: [0x174],
+        thumb: [0x174],
         aarch64: [0x238],
         amd64: [0x270, 0x174],
         powerpc: [0x174],

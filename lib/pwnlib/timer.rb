@@ -29,11 +29,13 @@ module Pwnlib
 
     def timeout
       return @timeout || ::Pwnlib::Context.context.timeout unless started?
+
       @deadline == :forever ? :forever : [@deadline - Time.now, 0].max
     end
 
     def timeout=(timeout)
       raise "Can't change timeout when countdown" if started?
+
       @timeout = timeout
     end
 
@@ -41,8 +43,10 @@ module Pwnlib
     # NOTE(Darkpi): timeout = nil means default value for the first time, and nop after that.
     def countdown(timeout = nil)
       raise ArgumentError, 'Need a block for countdown' unless block_given?
+
       if started?
         return yield if timeout.nil?
+
         raise 'Nested countdown not permitted'
       end
 

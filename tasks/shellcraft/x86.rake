@@ -41,6 +41,7 @@ end
     invalid(path) unless x86 == 'x86' && %w[linux common].include?(dir) && file.end_with?('.rb')
     func = file[0..-4]
     return if dir == func
+
     puts "Generating files of #{path.inspect}.."
     dir_ = dir.capitalize
     prototype = IO.binread(File.join(GEN_PATH, path)).scan(/^\s+def (#{func}.*)$/).flatten.last

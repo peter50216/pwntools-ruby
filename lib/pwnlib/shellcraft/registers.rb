@@ -55,6 +55,7 @@ module Pwnlib
           @size = size
           X86_ORDERED.each do |row|
             next unless row.include?(name)
+
             @bigger = row[0, row.index(name)]
             @smaller = row[(row.index(name) + 1)..-1]
             @native64 = row[0]
@@ -122,6 +123,7 @@ module Pwnlib
       def get_register(name)
         return name if name.instance_of?(Register)
         return INTEL[name.to_s] if name.instance_of?(String) || name.instance_of?(Symbol)
+
         nil
       end
 

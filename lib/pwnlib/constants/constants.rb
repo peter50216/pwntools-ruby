@@ -50,6 +50,7 @@ module Pwnlib
       #   # Pwnlib::Errors::ConstantNotFoundError: Undefined constant(s): meow
       def eval(str)
         return str unless str.instance_of?(String)
+
         begin
           val = calculator.evaluate!(str.strip).to_i
         rescue Dentaku::UnboundVariableError => e
@@ -94,6 +95,7 @@ module Pwnlib
       def load_constants((os, arch))
         filename = File.join(__dir__, os, "#{arch}.rb")
         return {} unless File.exist?(filename)
+
         builder = ConstantBuilder.new
         builder.instance_eval(IO.read(filename))
         builder.tbl

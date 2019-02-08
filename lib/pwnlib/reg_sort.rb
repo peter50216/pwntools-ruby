@@ -70,6 +70,7 @@ module Pwnlib
         first_reg, val = list.shift
         # Special case for val.zero? because zeroify registers is cheaper than mov.
         next if list.empty? || all_regs.include?(val) || val.zero?
+
         list.each do |(reg, _)|
           hash[reg] = first_reg
           in_out.delete(reg)
@@ -87,11 +88,13 @@ module Pwnlib
       until deg.empty?
         min_deg = deg.min_by { |_, v| v }[1]
         break unless min_deg.zero? # remain are all cycles
+
         min_pivs = deg.select { |_, v| v == min_deg }
         piv = randomize ? min_pivs.sample : min_pivs.first
         dst = piv.first
         deg.delete(dst)
         next unless graph.key?(dst) # Reach an end node.
+
         deg[graph[dst]] -= 1
         result << ['mov', dst, graph[dst]]
         graph.delete(dst)
@@ -134,6 +137,7 @@ module Pwnlib
         return [] unless assignments.key?(target)
         # Found a cycle.
         return target == path.first ? path : [] if path.include?(target)
+
         check_cycle_(target, assignments, path)
       end
     end

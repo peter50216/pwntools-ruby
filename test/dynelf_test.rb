@@ -49,6 +49,7 @@ class DynELFTest < MiniTest::Test
         IO.readlines("/proc/#{options[:pid]}/maps").map(&:split).each do |s|
           st, ed = s[0].split('-').map { |x| x.to_i(16) }
           next unless main_ra.between?(st, ed)
+
           realbase = st
           break
         end

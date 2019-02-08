@@ -59,6 +59,7 @@ module Pwnlib
       # @!macro raise_timeout
       def recv(num_bytes = nil, timeout: nil)
         return '' if @buffer.empty? && !fillbuffer(timeout: timeout)
+
         @buffer.get(num_bytes)
       end
       alias read recv
@@ -99,6 +100,7 @@ module Pwnlib
       # @!macro raise_timeout
       def recvpred(timeout: nil)
         raise ArgumentError, 'Need a block for recvpred' unless block_given?
+
         @timer.countdown(timeout) do
           data = ''
           begin
@@ -108,6 +110,7 @@ module Pwnlib
               c = recv(1)
 
               return '' if c.empty?
+
               data << c
             end
             data.slice!(0..-1)
@@ -167,6 +170,7 @@ module Pwnlib
               s = recv(1)
 
               return '' if s.empty?
+
               matching << s
 
               sidx = matching.size
@@ -174,6 +178,7 @@ module Pwnlib
               delims.each do |d|
                 idx = matching.index(d)
                 next unless idx
+
                 if idx + d.size <= sidx + match_len
                   sidx = idx
                   match_len = d.size
@@ -323,6 +328,7 @@ module Pwnlib
       #   #=> nil
       def puts(*objs)
         return write(context.newline) if objs.empty?
+
         objs = *objs.flatten
         s = ''
         objs.map(&:to_s).each do |elem|

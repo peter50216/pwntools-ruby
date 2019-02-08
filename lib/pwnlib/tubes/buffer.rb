@@ -35,6 +35,7 @@ module Pwnlib
         else
           data = data.to_s.dup
           return if data.empty?
+
           @data << data
         end
         @size += data.size
@@ -53,6 +54,7 @@ module Pwnlib
         else
           data = data.to_s.dup
           return if data.empty?
+
           @data.unshift(data)
         end
         @size += data.size

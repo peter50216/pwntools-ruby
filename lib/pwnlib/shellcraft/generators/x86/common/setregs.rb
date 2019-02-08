@@ -48,6 +48,7 @@ module Pwnlib
             cdq = false
             ev = lambda do |reg|
               return reg unless reg.is_a?(String)
+
               evaluate(reg)
             end
             eax = ev[eax]

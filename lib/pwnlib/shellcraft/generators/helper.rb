@@ -31,6 +31,7 @@ module Pwnlib
           def typesetting
             indent = @_output.string.lines.map do |line|
               next line.strip + "\n" if label_str?(line.strip)
+
               line == "\n" ? line : ' ' * 2 + line.lstrip
             end
             indent.join
@@ -55,6 +56,7 @@ module Pwnlib
 
           def evaluate(item)
             return item if register?(item)
+
             Constants.eval(item)
           end
 

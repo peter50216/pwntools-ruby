@@ -72,6 +72,7 @@ module Pwnlib
           else
             if is_all
               raise ArgumentError, "Can't pack negative number with bits='all' and signed=false" if number < 0
+
               bits = number.zero? ? 8 : ((number.bit_length - 1) | 7) + 1
             end
 
@@ -197,6 +198,7 @@ module Pwnlib
           bytes = bits / 8
 
           raise ArgumentError, "data.size=#{data.size} must be a multiple of bytes=#{bytes}" if data.size % bytes != 0
+
           ret = []
           (data.size / bytes).times do |idx|
             x1 = idx * bytes

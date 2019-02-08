@@ -140,6 +140,7 @@ module Pwnlib
       def recv_raw(size)
         o, = IO.select([@o], [], [], @timeout)
         return if o.nil?
+
         @o.readpartial(size)
       rescue Errno::EIO, Errno::EPIPE, IOError
         raise ::Pwnlib::Errors::EndOfTubeError

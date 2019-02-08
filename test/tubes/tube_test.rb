@@ -61,6 +61,7 @@ class TubeTest < MiniTest::Test
     class << t
       def recv_raw(_n)
         raise ::Pwnlib::Errors::EndOfTubeError if io.eof?
+
         io.read
       end
 

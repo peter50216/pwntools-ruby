@@ -36,18 +36,21 @@ module Pwnlib
           #   #=> nil
           def mov(dst, src, stack_allowed: true)
             raise ArgumentError, "#{dst} is not a register" unless register?(dst)
+
             dst = get_register(dst)
             if register?(src)
               src = get_register(src)
               if dst.size < src.size && !dst.bigger.include?(src.name)
                 raise ArgumentError, "cannot mov #{dst}, #{src}: dst is smaller than src"
               end
+
               # Downgrade our register choice if possible.
               # Opcodes for operating on 32-bit registers are always (?) shorter.
               dst = get_register(dst.native32) if dst.size == 64 && src.size <= 32
             else
               context.local(arch: 'amd64') { src = evaluate(src) }
               raise ArgumentError, format('cannot mov %s, %d: dst is smaller than src', dst, src) unless dst.fits(src)
+
               orig_dst = dst
               dst = get_register(dst.native32) if dst.size == 64 && bits_required(src) <= 32
 

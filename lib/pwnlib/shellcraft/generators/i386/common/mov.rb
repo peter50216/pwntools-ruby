@@ -12,8 +12,10 @@ module Pwnlib
           # See {Amd64::Common#mov} for parameters' details.
           def mov(dst, src, stack_allowed: true)
             raise ArgumentError, "#{dst} is not a register" unless register?(dst)
+
             dst = get_register(dst)
             raise ArgumentError, "cannot use #{dst} on i386" if dst.size > 32 || dst.is64bit
+
             if register?(src)
               src = get_register(src)
               raise ArgumentError, "cannot use #{src} on i386" if src.size > 32 || src.is64bit

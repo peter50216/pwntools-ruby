@@ -166,6 +166,7 @@ module Pwnlib
       phdr.p_filesz = phdr.p_memsz = entry + data.size
       elf = ehdr.to_binary_s + phdr.to_binary_s + data
       return elf unless to_file
+
       path = Dir::Tmpname.create(['pwn', '.elf']) do |temp|
         File.open(temp, 'wb', 0o750) { |f| f.write(elf) }
       end

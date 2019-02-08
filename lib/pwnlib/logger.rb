@@ -47,6 +47,7 @@ module Pwnlib
       #   The severity of the message.
       def indented(message, level: DEBUG)
         return if @logdev.nil? || level < context.log_level
+
         @logdev.write(
           message.lines.map { |s| '    ' + s }.join + "\n"
         )
@@ -108,6 +109,7 @@ module Pwnlib
         severity = INFO
         # Don't invoke the block if it's unnecessary.
         return true if severity < context.log_level
+
         caller_ = caller_locations(1, 1).first
         src = source_of(caller_.absolute_path, caller_.lineno)
         results = args.empty? ? [[yield, source_of_block(src)]] : args.zip(source_of_args(src))
@@ -122,6 +124,7 @@ module Pwnlib
       def add(severity, message = nil, progname = nil)
         severity ||= UNKNOWN
         return true if severity < context.log_level
+
         super(severity, message, progname)
       end
 
@@ -168,6 +171,7 @@ module Pwnlib
         sexp = ::RubyParser.new.process(source)
         sexp = search_sexp(sexp, target)
         return nil if sexp.nil?
+
         yield sexp
       end
 
@@ -175,6 +179,7 @@ module Pwnlib
       def search_sexp(sexp, target)
         return nil unless sexp.is_a?(::Sexp)
         return sexp if match_sexp?(sexp, target)
+
         sexp.find do |e|
           f = search_sexp(e, target)
           break f if f
@@ -185,6 +190,7 @@ module Pwnlib
         target.zip(sexp.entries).all? do |t, s|
           next true if t.nil?
           next match_sexp?(s, t) if t.is_a?(Array)
+
           s == t
         end
       end

@@ -86,7 +86,7 @@ module Pwnlib
             none: Rainbow('No RELRO').red
           }[relro],
           'Stack:'.ljust(10) + {
-            true =>  Rainbow('Canary found').green,
+            true => Rainbow('Canary found').green,
             false => Rainbow('No canary found').red
           }[canary?],
           'NX:'.ljust(10) + {
@@ -106,10 +106,13 @@ module Pwnlib
       def relro
         return :none unless @elf_file.segment_by_type(:gnu_relro)
         return :full if dynamic_tag(:bind_now)
+
         flags = dynamic_tag(:flags)
         return :full if flags && (flags.value & ::ELFTools::Constants::DF_BIND_NOW) != 0
+
         flags1 = dynamic_tag(:flags_1)
         return :full if flags1 && (flags1.value & ::ELFTools::Constants::DF_1_NOW) != 0
+
         :partial
       end
 
@@ -163,6 +166,7 @@ module Pwnlib
       #   #=> true
       def search(needle)
         return enum_for(:search, needle) unless block_given?
+
         load_address_fixup = @address - @load_addr
         stream = @elf_file.stream
         @elf_file.each_segments do |seg|
@@ -177,6 +181,7 @@ module Pwnlib
           loop do
             offset = data.index(needle, offset)
             break if offset.nil?
+
             yield (addr + offset + load_address_fixup)
             offset += 1
           end
@@ -249,6 +254,7 @@ module Pwnlib
       def dynamic_tag(type)
         dynamic = @elf_file.segment_by_type(:dynamic) || @elf_file.section_by_name('.dynamic')
         return nil if dynamic.nil? # No dynamic present, might be static-linked.
+
         dynamic.tag_by_type(type)
       end
 
@@ -258,9 +264,11 @@ module Pwnlib
         sections_by_types(%i(rel rela)).each do |rel_sec|
           symtab = @elf_file.section_at(rel_sec.header.sh_link)
           next unless symtab.respond_to?(:symbol_at)
+
           rel_sec.relocations.each do |rel|
             symbol = symtab.symbol_at(rel.symbol_index)
             next if symbol.nil? # Unusual case.
+
             @got[symbol.name] = rel.header.r_offset.to_i
           end
         end
@@ -276,15 +284,19 @@ module Pwnlib
         @plt = nil
         plt_sec = @elf_file.section_by_name('.plt')
         return log.warn('No PLT section found, PLT not loaded') if plt_sec.nil?
+
         rel_sec = @elf_file.section_by_name('.rel.plt') || @elf_file.section_by_name('.rela.plt')
         return log.warn('No REL.PLT section found, PLT not loaded') if rel_sec.nil?
+
         symtab = @elf_file.section_at(rel_sec.header.sh_link)
         return unless symtab.respond_to?(:symbol_at) # unusual case
+
         @plt = OpenStruct.new
         address = plt_sec.header.sh_addr.to_i + PLT_OFFSET
         rel_sec.relocations.each do |rel|
           symbol = symtab.symbol_at(rel.symbol_index)
           next if symbol.nil? # unusual case
+
           @plt[symbol.name] = address
           address += PLT_OFFSET
         end
@@ -295,10 +307,12 @@ module Pwnlib
         @symbols = OpenStruct.new
         @elf_file.each_sections do |section|
           next unless section.respond_to?(:symbols)
+
           section.each_symbols do |symbol|
             # Don't care symbols without name.
             next if symbol.name.empty?
             next if symbol.header.st_value.zero?
+
             # TODO(david942j): handle symbols with same name.
             @symbols[symbol.name] = symbol.header.st_value.to_i
           end
@@ -311,6 +325,7 @@ module Pwnlib
 
       def base_address
         return 0 if pie?
+
         # Find the min of PT_LOAD's p_vaddr
         @elf_file.segments_by_type(:load)
                  .map { |seg| seg.header.p_vaddr }

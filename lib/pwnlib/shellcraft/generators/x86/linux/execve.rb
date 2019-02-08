@@ -34,6 +34,7 @@ module Pwnlib
             argv = case argv
                    when String
                      raise ArgumentError, "#{argv.inspect} is not a valid register name" unless register?(argv)
+
                      argv
                    when Array
                      cat Common.pushstr_array(abi.register_arguments[2], argv)
@@ -46,6 +47,7 @@ module Pwnlib
             envp = case envp
                    when String
                      raise ArgumentError, "#{envp.inspect} is not a valid register name" unless register?(envp)
+
                      envp
                    when Hash
                      cat Common.pushstr_array(abi.register_arguments[3], envp.map { |k, v| "#{k}=#{v}" })

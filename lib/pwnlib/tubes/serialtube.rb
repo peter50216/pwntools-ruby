@@ -69,6 +69,7 @@ module Pwnlib
             while @serial_timer.active?
               data += @conn.read(numbytes - data.length)
               break unless data.empty?
+
               sleep 0.1
             end
             # XXX(JonathanBeverley): should we reverse @convert_newlines here?
