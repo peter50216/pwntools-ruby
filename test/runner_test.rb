@@ -9,7 +9,7 @@ class RunnerTest < MiniTest::Test
   include ::Pwnlib::Context
 
   def setup
-    skip 'Runner can only be used on Linux' unless TTY::Platform.new.linux?
+    linux_only 'Runner can only be used on Linux'
   end
 
   def shellcraft

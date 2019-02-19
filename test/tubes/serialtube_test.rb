@@ -19,10 +19,6 @@ end
 class SerialTest < MiniTest::Test
   include ::Pwnlib::Tubes
 
-  def skip_windows
-    skip 'Not test tube/serialtube on Windows' if TTY::Platform.new.windows?
-  end
-
   def open_pair
     Open3.popen3('socat -d -d pty,raw,echo=0 pty,raw,echo=0') do |_i, _o, stderr, thread|
       devs = []

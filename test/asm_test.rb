@@ -14,27 +14,19 @@ class AsmTest < MiniTest::Test
     @shellcraft = ::Pwnlib::Shellcraft::Shellcraft.instance
   end
 
-  def skip_windows
-    skip 'Not test asm/disasm on Windows' if TTY::Platform.new.windows?
-  end
-
-  def linux_only
-    skip 'ELF can only be executed on Linux' unless TTY::Platform.new.linux?
-  end
-
   def parse_sfile(filename)
     # First line is architecture
     lines = File.readlines(filename)
     metadata = lines.shift
-      .delete('#')
-      .split(',').map { |c| c.split(':', 2).map(&:strip) }
-      .map { |k, v| [k.to_sym, v] }
-      .to_h
+                    .delete('#')
+                    .split(',').map { |c| c.split(':', 2).map(&:strip) }
+                    .map { |k, v| [k.to_sym, v] }
+                    .to_h
     lines.reject { |l| l.start_with?('#') }.join.split("\n\n").each do |test|
       # fetch `<vma>:`
       vma = test.scan(/^\s*(\w+):/).flatten.first.to_i(16)
       # fetch bytes
-      bytes = [test.scan(/^\s*\w+:\s*(([\da-f]{2}\s)+)/).map(&:first).join.split.join].pack('H*')
+      bytes = [test.scan(/^\s*\w+:\s*(([\da-f]{2}\s)+)\s*[a-z]/).map(&:first).join.split.join].pack('H*')
       output = test
       output << "\n" unless output.end_with?("\n")
       yield(bytes, vma, test, **metadata)
@@ -197,7 +189,7 @@ class AsmTest < MiniTest::Test
   # this test can be removed after method +run_shellcode+ being implemented
   def test_make_elf_and_run
     # run the ELF we created to make sure it works.
-    linux_only
+    linux_only('ELF can only be executed on Linux')
 
     # test supported architecture
     {
