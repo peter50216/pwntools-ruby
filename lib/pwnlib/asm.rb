@@ -37,6 +37,8 @@ module Pwnlib
     #
     # @raise [Pwnlib::Errors::DependencyError]
     #   If libcapstone is not installed.
+    # @raise [Pwnlib::Errors::UnsupportedArchError]
+    #   If disassembling of +context.arch+ is not supported.
     #
     # @example
     #   context.arch = 'i386'
@@ -58,7 +60,7 @@ module Pwnlib
     #   #  1017:   0f 05                         syscall
     def disasm(data, vma: 0)
       require_message('crabstone', install_crabstone_guide) # will raise error if require fail.
-      cs = Crabstone::Disassembler.new(cap_arch, cap_mode)
+      cs = Crabstone::Disassembler.new(cs_arch, cs_mode)
       insts = cs.disasm(data, vma).map do |ins|
         [ins.address, ins.bytes.pack('C*'), ins.mnemonic, ins.op_str.to_s]
       end
@@ -79,9 +81,16 @@ module Pwnlib
     #
     # @param [String] code
     #   The assembly code to be converted.
+    # @param [Integer] vma
+    #   Virtual memory address.
     #
     # @return [String]
     #   The result.
+    #
+    # @raise [Pwnlib::Errors::DependencyError]
+    #   If libkeystone is not installed.
+    # @raise [Pwnlib::Errors::UnsupportedArchError]
+    #   If assembling of +context.arch+ is not supported.
     #
     # @example
     #   assembly = shellcraft.amd64.linux.sh
@@ -93,9 +102,9 @@ module Pwnlib
     #
     # @diff
     #   Not support +asm('mov eax, SYS_execve')+.
-    def asm(code)
+    def asm(code, vma: 0)
       require_message('keystone_engine', install_keystone_guide)
-      KeystoneEngine::Ks.new(ks_arch, ks_mode).asm(code)[0]
+      KeystoneEngine::Ks.new(ks_arch, ks_mode).asm(code, vma)[0]
     end
 
     # Builds an ELF file from executable code.
@@ -174,18 +183,42 @@ module Pwnlib
     end
 
     ::Pwnlib::Util::Ruby.private_class_method_block do
-      def cap_arch
-        {
-          'i386' => Crabstone::ARCH_X86,
-          'amd64' => Crabstone::ARCH_X86
-        }[context.arch]
+      def cs_arch
+        case context.arch
+        when 'aarch64' then Crabstone::ARCH_ARM64
+        when 'amd64' then Crabstone::ARCH_X86
+        when 'arm' then Crabstone::ARCH_ARM
+        when 'i386' then Crabstone::ARCH_X86
+        when 'm68k' then Crabstone::ARCH_M68K
+        when 'mips' then Crabstone::ARCH_MIPS
+        when 'mips64' then Crabstone::ARCH_MIPS
+        when 'powerpc' then Crabstone::ARCH_PPC
+        when 'powerpc64' then Crabstone::ARCH_PPC
+        when 'sparc' then Crabstone::ARCH_SPARC
+        when 'sparc64' then Crabstone::ARCH_SPARC
+        when 'thumb' then Crabstone::ARCH_ARM
+        else raise ::Pwnlib::Errors::UnsupportedArchError,
+                   "Disassemble architecture #{context.arch.inspect} is not supported."
+        end
       end
 
-      def cap_mode
-        {
-          32 => Crabstone::MODE_32,
-          64 => Crabstone::MODE_64
-        }[context.bits]
+      def cs_mode
+        case context.arch
+        when 'aarch64' then Crabstone::MODE_ARM
+        when 'amd64' then Crabstone::MODE_64
+        when 'arm' then Crabstone::MODE_ARM
+        when 'i386' then Crabstone::MODE_32
+        when 'm68k' then Crabstone::MODE_M68K_040 # XXX(david942j): Which mode should be used..?
+        when 'mips' then Crabstone::MODE_MIPS32
+        when 'mips64' then Crabstone::MODE_MIPS64
+        when 'powerpc' then Crabstone::MODE_32
+        when 'powerpc64' then Crabstone::MODE_64
+        when 'sparc' then 0 # default mode is enough
+        when 'sparc64' then Crabstone::MODE_V9
+        when 'thumb' then Crabstone::MODE_THUMB
+        else raise ::Pwnlib::Errors::UnsupportedArchError,
+                   "Disassemble architecture #{context.arch.inspect} is not supported."
+        end | (context.endian == 'little' ? Crabstone::MODE_LITTLE_ENDIAN : Crabstone::MODE_BIG_ENDIAN)
       end
 
       def ks_arch
@@ -211,7 +244,7 @@ module Pwnlib
 
       def install_crabstone_guide
         <<-EOS
-#disasm dependes on capstone, which is detected not installed yet.
+#disasm depends on capstone, which is detected not installed yet.
 Checkout the following link for installation guide:
 
 http://www.capstone-engine.org/documentation.html
@@ -221,7 +254,7 @@ http://www.capstone-engine.org/documentation.html
 
       def install_keystone_guide
         <<-EOS
-#asm dependes on keystone, which is detected not installed yet.
+#asm depends on keystone, which is detected not installed yet.
 Checkout the following link for installation guide:
 
 https://github.com/keystone-engine/keystone/tree/master/docs
