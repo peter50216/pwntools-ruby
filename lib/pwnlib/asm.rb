@@ -190,16 +190,14 @@ module Pwnlib
         when 'amd64' then Crabstone::ARCH_X86
         when 'arm' then Crabstone::ARCH_ARM
         when 'i386' then Crabstone::ARCH_X86
-        when 'm68k' then Crabstone::ARCH_M68K
         when 'mips' then Crabstone::ARCH_MIPS
         when 'mips64' then Crabstone::ARCH_MIPS
-        when 'powerpc' then Crabstone::ARCH_PPC
         when 'powerpc64' then Crabstone::ARCH_PPC
         when 'sparc' then Crabstone::ARCH_SPARC
         when 'sparc64' then Crabstone::ARCH_SPARC
         when 'thumb' then Crabstone::ARCH_ARM
         else raise ::Pwnlib::Errors::UnsupportedArchError,
-                   "Disassemble architecture #{context.arch.inspect} is not supported."
+                   "Disasm on architecture #{context.arch.inspect} is not supported yet."
         end
       end
 
@@ -209,16 +207,12 @@ module Pwnlib
         when 'amd64' then Crabstone::MODE_64
         when 'arm' then Crabstone::MODE_ARM
         when 'i386' then Crabstone::MODE_32
-        when 'm68k' then Crabstone::MODE_M68K_040 # XXX(david942j): Which mode should be used..?
         when 'mips' then Crabstone::MODE_MIPS32
         when 'mips64' then Crabstone::MODE_MIPS64
-        when 'powerpc' then Crabstone::MODE_32
         when 'powerpc64' then Crabstone::MODE_64
         when 'sparc' then 0 # default mode is enough
         when 'sparc64' then Crabstone::MODE_V9
         when 'thumb' then Crabstone::MODE_THUMB
-        else raise ::Pwnlib::Errors::UnsupportedArchError,
-                   "Disassemble architecture #{context.arch.inspect} is not supported."
         end | (context.endian == 'little' ? Crabstone::MODE_LITTLE_ENDIAN : Crabstone::MODE_BIG_ENDIAN)
       end
 

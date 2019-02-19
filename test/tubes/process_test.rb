@@ -85,6 +85,10 @@ class ProcessTest < MiniTest::Test
     # In cooked mode, tty should echo the input, so we can gets twice.
     assert_equal("Hi\r\n", cat.gets)
     assert_equal("Hi\r\n", cat.gets)
+    class << cat
+      # hook shutdown to silence the +cat: -: Input/output error+ message.
+      def shutdown; end
+    end
     cat.close
   end
 
