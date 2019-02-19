@@ -117,15 +117,11 @@ class AsmTest < MiniTest::Test
   Dir.glob(File.join(__dir__, 'data', 'assembly', '*.s')) do |file|
     __send__(:define_method, "test_disasm_file_#{File.basename(file, '.s')}") do
       skip_windows
-      count = 0
       parse_sfile(file) do |bytes, vma, output, **ctx|
         context.local(**ctx) do
           assert_equal(output, Asm.disasm(bytes, vma: vma))
-          count += 1
         end
       end
-      # At least one example being tested in one .s file.
-      assert(count.positive?)
     end
   end
 
