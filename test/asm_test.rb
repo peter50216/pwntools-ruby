@@ -22,6 +22,25 @@ class AsmTest < MiniTest::Test
     skip 'ELF can only be executed on Linux' unless TTY::Platform.new.linux?
   end
 
+  def parse_sfile(filename)
+    # First line is architecture
+    lines = File.readlines(filename)
+    metadata = lines.shift
+      .delete('#')
+      .split(',').map { |c| c.split(':', 2).map(&:strip) }
+      .map { |k, v| [k.to_sym, v] }
+      .to_h
+    lines.reject { |l| l.start_with?('#') }.join.split("\n\n").each do |test|
+      # fetch `<vma>:`
+      vma = test.scan(/^\s*(\w+):/).flatten.first.to_i(16)
+      # fetch bytes
+      bytes = [test.scan(/^\s*\w+:\s*(([\da-f]{2}\s)+)/).map(&:first).join.split.join].pack('H*')
+      output = test
+      output << "\n" unless output.end_with?("\n")
+      yield(bytes, vma, test, **metadata)
+    end
+  end
+
   def test_i386_asm
     skip_windows
     context.local(arch: 'i386') do
@@ -70,9 +89,6 @@ class AsmTest < MiniTest::Test
   2a:   99                   cdq
   2b:   cd 80                int     0x80
       EOS
-      assert_equal(<<-EOS, Asm.disasm("\xb8\x5d\x00\x00\x00"))
-  0:   b8 5d 00 00 00 mov     eax, 0x5d
-      EOS
     end
   end
 
@@ -102,9 +118,22 @@ class AsmTest < MiniTest::Test
   102e:   99                            cdq
   102f:   0f 05                         syscall
       EOS
-      assert_equal(<<-EOS, Asm.disasm("\xb8\x17\x00\x00\x00"))
-  0:   b8 17 00 00 00 mov     eax, 0x17
-      EOS
+    end
+  end
+
+  def test_disasm_all
+    skip_windows
+
+    Dir.glob(File.join(__dir__, 'data', 'assembly', '*.s')) do |file|
+      count = 0
+      parse_sfile(file) do |bytes, vma, output, **ctx|
+        context.local(**ctx) do
+          assert_equal(output, Asm.disasm(bytes, vma: vma))
+          count += 1
+        end
+      end
+      # At least one example being tested in one .s file.
+      assert(count.positive?)
     end
   end
 
