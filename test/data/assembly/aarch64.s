@@ -1,4 +1,3 @@
-# arch: aarch64
 # These tests are fetched from Capstone's test_arm64.c
 # ARM-64
   2c:   09 00 38 d5  mrs   x9, midr_el1

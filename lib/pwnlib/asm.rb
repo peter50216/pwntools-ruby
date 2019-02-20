@@ -210,24 +210,42 @@ module Pwnlib
         when 'mips' then Crabstone::MODE_MIPS32
         when 'mips64' then Crabstone::MODE_MIPS64
         when 'powerpc64' then Crabstone::MODE_64
-        when 'sparc' then 0 # default mode is enough
+        when 'sparc' then 0 # default mode
         when 'sparc64' then Crabstone::MODE_V9
         when 'thumb' then Crabstone::MODE_THUMB
-        end | (context.endian == 'little' ? Crabstone::MODE_LITTLE_ENDIAN : Crabstone::MODE_BIG_ENDIAN)
+        end | (context.endian == 'big' ? Crabstone::MODE_BIG_ENDIAN : Crabstone::MODE_LITTLE_ENDIAN)
       end
 
       def ks_arch
-        {
-          'i386' => KeystoneEngine::KS_ARCH_X86,
-          'amd64' => KeystoneEngine::KS_ARCH_X86
-        }[context.arch]
+        case context.arch
+        when 'aarch64' then KeystoneEngine::KS_ARCH_ARM64
+        when 'amd64' then KeystoneEngine::KS_ARCH_X86
+        when 'arm' then KeystoneEngine::KS_ARCH_ARM
+        when 'i386' then KeystoneEngine::KS_ARCH_X86
+        when 'mips' then KeystoneEngine::KS_ARCH_MIPS
+        when 'mips64' then KeystoneEngine::KS_ARCH_MIPS
+        when 'powerpc64' then KeystoneEngine::KS_ARCH_PPC
+        when 'sparc' then KeystoneEngine::KS_ARCH_SPARC
+        when 'sparc64' then KeystoneEngine::KS_ARCH_SPARC
+        when 'thumb' then KeystoneEngine::KS_ARCH_ARM
+        else raise ::Pwnlib::Errors::UnsupportedArchError,
+                   "Asm on architecture #{context.arch.inspect} is not supported yet."
+        end
       end
 
       def ks_mode
-        {
-          32 => KeystoneEngine::KS_MODE_32,
-          64 => KeystoneEngine::KS_MODE_64
-        }[context.bits]
+        case context.arch
+        when 'aarch64' then 0 # default mode
+        when 'amd64' then KeystoneEngine::KS_MODE_64
+        when 'arm' then KeystoneEngine::KS_MODE_ARM
+        when 'i386' then KeystoneEngine::KS_MODE_32
+        when 'mips' then KeystoneEngine::KS_MODE_MIPS32
+        when 'mips64' then KeystoneEngine::KS_MODE_MIPS64
+        when 'powerpc64' then KeystoneEngine::KS_MODE_PPC64
+        when 'sparc' then KeystoneEngine::KS_MODE_SPARC32
+        when 'sparc64' then KeystoneEngine::KS_MODE_SPARC64
+        when 'thumb' then KeystoneEngine::KS_MODE_THUMB
+        end | (context.endian == 'big' ? KeystoneEngine::KS_MODE_BIG_ENDIAN : KeystoneEngine::KS_MODE_LITTLE_ENDIAN)
       end
 
       # FFI is used in keystone and capstone binding gems, this method handles when libraries not installed yet.

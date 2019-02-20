@@ -1,4 +1,3 @@
-# arch: arm
 # These tests are fetched from Capstone's test_arm.c
   1000:   ed ff ff eb  bl    #0xfbc
   1004:   04 e0 2d e5  str   lr, [sp, #-4]!

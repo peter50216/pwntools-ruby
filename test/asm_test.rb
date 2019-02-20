@@ -17,53 +17,72 @@ class AsmTest < MiniTest::Test
   def parse_sfile(filename)
     # First line is architecture
     lines = File.readlines(filename)
-    metadata = lines.shift
-                    .delete('#')
-                    .split(',').map { |c| c.split(':', 2).map(&:strip) }
-                    .map { |k, v| [k.to_sym, v] }
-                    .to_h
-    lines.reject { |l| l.start_with?('#') }.join.split("\n\n").each do |test|
-      # fetch `<vma>:`
-      vma = test.scan(/^\s*(\w+):/).flatten.first.to_i(16)
-      # fetch bytes
-      bytes = [test.scan(/^\s*\w+:\s{3}(([\da-f]{2}\s)+)\s/).map(&:first).join.split.join].pack('H*')
-      output = test
+    lines.join.split("\n\n").each do |it|
+      test = it.lines
+      # First line of test might be the extra context setting
+      metadata = {}
+      if test.first.start_with?('# context: ')
+        # "# context: arch: a, endian: big"
+        # => { arch: 'a', endian: 'big' }
+        metadata = test.shift.slice(11..-1)
+                       .split(',').map { |c| c.split(':', 2).map(&:strip) }
+                       .map { |k, v| [k.to_sym, v] }.to_h
+      end
+      comment = test.select { |l| l =~ /^\s*[;#]/ }.join
+      output = test.reject { |l| l =~ /^\s*[;#]/ }.join
+      next if output.empty?
+
       output << "\n" unless output.end_with?("\n")
-      yield(bytes, vma, test, **metadata)
+      lines = output.lines.map do |l|
+        vma, hex_code, _dummy, inst = l.scan(/^\s*(\w+):\s{3}(([\da-f]{2}\s)+)\s+(.*)$/).first
+        [vma.to_i(16), hex_code.split.join, inst.strip]
+      end
+      vma = lines.first.first
+      # concat all bytes
+      bytes = [lines.map { |l| l[1] }.join].pack('H*')
+      insts = lines.map(&:last)
+      yield(bytes, vma, insts, output, comment, **metadata)
     end
   end
 
-  def test_i386_asm
-    skip_windows
-    context.local(arch: 'i386') do
-      assert_equal("\x90", Asm.asm('nop'))
-      assert_equal("\xeb\xfe", Asm.asm(@shellcraft.infloop))
-      assert_equal("jhh///sh/binj\x0bX\x89\xe31\xc9\x99\xcd\x80", Asm.asm(@shellcraft.sh))
-      # issue #51
-      assert_equal("j\x01\xfe\x0c$h\x01\x01\x01\x01\x814$\xf2\xf3\x0b\xfe",
-                   Asm.asm(@shellcraft.pushstr("\xf3\xf2\x0a\xff")))
+  # All tests of asm can be found under test/data/assembly/<arch>.s.
+  %w[aarch64 amd64 arm i386 mips mips64 powerpc64 sparc sparc64 thumb].each do |arch|
+    file = File.join(__dir__, 'data', 'assembly', arch + '.s')
+    # Defining methods dynamically makes proper error message shown when tests failed.
+    __send__(:define_method, "test_asm_#{arch}") do
+      skip_windows
+      context.local(arch: arch) do
+        parse_sfile(file) do |bytes, vma, insts, _output, comment, **ctx|
+          next if comment.include?('!skip asm')
+
+          context.local(**ctx) do
+            assert_equal(bytes, Asm.asm(insts.join("\n"), vma: vma))
+          end
+        end
+      end
     end
   end
 
-  def test_amd64_asm
-    skip_windows
-    context.local(arch: 'amd64') do
-      assert_equal("\x90", Asm.asm('nop'))
-      assert_equal("\xeb\xfe", Asm.asm(@shellcraft.infloop))
-      assert_equal("jhH\xb8/bin///sPj;XH\x89\xe71\xf6\x99\x0f\x05", Asm.asm(@shellcraft.sh))
-      assert_equal("j\x01\xfe\x0c$H\xb8\x01\x01\x01\x01\x01\x01\x01\x01PH\xb8\xfe\xfe\xfe\xfe\xfe\xfe\x0b\xfeH1\x04$",
-                   Asm.asm(@shellcraft.pushstr("\xff\xff\xff\xff\xff\xff\x0a\xff")))
+  def test_asm_unsupported
+    err = context.local(arch: :vax) do
+      assert_raises(::Pwnlib::Errors::UnsupportedArchError) { Asm.asm('') }
     end
+    assert_equal('Asm on architecture "vax" is not supported yet.', err.message)
   end
 
   # All tests of disasm can be found under test/data/assembly/<arch>.s.
-  Dir.glob(File.join(__dir__, 'data', 'assembly', '*.s')) do |file|
+  %w[aarch64 amd64 arm i386 mips mips64 powerpc64 sparc sparc64 thumb].each do |arch|
+    file = File.join(__dir__, 'data', 'assembly', arch + '.s')
     # Defining methods dynamically makes proper error message shown when tests failed.
-    __send__(:define_method, "test_disasm_file_#{File.basename(file, '.s')}") do
+    __send__(:define_method, "test_disasm_#{arch}") do
       skip_windows
-      parse_sfile(file) do |bytes, vma, output, **ctx|
-        context.local(**ctx) do
-          assert_equal(output, Asm.disasm(bytes, vma: vma))
+      context.local(arch: arch) do
+        parse_sfile(file) do |bytes, vma, _insts, output, comment, **ctx|
+          next if comment.include?('!skip disasm')
+
+          context.local(**ctx) do
+            assert_equal(output, Asm.disasm(bytes, vma: vma))
+          end
         end
       end
     end

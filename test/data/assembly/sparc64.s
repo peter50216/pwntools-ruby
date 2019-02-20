@@ -1,4 +1,3 @@
-# arch: sparc64
 # These tests are fetched from Capstone's test_sparc.c
   1000:   81 a8 0a 24  fcmps %f0, %f4
   1004:   89 a0 10 20  fstox %f0, %f4

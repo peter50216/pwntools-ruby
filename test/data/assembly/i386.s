@@ -1,4 +1,3 @@
-# arch: i386
 # simple move
   0:   b8 5d 00 00 00  mov eax, 0x5d
 

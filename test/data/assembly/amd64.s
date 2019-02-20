@@ -1,4 +1,3 @@
-# arch: amd64
 # simple move
   0:   b8 17 00 00 00  mov eax, 0x17
 

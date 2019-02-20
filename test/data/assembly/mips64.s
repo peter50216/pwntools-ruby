@@ -1,4 +1,4 @@
-# arch: mips64
+# context: endian: little
 # These tests are fetched from Capstone's test_mips.c
 # MIPS-64-EL (Little-endian)
   1000:   56 34 21 34  ori $at, $at, 0x3456
