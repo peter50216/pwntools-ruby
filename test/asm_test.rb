@@ -37,6 +37,7 @@ class AsmTest < MiniTest::Test
         vma, hex_code, _dummy, inst = l.scan(/^\s*(\w+):\s{3}(([\da-f]{2}\s)+)\s+(.*)$/).first
         [vma.to_i(16), hex_code.split.join, inst.strip]
       end
+
       vma = lines.first.first
       # concat all bytes
       bytes = [lines.map { |l| l[1] }.join].pack('H*')
@@ -46,11 +47,12 @@ class AsmTest < MiniTest::Test
   end
 
   # All tests of asm can be found under test/data/assembly/<arch>.s.
-  %w[aarch64 amd64 arm i386 mips mips64 powerpc64 sparc sparc64 thumb].each do |arch|
+  %w[aarch64 amd64 arm i386 mips mips64 powerpc powerpc64 sparc sparc64 thumb].each do |arch|
     file = File.join(__dir__, 'data', 'assembly', arch + '.s')
     # Defining methods dynamically makes proper error message shown when tests failed.
     __send__(:define_method, "test_asm_#{arch}") do
       skip_windows
+
       context.local(arch: arch) do
         parse_sfile(file) do |bytes, vma, insts, _output, comment, **ctx|
           next if comment.include?('!skip asm')
@@ -64,6 +66,8 @@ class AsmTest < MiniTest::Test
   end
 
   def test_asm_unsupported
+    skip_windows
+
     err = context.local(arch: :vax) do
       assert_raises(::Pwnlib::Errors::UnsupportedArchError) { Asm.asm('') }
     end
@@ -76,6 +80,7 @@ class AsmTest < MiniTest::Test
     # Defining methods dynamically makes proper error message shown when tests failed.
     __send__(:define_method, "test_disasm_#{arch}") do
       skip_windows
+
       context.local(arch: arch) do
         parse_sfile(file) do |bytes, vma, _insts, output, comment, **ctx|
           next if comment.include?('!skip disasm')
@@ -89,6 +94,8 @@ class AsmTest < MiniTest::Test
   end
 
   def test_disasm_unsupported
+    skip_windows
+
     err = context.local(arch: :vax) do
       assert_raises(::Pwnlib::Errors::UnsupportedArchError) { Asm.disasm('') }
     end

@@ -187,17 +187,12 @@ module Pwnlib
       def cs_arch
         case context.arch
         when 'aarch64' then Crabstone::ARCH_ARM64
-        when 'amd64' then Crabstone::ARCH_X86
-        when 'arm' then Crabstone::ARCH_ARM
-        when 'i386' then Crabstone::ARCH_X86
-        when 'mips' then Crabstone::ARCH_MIPS
-        when 'mips64' then Crabstone::ARCH_MIPS
+        when 'amd64', 'i386' then Crabstone::ARCH_X86
+        when 'arm', 'thumb' then Crabstone::ARCH_ARM
+        when 'mips', 'mips64' then Crabstone::ARCH_MIPS
         when 'powerpc64' then Crabstone::ARCH_PPC
-        when 'sparc' then Crabstone::ARCH_SPARC
-        when 'sparc64' then Crabstone::ARCH_SPARC
-        when 'thumb' then Crabstone::ARCH_ARM
-        else raise ::Pwnlib::Errors::UnsupportedArchError,
-                   "Disasm on architecture #{context.arch.inspect} is not supported yet."
+        when 'sparc', 'sparc64' then Crabstone::ARCH_SPARC
+        else unsupported!("Disasm on architecture #{context.arch.inspect} is not supported yet.")
         end
       end
 
@@ -219,17 +214,12 @@ module Pwnlib
       def ks_arch
         case context.arch
         when 'aarch64' then KeystoneEngine::KS_ARCH_ARM64
-        when 'amd64' then KeystoneEngine::KS_ARCH_X86
-        when 'arm' then KeystoneEngine::KS_ARCH_ARM
-        when 'i386' then KeystoneEngine::KS_ARCH_X86
-        when 'mips' then KeystoneEngine::KS_ARCH_MIPS
-        when 'mips64' then KeystoneEngine::KS_ARCH_MIPS
-        when 'powerpc64' then KeystoneEngine::KS_ARCH_PPC
-        when 'sparc' then KeystoneEngine::KS_ARCH_SPARC
-        when 'sparc64' then KeystoneEngine::KS_ARCH_SPARC
-        when 'thumb' then KeystoneEngine::KS_ARCH_ARM
-        else raise ::Pwnlib::Errors::UnsupportedArchError,
-                   "Asm on architecture #{context.arch.inspect} is not supported yet."
+        when 'amd64', 'i386' then KeystoneEngine::KS_ARCH_X86
+        when 'arm', 'thumb' then KeystoneEngine::KS_ARCH_ARM
+        when 'mips', 'mips64' then KeystoneEngine::KS_ARCH_MIPS
+        when 'powerpc', 'powerpc64' then KeystoneEngine::KS_ARCH_PPC
+        when 'sparc', 'sparc64' then KeystoneEngine::KS_ARCH_SPARC
+        else unsupported!("Asm on architecture #{context.arch.inspect} is not supported yet.")
         end
       end
 
@@ -241,6 +231,7 @@ module Pwnlib
         when 'i386' then KeystoneEngine::KS_MODE_32
         when 'mips' then KeystoneEngine::KS_MODE_MIPS32
         when 'mips64' then KeystoneEngine::KS_MODE_MIPS64
+        when 'powerpc' then KeystoneEngine::KS_MODE_PPC32
         when 'powerpc64' then KeystoneEngine::KS_MODE_PPC64
         when 'sparc' then KeystoneEngine::KS_MODE_SPARC32
         when 'sparc64' then KeystoneEngine::KS_MODE_SPARC64
@@ -346,15 +337,17 @@ https://github.com/keystone-engine/keystone/tree/master/docs
 
       def e_machine
         const = ARCH_EM[context.arch.to_sym]
-        if const.nil?
-          raise ::Pwnlib::Errors::UnsupportedArchError,
-                "Unknown machine type of architecture #{context.arch.inspect}."
-        end
+        unsupported!("Unknown machine type of architecture #{context.arch.inspect}.") if const.nil?
+
         ::ELFTools::Constants::EM.const_get("EM_#{const}")
       end
 
       def endian
         context.endian.to_sym
+      end
+
+      def unsupported!(msg)
+        raise ::Pwnlib::Errors::UnsupportedArchError, msg
       end
 
       include ::Pwnlib::Context
