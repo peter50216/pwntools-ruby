@@ -158,7 +158,7 @@ class AsmTest < MiniTest::Test
   # this test can be removed after method +run_shellcode+ being implemented
   def test_make_elf_and_run
     # run the ELF we created to make sure it works.
-    linux_only('ELF can only be executed on Linux')
+    linux_only 'ELF can only be executed on Linux'
 
     # test supported architecture
     {
