@@ -15,33 +15,29 @@ class AsmTest < MiniTest::Test
   end
 
   def parse_sfile(filename)
-    # First line is architecture
-    lines = File.readlines(filename)
-    lines.join.split("\n\n").each do |it|
-      test = it.lines
-      # First line of test might be the extra context setting
+    File.read(filename).split("\n\n").each do |it|
+      lines = it.lines
       metadata = {}
-      if test.first.start_with?('# context: ')
+      # First line of +lines+ might be the extra context setting
+      if lines.first.start_with?('# context: ')
         # "# context: arch: a, endian: big"
         # => { arch: 'a', endian: 'big' }
-        metadata = test.shift.slice(11..-1)
-                       .split(',').map { |c| c.split(':', 2).map(&:strip) }
-                       .map { |k, v| [k.to_sym, v] }.to_h
+        metadata = lines.shift.slice(11..-1)
+                        .split(',').map { |c| c.split(':', 2).map(&:strip) }
+                        .map { |k, v| [k.to_sym, v] }.to_h
       end
-      comment = test.select { |l| l =~ /^\s*[;#]/ }.join
-      output = test.reject { |l| l =~ /^\s*[;#]/ }.join
+      comment, output = lines.partition { |l| l =~ /^\s*[;#]/ }.map(&:join)
       next if output.empty?
 
       output << "\n" unless output.end_with?("\n")
-      lines = output.lines.map do |l|
+      tests = output.lines.map do |l|
         vma, hex_code, _dummy, inst = l.scan(/^\s*(\w+):\s{3}(([\da-f]{2}\s)+)\s+(.*)$/).first
         [vma.to_i(16), hex_code.split.join, inst.strip]
       end
 
-      vma = lines.first.first
-      # concat all bytes
-      bytes = [lines.map { |l| l[1] }.join].pack('H*')
-      insts = lines.map(&:last)
+      vma = tests.first.first
+      bytes = [tests.map { |l| l[1] }.join].pack('H*')
+      insts = tests.map(&:last)
       yield(bytes, vma, insts, output, comment, **metadata)
     end
   end
