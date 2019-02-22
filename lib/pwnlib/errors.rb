@@ -5,7 +5,7 @@ module Pwnlib
   class Error < StandardError
   end
 
-  # Pnwlib Errors
+  # {Pwnlib} Errors.
   module Errors
     # Raised by some IO operations in tubes.
     class EndOfTubeError < ::Pwnlib::Error
@@ -23,7 +23,7 @@ module Pwnlib
     class TimeoutError < ::Pwnlib::Error
     end
 
-    # Raised when method doesn't support under current architecture.
+    # Raised when a method is not supported under current architecture.
     class UnsupportedArchError < ::Pwnlib::Error
     end
   end

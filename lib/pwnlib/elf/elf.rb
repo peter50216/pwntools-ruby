@@ -253,7 +253,7 @@ module Pwnlib
       # @return [ELFTools::Dynamic::Tag, nil]
       def dynamic_tag(type)
         dynamic = @elf_file.segment_by_type(:dynamic) || @elf_file.section_by_name('.dynamic')
-        return nil if dynamic.nil? # No dynamic present, might be static-linked.
+        return nil if dynamic.nil? # No dynamic table presents, might be statically linked.
 
         dynamic.tag_by_type(type)
       end
@@ -309,11 +309,11 @@ module Pwnlib
           next unless section.respond_to?(:symbols)
 
           section.each_symbols do |symbol|
-            # Don't care symbols without name.
+            # Don't care symbols without a name.
             next if symbol.name.empty?
             next if symbol.header.st_value.zero?
 
-            # TODO(david942j): handle symbols with same name.
+            # TODO(david942j): handle symbols with the same name.
             @symbols[symbol.name] = symbol.header.st_value.to_i
           end
         end

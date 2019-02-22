@@ -50,8 +50,7 @@ module Pwnlib
         raise 'Nested countdown not permitted'
       end
 
-      timeout ||= @timeout
-      timeout ||= ::Pwnlib::Context.context.timeout
+      timeout ||= @timeout || ::Pwnlib::Context.context.timeout
 
       @deadline = timeout == :forever ? :forever : Time.now + timeout
 
