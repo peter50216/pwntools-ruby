@@ -13,7 +13,7 @@ class ProcessTest < MiniTest::Test
   include ::Pwnlib::Context
 
   def setup
-    skip 'Skip on Windows' if TTY::Platform.new.windows?
+    skip_windows
   end
 
   def test_io
@@ -33,7 +33,8 @@ class ProcessTest < MiniTest::Test
   end
 
   def test_aslr
-    skip 'Only tested on linux' unless TTY::Platform.new.linux?
+    linux_only
+
     map1 = ::Pwnlib::Tubes::Process.new('cat /proc/self/maps', aslr: false).read
     map2 = ::Pwnlib::Tubes::Process.new(['cat', '/proc/self/maps'], aslr: false).read
     assert_match('/bin/cat', map1) # make sure it read something
@@ -84,6 +85,10 @@ class ProcessTest < MiniTest::Test
     # In cooked mode, tty should echo the input, so we can gets twice.
     assert_equal("Hi\r\n", cat.gets)
     assert_equal("Hi\r\n", cat.gets)
+    class << cat
+      # hook shutdown to silence the +cat: -: Input/output error+ message.
+      def shutdown; end
+    end
     cat.close
   end
 

@@ -37,41 +37,44 @@ module Pwnlib
     #
     # @raise [Pwnlib::Errors::DependencyError]
     #   If libcapstone is not installed.
+    # @raise [Pwnlib::Errors::UnsupportedArchError]
+    #   If disassembling of +context.arch+ is not supported.
     #
     # @example
     #   context.arch = 'i386'
     #   print disasm("\xb8\x5d\x00\x00\x00")
-    #   #   0:   b8 5d 00 00 00 mov     eax, 0x5d
+    #   #   0:   b8 5d 00 00 00  mov eax, 0x5d
     #
     #   context.arch = 'amd64'
     #   print disasm("\xb8\x17\x00\x00\x00")
     #   #   0:   b8 17 00 00 00 mov     eax, 0x17
     #   print disasm("jhH\xb8/bin///sPH\x89\xe71\xd21\xf6j;X\x0f\x05", vma: 0x1000)
-    #   #  1000:   6a 68                         push    0x68
-    #   #  1002:   48 b8 2f 62 69 6e 2f 2f 2f 73 movabs  rax, 0x732f2f2f6e69622f
-    #   #  100c:   50                            push    rax
-    #   #  100d:   48 89 e7                      mov     rdi, rsp
-    #   #  1010:   31 d2                         xor     edx, edx
-    #   #  1012:   31 f6                         xor     esi, esi
-    #   #  1014:   6a 3b                         push    0x3b
-    #   #  1016:   58                            pop     rax
-    #   #  1017:   0f 05                         syscall
+    #   #  1000:   6a 68                          push    0x68
+    #   #  1002:   48 b8 2f 62 69 6e 2f 2f 2f 73  movabs  rax, 0x732f2f2f6e69622f
+    #   #  100c:   50                             push    rax
+    #   #  100d:   48 89 e7                       mov     rdi, rsp
+    #   #  1010:   31 d2                          xor     edx, edx
+    #   #  1012:   31 f6                          xor     esi, esi
+    #   #  1014:   6a 3b                          push    0x3b
+    #   #  1016:   58                             pop     rax
+    #   #  1017:   0f 05                          syscall
     def disasm(data, vma: 0)
       require_message('crabstone', install_crabstone_guide) # will raise error if require fail.
-      cs = Crabstone::Disassembler.new(cap_arch, cap_mode)
+      cs = Crabstone::Disassembler.new(cs_arch, cs_mode)
       insts = cs.disasm(data, vma).map do |ins|
-        [ins.address, ins.bytes.pack('C*'), ins.mnemonic, ins.op_str.to_s]
+        [ins.address, ins.bytes, ins.mnemonic.to_s, ins.op_str.to_s]
       end
       max_dlen = format('%x', insts.last.first).size + 2
       max_hlen = insts.map { |ins| ins[1].size }.max * 3
+      max_ilen = insts.map { |ins| ins[2].size }.max
       insts.reduce('') do |s, ins|
-        hex_code = ins[1].bytes.map { |c| format('%02x', c) }.join(' ')
+        hex_code = ins[1].map { |c| format('%02x', c) }.join(' ')
         inst = if ins[3].empty?
                  ins[2]
                else
-                 format('%-7s %s', ins[2], ins[3])
+                 format("%-#{max_ilen}s %s", ins[2], ins[3])
                end
-        s + format("%#{max_dlen}x:   %-#{max_hlen}s%s\n", ins[0], hex_code, inst)
+        s + format("%#{max_dlen}x:   %-#{max_hlen}s %s\n", ins[0], hex_code, inst)
       end
     end
 
@@ -79,9 +82,16 @@ module Pwnlib
     #
     # @param [String] code
     #   The assembly code to be converted.
+    # @param [Integer] vma
+    #   Virtual memory address.
     #
     # @return [String]
     #   The result.
+    #
+    # @raise [Pwnlib::Errors::DependencyError]
+    #   If libkeystone is not installed.
+    # @raise [Pwnlib::Errors::UnsupportedArchError]
+    #   If assembling of +context.arch+ is not supported.
     #
     # @example
     #   assembly = shellcraft.amd64.linux.sh
@@ -93,9 +103,9 @@ module Pwnlib
     #
     # @diff
     #   Not support +asm('mov eax, SYS_execve')+.
-    def asm(code)
+    def asm(code, vma: 0)
       require_message('keystone_engine', install_keystone_guide)
-      KeystoneEngine::Ks.new(ks_arch, ks_mode).asm(code)[0]
+      KeystoneEngine::Ks.new(ks_arch, ks_mode).asm(code, vma)[0]
     end
 
     # Builds an ELF file from executable code.
@@ -174,32 +184,59 @@ module Pwnlib
     end
 
     ::Pwnlib::Util::Ruby.private_class_method_block do
-      def cap_arch
-        {
-          'i386' => Crabstone::ARCH_X86,
-          'amd64' => Crabstone::ARCH_X86
-        }[context.arch]
+      def cs_arch
+        case context.arch
+        when 'aarch64' then Crabstone::ARCH_ARM64
+        when 'amd64', 'i386' then Crabstone::ARCH_X86
+        when 'arm', 'thumb' then Crabstone::ARCH_ARM
+        when 'mips', 'mips64' then Crabstone::ARCH_MIPS
+        when 'powerpc64' then Crabstone::ARCH_PPC
+        when 'sparc', 'sparc64' then Crabstone::ARCH_SPARC
+        else unsupported!("Disasm on architecture #{context.arch.inspect} is not supported yet.")
+        end
       end
 
-      def cap_mode
-        {
-          32 => Crabstone::MODE_32,
-          64 => Crabstone::MODE_64
-        }[context.bits]
+      def cs_mode
+        case context.arch
+        when 'aarch64' then Crabstone::MODE_ARM
+        when 'amd64' then Crabstone::MODE_64
+        when 'arm' then Crabstone::MODE_ARM
+        when 'i386' then Crabstone::MODE_32
+        when 'mips' then Crabstone::MODE_MIPS32
+        when 'mips64' then Crabstone::MODE_MIPS64
+        when 'powerpc64' then Crabstone::MODE_64
+        when 'sparc' then 0 # default mode
+        when 'sparc64' then Crabstone::MODE_V9
+        when 'thumb' then Crabstone::MODE_THUMB
+        end | (context.endian == 'big' ? Crabstone::MODE_BIG_ENDIAN : Crabstone::MODE_LITTLE_ENDIAN)
       end
 
       def ks_arch
-        {
-          'i386' => KeystoneEngine::KS_ARCH_X86,
-          'amd64' => KeystoneEngine::KS_ARCH_X86
-        }[context.arch]
+        case context.arch
+        when 'aarch64' then KeystoneEngine::KS_ARCH_ARM64
+        when 'amd64', 'i386' then KeystoneEngine::KS_ARCH_X86
+        when 'arm', 'thumb' then KeystoneEngine::KS_ARCH_ARM
+        when 'mips', 'mips64' then KeystoneEngine::KS_ARCH_MIPS
+        when 'powerpc', 'powerpc64' then KeystoneEngine::KS_ARCH_PPC
+        when 'sparc', 'sparc64' then KeystoneEngine::KS_ARCH_SPARC
+        else unsupported!("Asm on architecture #{context.arch.inspect} is not supported yet.")
+        end
       end
 
       def ks_mode
-        {
-          32 => KeystoneEngine::KS_MODE_32,
-          64 => KeystoneEngine::KS_MODE_64
-        }[context.bits]
+        case context.arch
+        when 'aarch64' then 0 # default mode
+        when 'amd64' then KeystoneEngine::KS_MODE_64
+        when 'arm' then KeystoneEngine::KS_MODE_ARM
+        when 'i386' then KeystoneEngine::KS_MODE_32
+        when 'mips' then KeystoneEngine::KS_MODE_MIPS32
+        when 'mips64' then KeystoneEngine::KS_MODE_MIPS64
+        when 'powerpc' then KeystoneEngine::KS_MODE_PPC32
+        when 'powerpc64' then KeystoneEngine::KS_MODE_PPC64
+        when 'sparc' then KeystoneEngine::KS_MODE_SPARC32
+        when 'sparc64' then KeystoneEngine::KS_MODE_SPARC64
+        when 'thumb' then KeystoneEngine::KS_MODE_THUMB
+        end | (context.endian == 'big' ? KeystoneEngine::KS_MODE_BIG_ENDIAN : KeystoneEngine::KS_MODE_LITTLE_ENDIAN)
       end
 
       # FFI is used in keystone and capstone binding gems, this method handles when libraries not installed yet.
@@ -211,7 +248,7 @@ module Pwnlib
 
       def install_crabstone_guide
         <<-EOS
-#disasm dependes on capstone, which is detected not installed yet.
+#disasm depends on capstone, which is detected not installed yet.
 Checkout the following link for installation guide:
 
 http://www.capstone-engine.org/documentation.html
@@ -221,7 +258,7 @@ http://www.capstone-engine.org/documentation.html
 
       def install_keystone_guide
         <<-EOS
-#asm dependes on keystone, which is detected not installed yet.
+#asm depends on keystone, which is detected not installed yet.
 Checkout the following link for installation guide:
 
 https://github.com/keystone-engine/keystone/tree/master/docs
@@ -300,15 +337,17 @@ https://github.com/keystone-engine/keystone/tree/master/docs
 
       def e_machine
         const = ARCH_EM[context.arch.to_sym]
-        if const.nil?
-          raise ::Pwnlib::Errors::UnsupportedArchError,
-                "Unknown machine type of architecture #{context.arch.inspect}."
-        end
+        unsupported!("Unknown machine type of architecture #{context.arch.inspect}.") if const.nil?
+
         ::ELFTools::Constants::EM.const_get("EM_#{const}")
       end
 
       def endian
         context.endian.to_sym
+      end
+
+      def unsupported!(msg)
+        raise ::Pwnlib::Errors::UnsupportedArchError, msg
       end
 
       include ::Pwnlib::Context

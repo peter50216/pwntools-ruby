@@ -16,7 +16,7 @@ class DynELFTest < MiniTest::Test
   include ::Pwnlib::ELF
 
   def setup
-    skip 'Only tested on linux' unless TTY::Platform.new.linux?
+    linux_only
   end
 
   # popen victim with specific libc.so.6
