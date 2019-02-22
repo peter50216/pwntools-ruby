@@ -67,7 +67,7 @@ module Pwnlib
           style = DEFAULT_STYLE.merge(style)
           highlight.bytes.each { |b| style[b] = HIGHLIGHT_STYLE }
           (0..255).each do |b|
-            next if style.include?(b)
+            next if style.key?(b)
 
             style[b] = (b.chr =~ /[[:print:]]/ ? style[:printable] : style[:unprintable])
           end

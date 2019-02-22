@@ -3,14 +3,16 @@ version: "2"
 plugins:
   duplication:
     enabled: true
-    exclude_paths:
-    - lib/pwnlib/shellcraft/generators/
-    - test/
+    exclude_patterns:
+      - lib/pwnlib/shellcraft/generators/
+      - test/
 checks:
+  file-lines:
+    enabled: false
   method-lines:
     enabled: false
   method-complexity:
     config:
       threshold: 10
 exclude_patterns:
-- "test/"
+  - test/
