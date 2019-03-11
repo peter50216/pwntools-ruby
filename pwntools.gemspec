@@ -28,7 +28,7 @@ Gem::Specification.new do |s|
 
   s.add_runtime_dependency 'crabstone', '~> 4'
   s.add_runtime_dependency 'dentaku', '>= 2.0.11', '< 3.4.0'
-  s.add_runtime_dependency 'elftools', '~> 1.0.1'
+  s.add_runtime_dependency 'elftools', '>= 1.0.1', '< 1.2.0'
   s.add_runtime_dependency 'keystone-engine', '~> 0.9'
   s.add_runtime_dependency 'method_source', '~> 0.9'
   s.add_runtime_dependency 'one_gadget', '>= 1.6.2', '< 1.8.0'
