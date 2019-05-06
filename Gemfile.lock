@@ -31,7 +31,7 @@ GEM
       ffi (~> 1.9)
     method_source (0.9.2)
     minitest (5.10.1)
-    one_gadget (1.7.1)
+    one_gadget (1.7.2)
       elftools (>= 1.0.2, < 1.2.0)
     parallel (1.17.0)
     parser (2.6.3.0)
