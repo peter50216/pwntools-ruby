@@ -1,4 +1,5 @@
 # encoding: ASCII-8BIT
+# frozen_string_literal: true
 
 require 'pwnlib/shellcraft/generators/amd64/linux/linux'
 require 'pwnlib/shellcraft/generators/x86/linux/sh'

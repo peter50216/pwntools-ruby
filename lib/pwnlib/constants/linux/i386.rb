@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 const :__NR_exit, 1
 const :__NR_fork, 2
 const :__NR_read, 3

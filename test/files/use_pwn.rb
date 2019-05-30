@@ -1,4 +1,5 @@
 # encoding: ASCII-8BIT
+# frozen_string_literal: true
 
 # Make sure we're using local copy for local testing.
 $LOAD_PATH.unshift File.expand_path(File.join(__FILE__, '..', '..', '..', 'lib'))

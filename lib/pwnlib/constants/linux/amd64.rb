@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 const :__NR_read, 0
 const :__NR_write, 1
 const :__NR_open, 2

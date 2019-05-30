@@ -1,4 +1,5 @@
 # encoding: ASCII-8BIT
+# frozen_string_literal: true
 
 require 'pwnlib/ext/helper'
 require 'pwnlib/util/packing'

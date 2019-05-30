@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'pwnlib/shellcraft/generators/helper'
 
 module Pwnlib

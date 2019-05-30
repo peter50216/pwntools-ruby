@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'ostruct'
 
 require 'elftools'
@@ -71,7 +73,7 @@ module Pwnlib
         [@got, @plt, @symbols].compact.each do |tbl|
           tbl.each_pair { |k, _| tbl[k] += val - old }
         end
-        @one_gadgets.map! { |off| off + val - old } if @one_gadgets
+        @one_gadgets&.map! { |off| off + val - old }
       end
 
       # Return the protection information, wrapper with color codes.

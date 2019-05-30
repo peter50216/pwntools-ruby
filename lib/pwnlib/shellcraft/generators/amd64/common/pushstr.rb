@@ -1,4 +1,5 @@
 # encoding: ASCII-8BIT
+# frozen_string_literal: true
 
 require 'pwnlib/shellcraft/generators/amd64/common/common'
 
@@ -44,7 +45,7 @@ module Pwnlib
               elsif okay(word)
                 cat "mov rax, #{pretty(sign)}"
                 cat 'push rax'
-              elsif sign32 > 0 && word[4, 4] == "\x00" * 4
+              elsif sign32.positive? && word[4, 4] == "\x00" * 4
                 # The high 4 byte of word are all zeros, so we can use +xor dword ptr [rsp]+.
                 a = u32(xor_pair(word[0, 4]).first, endian: 'little', signed: true)
                 cat "push #{pretty(a)} ^ #{pretty(sign)}"

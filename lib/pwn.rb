@@ -1,4 +1,5 @@
 # encoding: ASCII-8BIT
+# frozen_string_literal: true
 
 # require this file for easy exploit development, but would pollute main Object and some built-in objects. (String,
 # Integer, ...)

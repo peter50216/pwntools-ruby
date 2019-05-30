@@ -1,4 +1,5 @@
 # encoding: ASCII-8BIT
+# frozen_string_literal: true
 
 require 'pwnlib/shellcraft/generators/i386/common/common'
 require 'pwnlib/shellcraft/generators/x86/common/infloop'

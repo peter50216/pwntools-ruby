@@ -1,4 +1,5 @@
 # encoding: ASCII-8BIT
+# frozen_string_literal: true
 
 require 'logger'
 
@@ -195,7 +196,7 @@ module Pwnlib
       # @param [Integer] bits
       #   The word size.
       def bits=(bits)
-        raise ArgumentError, "bits must be > 0 (#{bits} given)" unless bits > 0
+        raise ArgumentError, "bits must be > 0 (#{bits} given)" unless bits.positive?
 
         @attrs[:bits] = bits
       end

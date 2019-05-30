@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'pwnlib/context'
 
 module Pwnlib
@@ -134,7 +136,7 @@ module Pwnlib
       def bits_required(value)
         bits = 0
         value = value.abs
-        while value > 0
+        while value.positive?
           bits += 8
           value >>= 8
         end
