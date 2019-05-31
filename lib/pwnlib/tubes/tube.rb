@@ -1,4 +1,5 @@
 # encoding: ASCII-8BIT
+# frozen_string_literal: true
 
 require 'pwnlib/context'
 require 'pwnlib/errors'
@@ -102,7 +103,7 @@ module Pwnlib
         raise ArgumentError, 'Need a block for recvpred' unless block_given?
 
         @timer.countdown(timeout) do
-          data = ''
+          data = +''
           begin
             until yield(data)
               return '' unless @timer.active?
@@ -164,7 +165,7 @@ module Pwnlib
         max_len = delims.map(&:size).max
         @timer.countdown(timeout) do
           data = Buffer.new
-          matching = ''
+          matching = +''
           begin
             while @timer.active?
               s = recv(1)
@@ -330,7 +331,7 @@ module Pwnlib
         return write(context.newline) if objs.empty?
 
         objs = *objs.flatten
-        s = ''
+        s = +''
         objs.map(&:to_s).each do |elem|
           s << elem
           s << context.newline unless elem.end_with?(context.newline)

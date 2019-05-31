@@ -1,4 +1,5 @@
 # encoding: ASCII-8BIT
+# frozen_string_literal: true
 
 require 'pwnlib/context'
 
@@ -71,7 +72,7 @@ module Pwnlib
             end
           else
             if is_all
-              raise ArgumentError, "Can't pack negative number with bits='all' and signed=false" if number < 0
+              raise ArgumentError, "Can't pack negative number with bits='all' and signed=false" if number.negative?
 
               bits = number.zero? ? 8 : ((number.bit_length - 1) | 7) + 1
             end
@@ -261,7 +262,7 @@ module Pwnlib
           v = case it
               when Array then flat(*it, **kwargs, &preprocessor)
               when Integer then p[it]
-              when String then it.force_encoding('ASCII-8BIT')
+              when String then it.dup.force_encoding('ASCII-8BIT') # dup in case 'it' is frozen
               else
                 raise ArgumentError, "flat does not support values of type #{it.class}"
               end

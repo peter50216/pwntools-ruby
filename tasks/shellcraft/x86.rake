@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 namespace :shellcraft do
   # Example: bundle exec rake 'shellcraft:x86[linux/*.rb]'
   desc 'Generate the almost same files under amd64/i386 that invoke methods of X86'
@@ -10,7 +12,7 @@ namespace :shellcraft do
     end
   end
 
-  TEMPLATE = <<-EOS.freeze
+  TEMPLATE = <<-EOS
 # encoding: ASCII-8BIT
 
 require 'pwnlib/shellcraft/generators/%<arch>s/%<dir>s/%<dir>s'

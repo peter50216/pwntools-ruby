@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'pwnlib/abi'
 require 'pwnlib/constants/constants'
 require 'pwnlib/context'

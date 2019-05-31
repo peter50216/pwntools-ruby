@@ -1,4 +1,5 @@
 # encoding: ASCII-8BIT
+# frozen_string_literal: true
 
 require 'rainbow'
 
@@ -18,7 +19,7 @@ module Pwnlib
     #   hexdump('217')
     #   #=> "00000000  32 31 37                  │217│\n00000003"
     module HexDump
-      MARKER = "\u2502".freeze
+      MARKER = "\u2502"
       HIGHLIGHT_STYLE = ->(s) { Rainbow(s).bg(:red) }
       DEFAULT_STYLE = {
         0x00 => ->(s) { Rainbow(s).red },
@@ -84,7 +85,7 @@ module Pwnlib
 
           byte_index = offset
           skipping = false
-          last_chunk = ''
+          last_chunk = +''
 
           loop do
             # We assume that chunk is in ASCII-8BIT encoding.
@@ -104,8 +105,8 @@ module Pwnlib
             skipping = false
             last_chunk = chunk
 
-            hex_bytes = ''
-            printable = ''
+            hex_bytes = +''
+            printable = +''
             chunk_bytes.each_with_index do |b, i|
               left_hex, right_char = styled_bytes[b]
               hex_bytes << left_hex

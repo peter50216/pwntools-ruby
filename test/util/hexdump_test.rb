@@ -1,4 +1,5 @@
 # encoding: UTF-8
+# frozen_string_literal: true
 
 # This test use UTF-8 encoding for strings since the output for hexdump contains lots of UTF-8 characters.
 

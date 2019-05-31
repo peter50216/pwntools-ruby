@@ -1,4 +1,5 @@
 # encoding: ASCII-8BIT
+# frozen_string_literal: true
 
 # require this file would also require all things in pwnlib, but would not pollute anything.
 

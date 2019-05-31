@@ -1,4 +1,5 @@
 # encoding: ASCII-8BIT
+# frozen_string_literal: true
 
 require 'pwnlib/context'
 
@@ -56,7 +57,7 @@ module Pwnlib
       #   hex(-10) #=> '-0xa'
       #   hex(0xfaceb00cdeadbeef) #=> '0xfaceb00cdeadbeef'
       def hex(n)
-        (n < 0 ? '-' : '') + format('0x%x', n.abs)
+        (n.negative? ? '-' : '') + format('0x%x', n.abs)
       end
 
       # URL-encodes a string.
@@ -92,7 +93,7 @@ module Pwnlib
       #   urldecode('%qw%er%ty') #=> raise ArgumentError
       #   urldecode('%qw%er%ty', true) #=> '%qw%er%ty'
       def urldecode(s, ignore_invalid = false)
-        res = ''
+        res = +''
         n = 0
         while n < s.size
           if s[n] != '%'
@@ -139,7 +140,7 @@ module Pwnlib
           is_little = context.endian == 'little'
           case s
           when String
-            v = 'B*'
+            v = +'B*'
             v.downcase! if is_little
             s.unpack(v)[0].chars.map { |ch| ch == '1' ? one : zero }
           when Integer
@@ -310,8 +311,8 @@ module Pwnlib
       def xor_pair(data, avoid: "\x00\n")
         data = pack(data) if data.is_a?(Integer)
         alphabet = 256.times.reject { |c| avoid.include?(c.chr) }
-        res1 = ''
-        res2 = ''
+        res1 = +''
+        res2 = +''
         data.bytes.each do |c1|
           # alphabet.shuffle! if context.randomize
           c2 = alphabet.find { |c| alphabet.include?(c1 ^ c) }

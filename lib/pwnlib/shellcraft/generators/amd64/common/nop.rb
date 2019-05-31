@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'pwnlib/shellcraft/generators/amd64/common/common'
 
 module Pwnlib

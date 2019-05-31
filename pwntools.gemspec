@@ -24,7 +24,7 @@ Gem::Specification.new do |s|
   s.test_files    = Dir['test/**/*']
   s.require_paths = ['lib']
 
-  s.required_ruby_version = '>= 2.1.0'
+  s.required_ruby_version = '>= 2.3'
 
   s.add_runtime_dependency 'crabstone', '~> 4'
   s.add_runtime_dependency 'dentaku', '>= 2.0.11', '< 3.4.0'

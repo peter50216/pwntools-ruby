@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'pwnlib/shellcraft/generators/amd64/common/mov'
 require 'pwnlib/shellcraft/generators/i386/common/mov'
 require 'pwnlib/shellcraft/generators/x86/common/common'
