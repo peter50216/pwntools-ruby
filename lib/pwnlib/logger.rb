@@ -40,7 +40,7 @@ module Pwnlib
         end
 
         # Cache the file content so we can modify the file when it's running.
-        # If the source is modified before the first call, pasring source file
+        # If the source is modified before the first call, parsing source file
         # might still fail.
         @source_of_file_cache ||= Hash.new do |h, key|
           h[key] = IO.read(key)
