@@ -130,7 +130,11 @@ module Pwnlib
       end
 
       def source_of(path, line_number)
-        File.open(path) { |f| LoggerType.expression_at(f, line_number) }
+        @source_of_file_cache = Hash.new do |h, key|
+          h[key] = IO.read(key)
+        end
+        f = @source_of_file_cache[path]
+        LoggerType.expression_at(f, line_number)
       end
 
       # Find the content of block that invoked by log.dump { ... }.
