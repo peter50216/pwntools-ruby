@@ -1,6 +1,9 @@
 # encoding: ASCII-8BIT
 # frozen_string_literal: true
 
+require 'open3'
+require 'tempfile'
+
 require 'test_helper'
 
 require 'pwnlib/context'
@@ -96,5 +99,18 @@ class LoggerTest < MiniTest::Test
        libc.to_s
        libc.to_s(16) = "bc614e000"
     EOS
+
+    lib_path = File.expand_path(File.join(__dir__, '..', 'lib'))
+    Tempfile.create(['dump', '.rb']) do |f|
+      f.write <<~EOS
+        $LOAD_PATH.unshift #{lib_path.inspect}
+        require 'pwn'
+        FileUtils.remove(__FILE__)
+        log.dump 1337
+      EOS
+      f.close
+      _, stderr, status = Open3.capture3('ruby', f.path, binmode: true)
+      assert(status.success?, stderr)
+    end
   end
 end

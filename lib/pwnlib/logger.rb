@@ -141,8 +141,7 @@ module Pwnlib
       end
 
       def source_of(path, line_number)
-        f = @source_of_file_cache[path]
-        LoggerType.expression_at(f, line_number)
+        LoggerType.expression_at(@source_of_file_cache[path], line_number)
       end
 
       # Find the content of block that invoked by log.dump { ... }.
