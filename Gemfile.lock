@@ -62,7 +62,7 @@ GEM
       json (>= 1.8, < 3)
       simplecov-html (~> 0.10.0)
     simplecov-html (0.10.2)
-    tty-platform (0.2.0)
+    tty-platform (0.2.1)
     unicode-display_width (1.6.0)
     yard (0.9.19)
 
