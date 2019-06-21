@@ -101,7 +101,8 @@ class LoggerTest < MiniTest::Test
     EOS
 
     lib_path = File.expand_path(File.join(__dir__, '..', 'lib'))
-    Tempfile.create(['dump', '.rb']) do |f|
+    f = Tempfile.new(['dump', '.rb'])
+    begin
       f.write <<~EOS
         $LOAD_PATH.unshift #{lib_path.inspect}
         require 'pwn'
@@ -111,6 +112,9 @@ class LoggerTest < MiniTest::Test
       f.close
       _, stderr, status = Open3.capture3('ruby', f.path, binmode: true)
       assert(status.success?, stderr)
+    ensure
+      f.close
+      f.unlink
     end
   end
 end
