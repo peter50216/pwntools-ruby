@@ -38,6 +38,17 @@ module Pwnlib
         @formatter = proc do |severity, _datetime, progname, msg|
           format("[%s] %s\n", Rainbow(progname || severity).color(SEV_COLOR[severity]), msg)
         end
+
+        # Cache the file content so we can modify the file when it's running.
+        # If the source is modified before the first call, parsing source file
+        # might still fail.
+        @source_of_file_cache = Hash.new do |h, key|
+          h[key] = IO.read(key)
+        end
+
+        # As a naive heuristic for the most common single file use case, adding
+        # the last file from the execution stack.
+        @source_of_file_cache[caller_locations.last.absolute_path]
       end
 
       # Log the message with indent.
@@ -130,7 +141,7 @@ module Pwnlib
       end
 
       def source_of(path, line_number)
-        File.open(path) { |f| LoggerType.expression_at(f, line_number) }
+        LoggerType.expression_at(@source_of_file_cache[path], line_number)
       end
 
       # Find the content of block that invoked by log.dump { ... }.
