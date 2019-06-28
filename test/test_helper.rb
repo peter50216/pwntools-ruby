@@ -62,9 +62,11 @@ module MiniTest
     def hook_stdin(io)
       org_stdin = $stdin
       $stdin = io
-      yield
-    ensure
-      $stdin = org_stdin
+      begin
+        yield
+      ensure
+        $stdin = org_stdin
+      end
     end
   end
 end
