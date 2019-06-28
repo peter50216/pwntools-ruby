@@ -17,7 +17,7 @@ require 'pwnlib/shellcraft/shellcraft'
 require 'pwnlib/tubes/process'
 require 'pwnlib/tubes/serialtube'
 require 'pwnlib/tubes/sock'
-
+require 'pwnlib/ui'
 require 'pwnlib/util/cyclic'
 require 'pwnlib/util/fiddling'
 require 'pwnlib/util/getdents'
@@ -31,6 +31,7 @@ module Pwn
   include ::Pwnlib::Context
   include ::Pwnlib::Logger
   include ::Pwnlib::Runner
+  include ::Pwnlib::UI
   include ::Pwnlib::Util::Cyclic
   include ::Pwnlib::Util::Fiddling
   include ::Pwnlib::Util::HexDump

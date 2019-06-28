@@ -51,5 +51,22 @@ module MiniTest
         ::Pwnlib::Logger.log.instance_variable_set(:@logdev, old)
       end
     end
+
+    # Hooks +$stdin+.
+    #
+    # @param [IO] io
+    #   IO object to be used as +$stdin+.
+    #
+    # @return [Object]
+    #   Returns what the block returned.
+    def hook_stdin(io)
+      org_stdin = $stdin
+      $stdin = io
+      begin
+        yield
+      ensure
+        $stdin = org_stdin
+      end
+    end
   end
 end
