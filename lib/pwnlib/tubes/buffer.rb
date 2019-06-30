@@ -64,7 +64,7 @@ module Pwnlib
 
       # Retrieves bytes from the buffer.
       #
-      # @param [Integer] n
+      # @param [Integer?] n
       #   Maximum number of bytes to fetch.
       #
       # @return [String]
