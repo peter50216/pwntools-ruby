@@ -283,9 +283,6 @@ module Pwnlib
         @buffer.get
       end
       alias readall recvall
-      # match Ruby's naming convention
-      alias recv_all recvall
-      alias read_all recvall
 
       # Sends data.
       #
