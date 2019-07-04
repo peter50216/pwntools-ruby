@@ -197,6 +197,13 @@ class TubeTest < MiniTest::Test
     5.times { assert_match(r, t.recvregex(r)) }
   end
 
+  def test_recvall
+    t = basic_tube
+    t.unrecv('meow')
+    assert_equal('meow', t.recvall)
+    assert_equal('', t.recvall)
+  end
+
   def test_send
     t = hello_tube
     assert_equal(6, t.write('DARKHH'))

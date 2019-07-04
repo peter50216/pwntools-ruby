@@ -271,6 +271,19 @@ module Pwnlib
         recvpred(timeout: timeout) { |data| data =~ regex }
       end
 
+      # Receives data until reaching EOF or a timeout is occurred.
+      #
+      # @!macro timeout_definition
+      #
+      # @return [String]
+      #   Returns the data received.
+      def recvall(timeout: nil)
+        recvn(1 << 63, timeout: timeout)
+      rescue ::Pwnlib::Errors::EndOfTubeError, ::Pwnlib::Errors::TimeoutError
+        @buffer.get
+      end
+      alias readall recvall
+
       # Sends data.
       #
       # @param [String] data
