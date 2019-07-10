@@ -14,7 +14,7 @@ module Pwnlib
           #   The values of each registers to be set, see examples.
           # @param [Boolean] stack_allowed
           #   If we can use stack for setting values.
-          #   With +stack_allowd+ equals +true+, shellcode would be shorter.
+          #   With +stack_allowed+ equals +true+, shellcode would be shorter.
           #
           # @example
           #   context.arch = 'i386'
