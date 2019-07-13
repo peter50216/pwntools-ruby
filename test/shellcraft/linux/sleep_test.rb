@@ -30,13 +30,6 @@ class SleepTest < MiniTest::Test
   syscall
   add rsp, 16 /* recover rsp */
       EOS
-
-      # check it do sleep
-      asm = @shellcraft.sleep(0.3) + @shellcraft.exit(0)
-      t = Time.now
-      ::Pwnlib::Runner.run_assembly(asm).recvall
-      t = Time.now - t
-      assert_operator t, :>=, 0.3
     end
   end
 
@@ -58,6 +51,18 @@ class SleepTest < MiniTest::Test
   int 0x80
   add esp, 16 /* recover esp */
       EOS
+    end
+  end
+
+  def test_run
+    linux_only
+
+    context.local(arch: :amd64) do
+      asm = @shellcraft.sleep(0.3) + @shellcraft.exit(0)
+      t = Time.now
+      ::Pwnlib::Runner.run_assembly(asm).recvall
+      t = Time.now - t
+      assert_operator t, :>=, 0.3
     end
   end
 end
