@@ -1,6 +1,8 @@
 # encoding: ASCII-8BIT
 # frozen_string_literal: true
 
+require 'benchmark'
+
 require 'test_helper'
 
 require 'pwnlib/context'
@@ -59,9 +61,7 @@ class SleepTest < MiniTest::Test
 
     context.local(arch: :amd64) do
       asm = @shellcraft.sleep(0.3) + @shellcraft.exit(0)
-      t = Time.now
-      ::Pwnlib::Runner.run_assembly(asm).recvall
-      t = Time.now - t
+      t = Benchmark.realtime { ::Pwnlib::Runner.run_assembly(asm).recvall }
       assert_operator t, :>=, 0.3
     end
   end
