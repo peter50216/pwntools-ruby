@@ -43,7 +43,7 @@ module Pwnlib
             cat Common.pushstr(data, append_null: false)
             sp = ::Pwnlib::ABI::ABI.default.stack_pointer
             cat Linux.syscall('SYS_nanosleep', sp, 0)
-            cat "add #{sp}, 16 /* recover #{sp} */"
+            cat "add #{sp}, #{data.size} /* recover #{sp} */"
           end
         end
       end
