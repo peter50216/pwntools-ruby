@@ -14,6 +14,7 @@ namespace :shellcraft do
 
   TEMPLATE = <<-EOS
 # encoding: ASCII-8BIT
+# frozen_string_literal: true
 
 require 'pwnlib/shellcraft/generators/%<arch>s/%<dir>s/%<dir>s'
 require 'pwnlib/shellcraft/generators/x86/%<dir>s/%<func>s'
