@@ -39,7 +39,7 @@ Gem::Specification.new do |s|
   # TODO(david942j): check why ruby crash during testing if upgrade minitest to 5.10.2/3
   s.add_development_dependency 'minitest', '= 5.10.1'
   s.add_development_dependency 'pry', '~> 0.10'
-  s.add_development_dependency 'rake', '~> 12.1'
+  s.add_development_dependency 'rake', '~> 13.0'
   s.add_development_dependency 'rubocop', '~> 0.63'
   s.add_development_dependency 'simplecov', '~> 0.15'
   s.add_development_dependency 'tty-platform', '~> 0.1'
