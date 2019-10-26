@@ -19,4 +19,4 @@ module Pwnlib
   end
 end
 
-::Array.public_send(:include, ::Pwnlib::Ext::Array::InstanceMethods)
+::Array.include ::Pwnlib::Ext::Array::InstanceMethods
