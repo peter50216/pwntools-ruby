@@ -14,4 +14,9 @@ class FullFileTest < MiniTest::Test
       assert(status.success?, stderr)
     end
   end
+
+  def test_ruby_cli
+    _, stderr, status = Open3.capture3('ruby', '-e', 'require "pwn"', binmode: true)
+    assert(status.success?, stderr)
+  end
 end

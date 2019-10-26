@@ -43,6 +43,8 @@ module Pwnlib
         # If the source is modified before the first call, parsing source file
         # might still fail.
         @source_of_file_cache = Hash.new do |h, key|
+          next if key.nil?
+
           h[key] = IO.read(key)
         end
 
