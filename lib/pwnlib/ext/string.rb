@@ -21,4 +21,4 @@ module Pwnlib
   end
 end
 
-::String.public_send(:include, ::Pwnlib::Ext::String::InstanceMethods)
+::String.include ::Pwnlib::Ext::String::InstanceMethods

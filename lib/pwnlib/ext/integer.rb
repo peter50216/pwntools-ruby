@@ -19,4 +19,4 @@ module Pwnlib
   end
 end
 
-::Integer.public_send(:include, ::Pwnlib::Ext::Integer::InstanceMethods)
+::Integer.include ::Pwnlib::Ext::Integer::InstanceMethods
