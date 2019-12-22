@@ -96,7 +96,7 @@ module Pwnlib
 
         data.gsub!(context.newline, "\r\n") if @convert_newlines
         begin
-          return @conn.write(data)
+          @conn.write(data)
         rescue RubySerial::Error
           close
           raise ::Pwnlib::Errors::EndOfTubeError

@@ -20,7 +20,7 @@ module Pwnlib
 
       # All files under generators/ will be required.
       def initialize
-        Dir[File.join(__dir__, 'generators', '**', '*.rb')].each do |f|
+        Dir[File.join(__dir__, 'generators', '**', '*.rb')].sort.each do |f|
           require f
         end
       end
