@@ -89,7 +89,7 @@ module Pwnlib
           rs, = IO.select([@sock], [], [], @timeout)
           return if rs.nil?
 
-          return @sock.readpartial(size)
+          @sock.readpartial(size)
         rescue Errno::ECONNREFUSED, Errno::ECONNRESET, Errno::ECONNABORTED, EOFError
           shutdown(:read)
           raise ::Pwnlib::Errors::EndOfTubeError
