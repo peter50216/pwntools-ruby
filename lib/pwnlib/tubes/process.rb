@@ -13,6 +13,7 @@ module Pwnlib
         env: ENV,
         in: :pipe,
         out: :pipe,
+        err: :out,
         raw: true,
         aslr: true
       }.freeze
@@ -65,10 +66,11 @@ module Pwnlib
         opts = DEFAULT_OPTIONS.merge(opts)
         super(timeout: opts[:timeout])
         argv = normalize_argv(argv, opts)
-        slave_i, slave_o = create_pipe(opts)
-        @pid = ::Process.spawn(opts[:env], *argv, in: slave_i, out: slave_o, unsetenv_others: true)
+        slave_i, slave_o, slave_e = create_pipe(opts)
+        @pid = ::Process.spawn(opts[:env], *argv, in: slave_i, out: slave_o, err: slave_e, unsetenv_others: true)
         slave_i.close
         slave_o.close unless slave_i == slave_o
+        slave_e.close unless slave_i == slave_e || slave_o == slave_e
       end
 
       # Close the IO.
@@ -100,6 +102,7 @@ module Pwnlib
       def close_io(dirs)
         @o.close if dirs.include?(:read) && !@o.closed?
         @i.close if dirs.include?(:write) && !@i.closed?
+        @e.close if dirs.include?(:error) && !@e.closed?
       end
 
       def normalize_argv(argv, opts)
@@ -110,7 +113,7 @@ module Pwnlib
       end
 
       def create_pipe(opts)
-        if [opts[:in], opts[:out]].include?(:pty)
+        if [opts[:in], opts[:out], opts[:err]].include?(:pty)
           # Require only when we need it.
           # This prevents broken on Windows, which has no pty support.
           require 'io/console'
@@ -120,7 +123,17 @@ module Pwnlib
         end
         @o, slave_o = pipe(opts[:out], mpty, spty)
         slave_i, @i = pipe(opts[:in], spty, mpty)
-        [slave_i, slave_o]
+
+        if opts[:err] == :out
+          @e = @o
+          slave_e = slave_o
+        else
+          # we need to make a new pair if the user asks for it
+          mpty, spty = PTY.open if opts[:err] == :pty
+          @e, slave_e = pipe(opts[:err], mpty, spty)
+        end
+
+        [slave_i, slave_o, slave_e]
       end
 
       # @return [(IO, IO)]
@@ -139,10 +152,10 @@ module Pwnlib
       end
 
       def recv_raw(size)
-        o, = IO.select([@o], [], [], @timeout)
+        o, = IO.select([@o, @e], [], [], @timeout)
         return if o.nil?
 
-        @o.readpartial(size)
+        o.first.readpartial(size)
       rescue Errno::EIO, Errno::EPIPE, IOError
         raise ::Pwnlib::Errors::EndOfTubeError
       end

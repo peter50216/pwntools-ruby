@@ -26,6 +26,16 @@ class ProcessTest < MiniTest::Test
     assert_equal("HAHA2\n", cat.gets)
   end
 
+  def test_err
+    # we should capture stderr now too, make sure
+    cat = ::Pwnlib::Tubes::Process.new('cat >&2')
+    cat.puts('HAHA')
+    assert_equal("HAHA\n", cat.gets)
+    assert_raises(::Pwnlib::Errors::TimeoutError) { cat.gets(timeout: 0.1) }
+    cat.puts('HAHA2')
+    assert_equal("HAHA2\n", cat.gets)
+  end
+
   def test_env
     data = ::Pwnlib::Tubes::Process.new('env').read
     assert_match('PATH=', data)
@@ -61,6 +71,12 @@ class ProcessTest < MiniTest::Test
     assert_raises(::Pwnlib::Errors::EndOfTubeError) { cat.recvn(1) }
     cat.shutdown
     assert_raises(ArgumentError) { cat.shutdown(:zz) }
+
+    cat = ::Pwnlib::Tubes::Process.new('cat')
+    cat.shutdown(:error)
+    assert_raises(::Pwnlib::Errors::EndOfTubeError) { cat.recvn(1) }
+    cat.shutdown
+    assert_raises(ArgumentError) { cat.shutdown(:zz) }
   end
 
   def test_kill
@@ -81,7 +97,7 @@ class ProcessTest < MiniTest::Test
     assert_equal("[false, true]\n", tty_test.call(false, true))
     assert_equal("[false, true]\r\n", tty_test.call(false, true, raw: false))
 
-    cat = ::Pwnlib::Tubes::Process.new('cat', in: :pty, out: :pty, raw: false)
+    cat = ::Pwnlib::Tubes::Process.new('cat', in: :pty, out: :pty, err: :pty, raw: false)
     cat.puts('Hi')
     # In cooked mode, tty should echo the input, so we can gets twice.
     assert_equal("Hi\r\n", cat.gets)

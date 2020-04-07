@@ -386,11 +386,12 @@ module Pwnlib
       #   Otherwise, raise +ArgumentError+.
       def normalize_direction(direction)
         case direction
-        when :both then %i[read write]
+        when :both then %i[read write error]
         when :read, :recv then [:read]
         when :write, :send then [:write]
+        when :error then [:error]
         else
-          raise ArgumentError, 'Only allow :both, :recv, :read, :send and :write passed'
+          raise ArgumentError, 'Only allow :both, :recv, :read, :send, :write, and :error passed'
         end
       end
 
