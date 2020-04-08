@@ -15,6 +15,8 @@ module Pwnlib
   #
   # An exploit developer can use +log+ to print out status messages during an exploitation.
   module Logger
+    SUCCESS = ::Logger::UNKNOWN + 1
+
     # The type for logger which inherits Ruby builtin Logger.
     # Main difference is using +context.log_level+ instead of +level+ in logging methods.
     class LoggerType < ::Logger
@@ -25,18 +27,30 @@ module Pwnlib
 
       # Color codes for pretty logging.
       SEV_COLOR = {
-        'DEBUG' => '#ff5f5f',
-        'INFO' => '#87ff00',
-        'WARN' => '#ffff00',
-        'ERROR' => '#ff5f00',
-        'FATAL' => '#ff0000'
+        'DEBUG' => :indianred,
+        'INFO' => :chartreuse,
+        'WARN' => :yellow,
+        'ERROR' => :orangered,
+        'FATAL' => :red,
+        'ANY' => :lime # HACK: assuming this is SUCCESS above
       }.freeze
 
       # Instantiate a {Pwnlib::Logger::LoggerType} object.
       def initialize
         super(STDOUT)
         @formatter = proc do |severity, _datetime, progname, msg|
-          format("[%s] %s\n", Rainbow(progname || severity).color(SEV_COLOR[severity]), msg)
+          prefix = if progname == ''
+                     '    '
+                   else
+                     format('[%s] ', progname || severity)
+                   end
+          indent = ' ' * prefix.length
+
+          # have to calculate twice to get color and right indent depth
+          if progname != '' && SEV_COLOR[severity]
+            prefix = format('[%s] ', Rainbow(progname || severity).color(SEV_COLOR[severity]))
+          end
+          prefix + msg.lines.join(indent) + "\n"
         end
 
         # Cache the file content so we can modify the file when it's running.
@@ -59,15 +73,6 @@ module Pwnlib
       #   The message to log.
       # @param [DEBUG, INFO, WARN, ERROR, FATAL, UNKNOWN] level
       #   The severity of the message.
-      def indented(message, level: DEBUG)
-        return if @logdev.nil? || level < context.log_level
-
-        @logdev.write(
-          message.lines.map { |s| '    ' + s }.join + "\n"
-        )
-        true
-      end
-
       # Log the arguments and their evalutated results.
       #
       # This method has same severity as +INFO+.
@@ -129,17 +134,37 @@ module Pwnlib
         results = args.empty? ? [[yield, source_of_block(src)]] : args.zip(source_of_args(src))
         msg = results.map { |res, expr| "#{expr.strip} = #{res.inspect}" }.join(', ')
         # do indent if msg contains multiple lines
-        first, *remain = msg.split("\n")
-        add(severity, ([first] + remain.map { |r| '[DUMP] '.gsub(/./, ' ') + r }).join("\n"), 'DUMP')
+        add(severity, msg, 'DUMP')
       end
+
+      def indented(message = nil, level: INFO, &block)
+        add level, message, '', &block
+      end
+
+      def success(message = nil, &block)
+        add SUCCESS, message, '+', &block
+      end
+
+      def failure(message = nil, &block)
+        add FATAL, message, '-', &block
+      end
+
+      def info(message = nil, &block)
+        add INFO, message, '*', &block
+      end
+
+      def warning(message = nil, &block)
+        add WARN, message, '!', &block
+      end
+      alias warn warning
 
       private
 
-      def add(severity, message = nil, progname = nil)
+      def add(severity, message = nil, progname = nil, &block)
         severity ||= UNKNOWN
         return true if severity < context.log_level
 
-        super(severity, message, progname)
+        super(severity, message, progname, &block)
       end
 
       def source_of(path, line_number)

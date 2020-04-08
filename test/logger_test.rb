@@ -36,18 +36,25 @@ class LoggerTest < MiniTest::Test
 
   def test_log
     str = 'darkhh i4 so s4d'
+    sym = {
+      'DEBUG' => 'DEBUG',
+      'INFO' => '*',
+      'WARN' => '!',
+      'ERROR' => 'ERROR',
+      'FATAL' => 'FATAL'
+    }
     context.local(log_level: DEBUG) do
       %w(DEBUG INFO WARN ERROR FATAL).each do |type|
-        assert_equal("[#{type}] #{str}\n", @logger.public_send(type.downcase, str))
-        assert_equal("[#{type}] #{str}\n", @logger.public_send(type.downcase) { str })
+        assert_equal("[#{sym[type]}] #{str}\n", @logger.public_send(type.downcase, str))
+        assert_equal("[#{sym[type]}] #{str}\n", @logger.public_send(type.downcase) { str })
       end
     end
 
     assert_empty(@logger.debug(str))
     assert_empty(@logger.debug { str })
     %w(INFO WARN ERROR FATAL).each do |type|
-      assert_equal("[#{type}] #{str}\n", @logger.public_send(type.downcase, str))
-      assert_equal("[#{type}] #{str}\n", @logger.public_send(type.downcase) { str })
+      assert_equal("[#{sym[type]}] #{str}\n", @logger.public_send(type.downcase, str))
+      assert_equal("[#{sym[type]}] #{str}\n", @logger.public_send(type.downcase) { str })
     end
   end
 

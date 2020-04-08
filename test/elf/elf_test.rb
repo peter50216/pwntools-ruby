@@ -23,7 +23,7 @@ class ELFTest < MiniTest::Test
   def test_load
     file = @path_of.call('amd64.prelro.elf')
     assert_output(<<-EOS) { log_stdout { ::Pwnlib::ELF::ELF.new(file) } }
-[INFO] #{File.realpath(file).inspect}
+[*] #{File.realpath(file).inspect}
     RELRO:    Partial RELRO
     Stack:    Canary found
     NX:       NX enabled
@@ -32,8 +32,8 @@ class ELFTest < MiniTest::Test
 
     file = @path_of.call('amd64.frelro.elf')
     assert_output(<<-EOS) { log_stdout { ::Pwnlib::ELF::ELF.new(file) } }
-[WARN] No REL.PLT section found, PLT not loaded
-[INFO] #{File.realpath(file).inspect}
+[!] No REL.PLT section found, PLT not loaded
+[*] #{File.realpath(file).inspect}
     RELRO:    Full RELRO
     Stack:    Canary found
     NX:       NX enabled

@@ -11,7 +11,7 @@ class UITest < MiniTest::Test
   def test_pause
     hook_stdin(StringIO.new("\n")) do
       assert_output(<<-EOS) { log_stdout { ::Pwnlib::UI.pause } }
-[INFO] Paused (press enter to continue)
+[*] Paused (press enter to continue)
       EOS
     end
   end

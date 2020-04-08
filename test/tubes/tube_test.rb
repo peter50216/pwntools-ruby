@@ -287,7 +287,7 @@ class TubeTest < MiniTest::Test
       t.io.rewind
       assert_equal(IO.binread(FLAG_FILE), t.io.read)
     end
-    assert_equal("[INFO] Switching to interactive mode\n[INFO] Got EOF in interactive mode\n", @log.string)
+    assert_equal("[*] Switching to interactive mode\n[*] Got EOF in interactive mode\n", @log.string)
     $stdin.close
     t.io.close
     $stdin = save_stdin
@@ -307,7 +307,7 @@ class TubeTest < MiniTest::Test
       $stdout.rewind
       assert_equal(IO.binread(FLAG_FILE), $stdout.read)
     end
-    assert_equal("[INFO] Switching to interactive mode\n[INFO] Got EOF in interactive mode\n", @log.string)
+    assert_equal("[*] Switching to interactive mode\n[*] Got EOF in interactive mode\n", @log.string)
     $stdout.close
     t.io.close
     $stdin = save_stdin
