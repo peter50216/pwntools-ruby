@@ -45,6 +45,33 @@ module Pwnlib
         @buffer = Buffer.new
       end
 
+      # Returns +true+, if there is data available within timeout seconds.
+      # Returns +false+ otherwise.
+      def can_recv(timeout: nil)
+        @timer.countdown(timeout) do
+          fillbuffer while @timer.active? && @buffer.empty?
+        end
+        !@buffer.empty?
+      end
+
+      # Removes all the buffered data from a tube by calling {#recv} with a low
+      # timeout until it fails.
+      #
+      # If timeout is zero, only cached data will be cleared.
+      #
+      # Note: If timeout is set to zero, the underlying network is not actually
+      # polled; only the internal buffer is cleared.
+      def clean(timeout: 0.05)
+        return @buffer.get if timeout.zero? || timeout.nil?
+
+        recvrepeat(timeout: timeout)
+      end
+
+      # Works exactly as {#clean}, but logs received data with og.info().
+      def clean_and_log(timeout: 0.05)
+        log.info recvall(timeout: timeout)
+      end
+
       # Receives up to +num_bytes+ bytes of data from the tube, and returns as soon as any quantity
       # of data is available.
       #
