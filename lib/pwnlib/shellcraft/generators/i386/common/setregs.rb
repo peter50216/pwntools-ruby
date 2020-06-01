@@ -12,9 +12,9 @@ module Pwnlib
           # @overload setregs(reg_context, stack_allowed: true)
           #
           # @see Generators::X86::Common#setregs
-          def setregs(*args)
+          def setregs(*args, **kwargs)
             context.local(arch: :i386) do
-              cat X86::Common.setregs(*args)
+              cat X86::Common.setregs(*args, **kwargs)
             end
           end
         end

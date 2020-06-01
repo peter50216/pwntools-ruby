@@ -97,7 +97,12 @@ module Pwnlib
                 method = instance_method(m).bind(runner)
                 define_singleton_method(m) do |*args, **kwargs|
                   runner.clear
-                  method.call(*args, **kwargs)
+                  # TODO(david942j): remove the check when we drop Ruby 2.6 support
+                  if kwargs.empty?
+                    method.call(*args)
+                  else
+                    method.call(*args, **kwargs)
+                  end
                   runner.typesetting
                 end
               end
