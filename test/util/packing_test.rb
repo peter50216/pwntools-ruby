@@ -117,8 +117,8 @@ class PackingTest < MiniTest::Test
   def test_up_rand
     srand(217)
     [8, 16, 32, 64].each do |sz|
-      u = ->(*x) { ::Pwnlib::Util::Packing.public_send("u#{sz}", *x) }
-      p = ->(*x) { ::Pwnlib::Util::Packing.public_send("p#{sz}", *x) }
+      u = ->(*x, **k) { ::Pwnlib::Util::Packing.public_send("u#{sz}", *x, **k) }
+      p = ->(*x, **k) { ::Pwnlib::Util::Packing.public_send("p#{sz}", *x, **k) }
       100.times do
         limit = (1 << sz)
         val = rand(0...limit)

@@ -16,15 +16,15 @@ class LoggerTest < MiniTest::Test
   def setup
     @logger = ::Pwnlib::Logger::LoggerType.new
     class << @logger
-      def add(*args)
+      def add(*)
         clear
         super
         @logdev.string
       end
 
-      def indented(*args)
+      def indented(*, **)
         clear
-        super(*args)
+        super
         @logdev.string
       end
 

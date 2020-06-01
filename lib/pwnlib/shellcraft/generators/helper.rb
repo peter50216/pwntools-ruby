@@ -95,9 +95,9 @@ module Pwnlib
                 # Each method runs in an independent 'runner', so methods would not effect each other.
                 runner = Runner.new
                 method = instance_method(m).bind(runner)
-                define_singleton_method(m) do |*args|
+                define_singleton_method(m) do |*args, **kwargs|
                   runner.clear
-                  method.call(*args)
+                  method.call(*args, **kwargs)
                   runner.typesetting
                 end
               end

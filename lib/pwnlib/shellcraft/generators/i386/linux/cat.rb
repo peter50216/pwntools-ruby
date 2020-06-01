@@ -12,9 +12,9 @@ module Pwnlib
           # @overload cat(filename, fd: 1)
           #
           # @see Generators::X86::Linux#cat
-          def cat(*args)
+          def cat(*args, **kwargs)
             context.local(arch: :i386) do
-              cat X86::Linux.cat(*args)
+              cat X86::Linux.cat(*args, **kwargs)
             end
           end
         end
