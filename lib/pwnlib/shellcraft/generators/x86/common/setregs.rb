@@ -18,21 +18,21 @@ module Pwnlib
           #
           # @example
           #   context.arch = 'i386'
-          #   puts shellcraft.setregs(rax: 'ebx', ebx: 'ecx', ecx: 0x123)
-          #   #  mov rax, rbx
+          #   puts shellcraft.setregs({ eax: 'ebx', ebx: 'ecx', ecx: 0x123 })
+          #   #  mov eax, ebx
           #   #  mov ebx, ecx
           #   #  xor ecx, ecx
           #   #  mov cx, 0x123
           # @example
           #   context.arch = 'amd64'
-          #   puts shellcraft.setregs(rdi: 'rsi', rsi: 'rdi')
+          #   puts shellcraft.setregs({ rdi: 'rsi', rsi: 'rdi' })
           #   #  xchg rdi, rsi
           #
-          #   puts shellcraft.setregs(rax: -1)
+          #   puts shellcraft.setregs({ rax: -1 })
           #   #  push -1
           #   #  pop rax
           #
-          #   puts shellcraft.setregs({rax: -1}, stack_allowed: false)
+          #   puts shellcraft.setregs({ rax: -1 }, stack_allowed: false)
           #   #  mov rax, -1
           def setregs(reg_context, stack_allowed: true)
             abi = ::Pwnlib::ABI::ABI.default

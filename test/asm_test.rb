@@ -107,8 +107,8 @@ class AsmTest < MiniTest::Test
     assert_match(/meow/, err.message)
   end
 
-  def make_elf_file(*args)
-    elf = Asm.make_elf(*args)
+  def make_elf_file(data, **kwargs)
+    elf = Asm.make_elf(data, **kwargs)
     stream = StringIO.new(elf)
     [elf, ::ELFTools::ELFFile.new(stream)]
   end

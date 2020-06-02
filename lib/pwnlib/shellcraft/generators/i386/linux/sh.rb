@@ -12,9 +12,9 @@ module Pwnlib
           # @overload sh(argv: false)
           #
           # @see Generators::X86::Linux#sh
-          def sh(*args)
+          def sh(**kwargs)
             context.local(arch: :i386) do
-              cat X86::Linux.sh(*args)
+              cat X86::Linux.sh(**kwargs)
             end
           end
         end

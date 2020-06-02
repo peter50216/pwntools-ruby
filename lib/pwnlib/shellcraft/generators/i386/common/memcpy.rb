@@ -24,7 +24,7 @@ module Pwnlib
           def memcpy(dst, src, n)
             cat "/* memcpy(#{pretty(dst)}, #{pretty(src)}, #{pretty(n)}) */"
             cat 'cld'
-            cat Common.setregs(edi: dst, esi: src, ecx: n)
+            cat Common.setregs({ edi: dst, esi: src, ecx: n })
             cat 'rep movsb'
           end
         end

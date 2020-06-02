@@ -30,11 +30,11 @@ module Pwnlib
       #
       # With this method, +context.local(arch: 'amd64') { shellcraft.sh }+ will invoke
       # {Shellcraft::Generators::Amd64::Linux#sh}.
-      def method_missing(method, *args, &block)
+      def method_missing(method, *args, **kwargs, &block)
         mod = find_module_for(method)
         return super if mod.nil?
 
-        mod.public_send(method, *args, &block)
+        mod.public_send(method, *args, **kwargs, &block)
       end
 
       # For +respond_to?+.
