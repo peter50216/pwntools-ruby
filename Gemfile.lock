@@ -6,7 +6,7 @@ PATH
       dentaku (>= 2.0.11, < 3.4.0)
       elftools (>= 1.0.1, < 1.2.0)
       keystone-engine (~> 0.9)
-      method_source (~> 0.9)
+      method_source (>= 0.9)
       one_gadget (>= 1.6.2, < 1.8.0)
       rainbow (>= 2.2, < 4.0)
       ruby2ruby (~> 2.4)
