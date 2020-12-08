@@ -29,7 +29,7 @@ Gem::Specification.new do |s|
   s.required_ruby_version = '>= 2.3'
 
   s.add_runtime_dependency 'crabstone', '~> 4'
-  s.add_runtime_dependency 'dentaku', '>= 2.0.11', '< 3.4.0'
+  s.add_runtime_dependency 'dentaku', '>= 2.0.11', '< 3.5.0'
   s.add_runtime_dependency 'elftools', '>= 1.0.1', '< 1.2.0'
   s.add_runtime_dependency 'keystone-engine', '~> 0.9'
   s.add_runtime_dependency 'method_source', '>= 0.9'
