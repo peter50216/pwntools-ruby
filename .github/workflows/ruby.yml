@@ -1,0 +1,31 @@
+name: build
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test:
+
+    runs-on: ${{ matrix.os }}-latest
+    strategy:
+      matrix:
+        os: [ubuntu, macos]
+        ruby-version: ['2.6', '2.7', head]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ${{ matrix.ruby-version }}
+        bundler-cache: true
+    - name: Install packages
+      run: .github/workflows/install.sh ${{ runner.os }}
+    - name: Run tests
+      run: bundle exec rake
+      env:
+        LD_LIBRARY_PATH: ./keystone/build/llvm/lib
+        DYLD_LIBRARY_PATH: /usr/local/opt/capstone/lib
