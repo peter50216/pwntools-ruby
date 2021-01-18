@@ -28,4 +28,4 @@ jobs:
       run: bundle exec rake
       env:
         LD_LIBRARY_PATH: ./keystone/build/llvm/lib
-        DYLD_LIBRARY_PATH: ./keystone/build/llvm/lib:/usr/local/opt/capstone/lib
+        DYLD_LIBRARY_PATH: /usr/local/opt/capstone/lib

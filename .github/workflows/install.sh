@@ -46,7 +46,7 @@ setup_osx()
   # install keystone
   install_keystone_from_source
   # hack, don't know why set DYLD_LIBRARY_PATH has no effect
-  # ln -s keystone/build/llvm/lib/libkeystone.dylib libkeystone.dylib
+  ln -s keystone/build/llvm/lib/libkeystone.dylib libkeystone.dylib
 
   # install socat
   brew install socat
