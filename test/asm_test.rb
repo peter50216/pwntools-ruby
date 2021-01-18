@@ -25,7 +25,7 @@ class AsmTest < MiniTest::Test
         # => { arch: 'a', endian: 'big' }
         metadata = lines.shift.slice(11..-1)
                         .split(',').map { |c| c.split(':', 2).map(&:strip) }
-                        .map { |k, v| [k.to_sym, v] }.to_h
+                        .to_h.transform_keys(&:to_sym)
       end
       comment, output = lines.partition { |l| l =~ /^\s*[;#]/ }.map(&:join)
       next if output.empty?
