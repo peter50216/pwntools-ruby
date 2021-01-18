@@ -52,7 +52,7 @@ module Pwnlib
       # randomize = context.randomize if randomize.nil?
 
       # TODO(david942j): stringify_keys
-      in_out = in_out.map { |k, v| [k.to_s, v] }.to_h
+      in_out = in_out.transform_keys(&:to_s)
       # Drop all registers which will be set to themselves.
       # Ex. {eax: 'eax'}
       in_out.reject! { |k, v| k == v }
@@ -83,7 +83,7 @@ module Pwnlib
 
       # Let's do the topological sort.
       # so sad ruby 2.1 doesn't have +itself+...
-      deg = graph.values.group_by { |i| i }.map { |k, v| [k, v.size] }.to_h
+      deg = graph.values.group_by { |i| i }.transform_values(&:size)
       graph.each_key { |k| deg[k] ||= 0 }
 
       until deg.empty?

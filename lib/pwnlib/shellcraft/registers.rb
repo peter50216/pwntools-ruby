@@ -34,8 +34,7 @@ module Pwnlib
         # @return [String]
         #   Register's name.
         attr_reader :name
-        attr_reader :bigger, :smaller, :ff00, :is64bit, :native64, :native32, :xor
-        attr_reader :size, :sizes
+        attr_reader :bigger, :smaller, :ff00, :is64bit, :native64, :native32, :xor, :size, :sizes
 
         # Instantiate a {Register} object.
         #
@@ -66,7 +65,7 @@ module Pwnlib
             @xor = @sizes[[size, 32].min]
             break
           end
-          @ff00 = name[1] + 'h' if @size >= 32 && @name.end_with?('x')
+          @ff00 = "#{name[1]}h" if @size >= 32 && @name.end_with?('x')
           @is64bit = true if @name.start_with?('r')
         end
 

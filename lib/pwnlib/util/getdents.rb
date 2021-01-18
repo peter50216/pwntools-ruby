@@ -24,6 +24,7 @@ module Pwnlib
       # The +linux_dirent+ structure.
       class Dirent < ::BinData::Record
         attr_accessor :bits
+
         # struct linux_dirent {
         #   unsigned long  d_ino;     /* Inode number */
         #   unsigned long  d_off;     /* Offset to next linux_dirent */
@@ -72,8 +73,8 @@ module Pwnlib
           ent = Dirent.new(endian: context.endian.to_sym)
           ent.bits = context.bits
           ent.read(str)
-          # Note: d_name might contains garbage after first "\x00", so we use gsub(/\x00.*/) instead of delete("\x00").
-          result.puts(DT_TYPE_INVERSE[ent.d_type] + ' ' + ent.d_name.gsub(/\x00.*/, ''))
+          # NOTE: d_name might contains garbage after first "\x00", so we use gsub(/\x00.*/) instead of delete("\x00").
+          result.puts("#{DT_TYPE_INVERSE[ent.d_type]} #{ent.d_name.gsub(/\x00.*/, '')}")
         end
         result.string
       end

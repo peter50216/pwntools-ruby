@@ -8,11 +8,10 @@ module Pwnlib
   module ABI
     # A super class for recording registers and stack's information.
     class ABI
-      attr_reader :register_arguments
-      attr_reader :arg_alignment
-      attr_reader :stack_pointer
+      attr_reader :register_arguments, :arg_alignment, :stack_pointer
       # Only used for x86, to specify the +eax+, +edx+ pair.
       attr_reader :cdq_pair
+
       def initialize(regs, align, stack_pointer, cdq_pair: nil)
         @register_arguments = regs
         @arg_alignment = align
@@ -42,6 +41,7 @@ module Pwnlib
     # which must be loaded into the specified register.
     class SyscallABI < ABI
       attr_reader :syscall_str
+
       def initialize(regs, align, stack_pointer, syscall_str)
         super(regs, align, stack_pointer)
         @syscall_str = syscall_str

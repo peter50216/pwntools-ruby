@@ -40,11 +40,11 @@ class FiddlingTest < MiniTest::Test
     assert_equal('test A', urldecode('te%73t%20%41'))
     assert_equal("\x00\xff\x01\xfe", urldecode('%00%ff%01%fe'))
 
-    assert_equal('%qq', urldecode('%qq', true))
+    assert_equal('%qq', urldecode('%qq', ignore_invalid: true))
     err = assert_raises(ArgumentError) { urldecode('%qq') }
     assert_match(/Invalid input to urldecode/, err.message)
 
-    assert_equal('%%1z2%orz%%%%%#$!#)@%', urldecode('%%1z2%orz%%%%%#$!#)@%', true))
+    assert_equal('%%1z2%orz%%%%%#$!#)@%', urldecode('%%1z2%orz%%%%%#$!#)@%', ignore_invalid: true))
     err = assert_raises(ArgumentError) { urldecode('%ff%') }
     assert_match(/Invalid input to urldecode/, err.message)
   end

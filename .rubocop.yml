@@ -1,6 +1,7 @@
 AllCops:
   DisplayCopNames: true
   DisplayStyleGuide: true
+  TargetRubyVersion: 2.5
 
 Layout/EndOfLine:
   EnforcedStyle: lf
@@ -11,6 +12,11 @@ Layout/HeredocIndentation:
 Layout/LineLength:
   Enabled: true
   Max: 120
+
+Lint/ConstantDefinitionInBlock:
+  Enabled: true
+  Exclude:
+    - 'tasks/**/*.rake'
 
 Metrics/AbcSize:
   Enabled: false
@@ -40,6 +46,9 @@ Naming/HeredocDelimiterNaming:
   Enabled: false
 
 Naming/MethodParameterName:
+  Enabled: false
+
+Naming/VariableNumber:
   Enabled: false
 
 Style/AsciiComments:
