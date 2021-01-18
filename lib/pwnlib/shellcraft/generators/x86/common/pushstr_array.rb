@@ -63,7 +63,7 @@ module Pwnlib
           #   #=> nil
           def pushstr_array(reg, array)
             abi = ::Pwnlib::ABI::ABI.default
-            array = array.map { |a| a.gsub(/\x00+\Z/, '') + "\x00" }
+            array = array.map { |a| "#{a.gsub(/\x00+\Z/, '')}\x00" }
             array_str = array.join
             word_size = abi.arg_alignment
             offset = array_str.size + word_size

@@ -63,7 +63,7 @@ module Pwnlib
           sym = symtab + sym_size * i
           st_name = @leak.d(sym)
           name = @leak.n(strtab + st_name, symbol.length + 1)
-          if name == (symbol + "\x00")
+          if name == ("#{symbol}\x00")
             offset = { 32 => 4, 64 => 8 }[@elfclass]
             st_value = unpack(@leak.n(sym + offset, @elfword))
             return @libbase + st_value
@@ -82,7 +82,7 @@ module Pwnlib
       build_id_offsets.each do |offset|
         next unless @leak.n(@libbase + offset + 12, 4) == "GNU\x00"
 
-        return @leak.n(@libbase + offset + 16, 20).unpack('H*').first
+        return @leak.n(@libbase + offset + 16, 20).unpack1('H*')
       end
       nil
     end

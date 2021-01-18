@@ -226,7 +226,7 @@ module Pwnlib
             c = context.signed ? ch : ch.upcase
             arrow = context.endian == 'little' ? '<' : '>'
             arrow = '' if sz == 8
-            data.unpack("#{c}#{arrow}")[0]
+            data.unpack1("#{c}#{arrow}")
           end
         end
       end

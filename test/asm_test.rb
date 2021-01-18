@@ -45,7 +45,7 @@ class AsmTest < MiniTest::Test
 
   # All tests of asm can be found under test/data/assembly/<arch>.s.
   %w[aarch64 amd64 arm i386 mips mips64 powerpc powerpc64 sparc sparc64 thumb].each do |arch|
-    file = File.join(__dir__, 'data', 'assembly', arch + '.s')
+    file = File.join(__dir__, 'data', 'assembly', "#{arch}.s")
     # Defining methods dynamically makes proper error message shown when tests failed.
     __send__(:define_method, "test_asm_#{arch}") do
       skip_windows
@@ -73,7 +73,7 @@ class AsmTest < MiniTest::Test
 
   # All tests of disasm can be found under test/data/assembly/<arch>.s.
   %w[aarch64 amd64 arm i386 mips mips64 powerpc64 sparc sparc64 thumb].each do |arch|
-    file = File.join(__dir__, 'data', 'assembly', arch + '.s')
+    file = File.join(__dir__, 'data', 'assembly', "#{arch}.s")
     # Defining methods dynamically makes proper error message shown when tests failed.
     __send__(:define_method, "test_disasm_#{arch}") do
       skip_windows

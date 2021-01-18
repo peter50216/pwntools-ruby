@@ -75,10 +75,10 @@ class LoggerTest < MiniTest::Test
     msg = @logger.dump(
       libc # comment is ok
       .to_s(16),
-      libc - libc
+      libc - libc * 1
     )
     assert_equal(<<-EOS, msg)
-[DUMP] libc.to_s(16) = "7fc0bdd13000", (libc - libc) = 0
+[DUMP] libc.to_s(16) = "7fc0bdd13000", (libc - (libc * 1)) = 0
     EOS
 
     libc = 0x7fc0bdd13000

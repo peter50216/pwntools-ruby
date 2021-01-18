@@ -23,16 +23,15 @@ module Pwnlib
       # @param [String] str
       # @param [Integer] val
       def initialize(str, val)
+        super()
         @str = str
         @val = val
       end
 
       # We don't need to fall back to super for this, so just disable the lint.
-      # rubocop:disable Style/MethodMissingSuper
       def method_missing(method, *args, &block)
         @val.__send__(method, *args, &block)
       end
-      # rubocop:enable Style/MethodMissingSuper
 
       def respond_to_missing?(method, include_all)
         @val.respond_to?(method, include_all)

@@ -60,9 +60,10 @@ module Pwnlib
 
         @closed[direction] = true
 
-        if direction.equal?(:read)
+        case direction
+        when :read
           @sock.close_read
-        elsif direction.equal?(:write)
+        when :write
           @sock.close_write
         end
       end
