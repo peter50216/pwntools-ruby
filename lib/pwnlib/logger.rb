@@ -34,7 +34,7 @@ module Pwnlib
 
       # Instantiate a {Pwnlib::Logger::LoggerType} object.
       def initialize
-        super(STDOUT)
+        super($stdout)
         @formatter = proc do |severity, _datetime, progname, msg|
           format("[%s] %s\n", Rainbow(progname || severity).color(SEV_COLOR[severity]), msg)
         end
@@ -63,7 +63,7 @@ module Pwnlib
         return if @logdev.nil? || level < context.log_level
 
         @logdev.write(
-          message.lines.map { |s| '    ' + s }.join + "\n"
+          "#{message.lines.map { |s| "    #{s}" }.join}\n"
         )
         true
       end

@@ -25,6 +25,25 @@ module Pwnlib
       arm: 0x8000
     }.freeze
 
+    # Mapping +context.arch+ to +::ELFTools::Constants::EM::EM_*+.
+    ARCH_EM = {
+      aarch64: 'AARCH64',
+      alpha: 'ALPHA',
+      amd64: 'X86_64',
+      arm: 'ARM',
+      cris: 'CRIS',
+      i386: '386',
+      ia64: 'IA_64',
+      m68k: '68K',
+      mips64: 'MIPS',
+      mips: 'MIPS',
+      powerpc64: 'PPC64',
+      powerpc: 'PPC',
+      s390: 'S390',
+      sparc64: 'SPARCV9',
+      sparc: 'SPARC'
+    }.freeze
+
     # Disassembles a bytestring into human readable assembly.
     #
     # {.disasm} depends on another open-source project - capstone, error will be raised if capstone is not intalled.
@@ -244,7 +263,7 @@ module Pwnlib
       def require_message(lib, msg)
         require lib
       rescue LoadError => e
-        raise ::Pwnlib::Errors::DependencyError, e.message + "\n\n" + msg
+        raise ::Pwnlib::Errors::DependencyError, "#{e.message}\n\n#{msg}"
       end
 
       def install_crabstone_guide
@@ -316,25 +335,6 @@ https://github.com/keystone-engine/keystone/tree/master/docs
         when :arm then 0x8000
         end
       end
-
-      # Mapping +context.arch+ to +::ELFTools::Constants::EM::EM_*+.
-      ARCH_EM = {
-        aarch64: 'AARCH64',
-        alpha: 'ALPHA',
-        amd64: 'X86_64',
-        arm: 'ARM',
-        cris: 'CRIS',
-        i386: '386',
-        ia64: 'IA_64',
-        m68k: '68K',
-        mips64: 'MIPS',
-        mips: 'MIPS',
-        powerpc64: 'PPC64',
-        powerpc: 'PPC',
-        s390: 'S390',
-        sparc64: 'SPARCV9',
-        sparc: 'SPARC'
-      }.freeze
 
       def e_machine
         const = ARCH_EM[context.arch.to_sym]

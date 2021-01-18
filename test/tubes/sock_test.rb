@@ -31,7 +31,7 @@ class SockTest < MiniTest::Test
   def test_eof
     popen_echo('DARKHH') do |s, data, o|
       s.puts(data)
-      assert_equal(data + "\n", s.gets)
+      assert_equal("#{data}\n", s.gets)
       o.gets
       s.puts(514)
       sleep(0.1) # Wait for connection reset

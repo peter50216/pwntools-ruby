@@ -32,7 +32,7 @@ module Pwnlib
           # Indent each line 2 spaces.
           def typesetting
             indent = @_output.string.lines.map do |line|
-              next line.strip + "\n" if label_str?(line.strip)
+              next "#{line.strip}\n" if label_str?(line.strip)
 
               line == "\n" ? line : ' ' * 2 + line.lstrip
             end

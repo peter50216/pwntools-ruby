@@ -104,7 +104,7 @@ class SerialTest < MiniTest::Test
 
       # recvuntil
       rs = random_string 12
-      file.print rs + '|'
+      file.print "#{rs}|"
       result = serial.recvuntil('|').chomp('|')
       assert_equal rs, result
 

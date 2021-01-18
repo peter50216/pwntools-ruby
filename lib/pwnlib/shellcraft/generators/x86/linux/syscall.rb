@@ -29,7 +29,7 @@ module Pwnlib
             reg_ctx = registers.zip(arguments).to_h
             syscall = arguments.first
             if syscall.to_s.start_with?('SYS_')
-              fmt = syscall.to_s[4..-1] + '(%s)'
+              fmt = "#{syscall.to_s[4..-1]}(%s)"
               args = []
             else
               fmt = 'syscall(%s)'

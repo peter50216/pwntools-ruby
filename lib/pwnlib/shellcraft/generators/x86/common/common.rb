@@ -11,9 +11,10 @@ module Pwnlib
           class << self
             def define_arch_dependent_method(method)
               define_method(method) do |*args, **kwargs|
-                if context.arch == 'amd64'
+                case context.arch
+                when 'amd64'
                   cat Amd64::Common.public_send(method, *args, **kwargs)
-                elsif context.arch == 'i386'
+                when 'i386'
                   cat I386::Common.public_send(method, *args, **kwargs)
                 end
               end

@@ -27,7 +27,7 @@ module Pwnlib
       # @example
       #   enhex('217') #=> '323137'
       def enhex(s)
-        s.unpack('H*')[0]
+        s.unpack1('H*')
       end
 
       # Hex-decodes a string.
@@ -91,8 +91,8 @@ module Pwnlib
       # @example
       #   urldecode('test%20url') #=> 'test url'
       #   urldecode('%qw%er%ty') #=> raise ArgumentError
-      #   urldecode('%qw%er%ty', true) #=> '%qw%er%ty'
-      def urldecode(s, ignore_invalid = false)
+      #   urldecode('%qw%er%ty', ignore_invalid: true) #=> '%qw%er%ty'
+      def urldecode(s, ignore_invalid: false)
         res = +''
         n = 0
         while n < s.size
@@ -142,7 +142,7 @@ module Pwnlib
           when String
             v = +'B*'
             v.downcase! if is_little
-            s.unpack(v)[0].chars.map { |ch| ch == '1' ? one : zero }
+            s.unpack1(v).chars.map { |ch| ch == '1' ? one : zero }
           when Integer
             # TODO(Darkpi): What should we do to negative number?
             raise ArgumentError, 's must be non-negative' unless s >= 0
@@ -264,7 +264,7 @@ module Pwnlib
       # @example
       #   b64d('ZGVzdQ==') #=> 'desu'
       def b64d(s)
-        s.unpack('m0')[0]
+        s.unpack1('m0')
       end
 
       # Xor two strings.

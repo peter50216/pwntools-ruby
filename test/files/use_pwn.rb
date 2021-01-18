@@ -9,8 +9,8 @@ require 'pwn'
 context[arch: 'amd64']
 
 raise 'pack fail' unless pack(1) == "\x01\0\0\0\0\0\0\0"
-raise 'not unique context' unless ::Pwnlib::Util::Fiddling.__send__(:context).object_id == context.object_id
-raise 'not unique context' unless ::Pwnlib::Context.context.object_id == context.object_id
+raise 'not unique context' unless ::Pwnlib::Util::Fiddling.__send__(:context).equal?(context)
+raise 'not unique context' unless ::Pwnlib::Context.context.equal?(context)
 
 # Make sure things aren't polluting Object
 begin
