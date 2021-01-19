@@ -45,7 +45,7 @@ class ProcessTest < MiniTest::Test
   def test_eof
     ls = ::Pwnlib::Tubes::Process.new(['ls', '-la'])
     assert_match(/total/, ls.gets)
-    assert_raises(::Pwnlib::Errors::EndOfTubeError) { ls.write('anything') }
+    assert_raises(::Pwnlib::Errors::EndOfTubeError) { loop { ls.write('anything') } }
     assert_raises(::Pwnlib::Errors::EndOfTubeError) { loop { ls.gets } }
   end
 
