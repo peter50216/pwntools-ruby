@@ -29,8 +29,8 @@ jobs:
       env:
         LD_LIBRARY_PATH: ./keystone/build/llvm/lib
         DYLD_LIBRARY_PATH: /usr/local/opt/capstone/lib
-    - name: Publish code coverage
-      if: ${{ success() }}
+    - name: Publish code coverage to codeclimate
+      if: ${{ success() && runner.os == 'Linux' }}
       uses: paambaati/codeclimate-action@v2.7.5
       env:
         CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
