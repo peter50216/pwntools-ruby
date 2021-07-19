@@ -18,9 +18,11 @@ GEM
     ast (2.4.2)
     bindata (2.4.8)
     coderay (1.1.3)
+    concurrent-ruby (1.1.9)
     crabstone (4.0.3)
       ffi
-    dentaku (3.4.1)
+    dentaku (3.4.2)
+      concurrent-ruby
     docile (1.3.5)
     elftools (1.1.3)
       bindata (~> 2)
