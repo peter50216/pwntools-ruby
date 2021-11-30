@@ -71,7 +71,9 @@ GEM
     simplecov-html (0.10.2)
     tty-platform (0.3.0)
     unicode-display_width (2.0.0)
-    yard (0.9.26)
+    webrick (1.7.0)
+    yard (0.9.27)
+      webrick (~> 1.7.0)
 
 PLATFORMS
   ruby
